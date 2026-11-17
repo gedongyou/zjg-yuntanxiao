@@ -110,16 +110,31 @@ for (let i = 0; i < tabs.length; i++) {
   await shot('a' + (i + 2) + '-' + tabs[i]);
 }
 
-// 回到排版页，单独截配色卡片（含预设与恢复默认按钮）
+// 回到排版页，单独截配色卡片（含六个颜色、预设与恢复默认按钮）
 await evalJs(`document.querySelector('#tabs [data-tab="layout"]').click(); 1`);
 await sleep(500);
-const themeTop = await evalJs(`(function(){
-  var h = document.querySelectorAll('#pane .h');
-  return h.length > 1 ? Math.max(0, h[1].getBoundingClientRect().top + window.scrollY - 24) : 0;
-})()`);
-await evalJs(`window.scrollTo(0, ${themeTop}); 1`);
+// 卡片在 #pane 自己的滚动容器里，captureBeyondViewport 撑不开它 ——
+// 把窗口临时调高，让整张卡一次进视口，再截
+await send('Emulation.setDeviceMetricsOverride', { width: 1560, height: 1500, deviceScaleFactor: 1, mobile: false });
 await sleep(400);
-await shot('a4-theme');
+const themeBox = await evalJs(`(function(){
+  var cards = document.querySelectorAll('#pane .card');
+  var card = cards[cards.length - 1];
+  if (!card) return null;
+  card.scrollIntoView({ block: 'start' });
+  var r = card.getBoundingClientRect();
+  return { y: Math.round(r.top + window.scrollY - 10), h: Math.round(r.height + 20) };
+})()`);
+await sleep(400);
+if (themeBox) {
+  const r = await send('Page.captureScreenshot', {
+    format: 'png', captureBeyondViewport: true,
+    clip: { x: 0, y: Math.max(0, themeBox.y), width: 900, height: themeBox.h, scale: 1 },
+  });
+  await writeFile(OUT + '\\a4-theme.png', Buffer.from(r.data, 'base64'));
+  console.log(OUT + '\\a4-theme.png  h=' + themeBox.h);
+}
+await send('Emulation.setDeviceMetricsOverride', { width: 1560, height: 1000, deviceScaleFactor: 1, mobile: false });
 
 // 检查有没有 JS 报错
 const errs = await evalJs(`(window.__errs||[]).join('|')`);

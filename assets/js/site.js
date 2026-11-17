@@ -49,9 +49,11 @@
   if (T.ink) { R.setProperty('--ink', T.ink); }
   if (T.red) { R.setProperty('--red', T.red); }
   if (T.gold) { R.setProperty('--gold', T.gold); }
+  if (T.sky) { R.setProperty('--sky', T.sky); }
   if (T.contrast && T.contrast !== 1) { R.setProperty('--contrast', T.contrast); }
   if (T.density && T.density !== 1) { R.setProperty('--density', T.density); }
-  if (typeof T.imageGray === 'number') { R.setProperty('--img-gray', T.imageGray); }
+  var gray = (typeof T.imgGray === 'number') ? T.imgGray : T.imageGray;
+  if (typeof gray === 'number') { R.setProperty('--img-gray', gray); }
 
   var M = D.meta || {};
   if (M.title) document.title = M.title;

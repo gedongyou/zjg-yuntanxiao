@@ -96,7 +96,7 @@
   // 默认配色（出厂值，「恢复默认」用这一份，不是当前值）
   var THEME0 = {
     paper: '#FAF8F3', paper2: '#F2EDE1', ink: '#14151A',
-    red: '#B0271D', gold: '#B08A4E',
+    red: '#B0271D', gold: '#B08A4E', sky: '#BBD7EC',
     contrast: 1, density: 1, imgGray: 0.12
   };
 
@@ -133,7 +133,8 @@
     paper2: [['竹青', '#F2EDE1'], ['浅米', '#EDE6D6'], ['浅灰', '#E9EAEC']],
     ink: [['松烟', '#14151A'], ['藏青', '#1B2733'], ['深褐', '#2A211B']],
     red: [['朱砂', '#B0271D'], ['胭脂', '#A33048'], ['赭石', '#9C4A2F']],
-    gold: [['金', '#B08A4E'], ['黄铜', '#A98135'], ['暗金', '#8C6B39']]
+    gold: [['金', '#B08A4E'], ['黄铜', '#A98135'], ['暗金', '#8C6B39']],
+    sky: [['晴空', '#BBD7EC'], ['雾蓝', '#C8D6E0'], ['淡青', '#BFD9D2'], ['藕荷', '#D6CEE0']]
   };
 
   function fColor(label, path) {
@@ -323,11 +324,11 @@
     },
     theme: function () {
       return '<div class="grid2">' +
-          fColor('纸色', 'theme.paper') + fColor('次纸色', 'theme.paper2') + '</div>' +
+          fColor('纸色（页面底色）', 'theme.paper') + fColor('次纸色（分段/页脚）', 'theme.paper2') + '</div>' +
         '<div class="grid2">' +
-          fColor('墨色', 'theme.ink') + fColor('主红', 'theme.red') + '</div>' +
+          fColor('墨色（正文/标题）', 'theme.ink') + fColor('主红（强调/按钮）', 'theme.red') + '</div>' +
         '<div class="grid2">' +
-          fColor('金', 'theme.gold') + '<div></div>' + '</div>' +
+          fColor('金（线/描边）', 'theme.gold') + fColor('天空（首屏背景）', 'theme.sky') + '</div>' +
         '<div class="grid3">' +
           fNum('对比度', 'theme.contrast', '1 正常，1.15 更硬') +
           fNum('疏密', 'theme.density', '1 正常，1.15 更松') +
@@ -363,7 +364,7 @@
     nav: '固定页头与手机抽屉',
     ask: '右下角问答面板的开场和兜底',
     meta: '浏览器标题、描述、图标',
-    theme: '纸色、墨色、主红、对比度、疏密、图片灰度'
+    theme: '纸色、次纸色、墨色、主红、金、天空、对比度、疏密、图片灰度'
   };
 
   /* ---------------- 渲染 ---------------- */

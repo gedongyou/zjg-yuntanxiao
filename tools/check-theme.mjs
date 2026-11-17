@@ -134,7 +134,7 @@ await evalJs(`(function(){
 await sleep(500);
 const afterReset = await evalJs(`(function(){
   var o = {};
-  ['paper','paper2','ink','red','gold'].forEach(function(k){
+  ['paper','paper2','ink','red','gold','sky'].forEach(function(k){
     o[k] = document.querySelector('[data-p="theme.'+k+'"][data-color-txt]').value;
   });
   o.contrast = document.querySelector('[data-p="theme.contrast"]').value;

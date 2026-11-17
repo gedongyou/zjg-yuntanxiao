@@ -11,6 +11,13 @@
   --red:        #B0271D;
   --red-2:      #8E1A12;
   --gold:       #B08A4E;
+  --sky:        #BBD7EC;
+
+  /* 由主色派生的可调背景（后台换色时跟着走） */
+  --paper-soft: color-mix(in srgb, var(--paper) 66%, transparent);
+  --paper-veil: color-mix(in srgb, var(--paper) 88%, transparent);
+  --paper-solid: color-mix(in srgb, var(--paper) 97%, transparent);
+  --band:       color-mix(in srgb, var(--paper-2) 62%, transparent);
 
   --serif: "Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;
   --sans: -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
@@ -49,7 +56,7 @@
 }
 
 *,*::before,*::after{ box-sizing:border-box; }
-html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; background:#FAF8F3; }
+html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; background:var(--paper); }
 body{
   margin:0;
   background:transparent;
@@ -70,16 +77,16 @@ body{
   overflow:hidden;
   background:
     linear-gradient(180deg,
-      #BBD7EC 0%,
-      #CDE2F0 22%,
-      #E3EDF2 48%,
-      #F2F2EA 74%,
-      #FAF8F3 100%);
+      var(--sky) 0%,
+      color-mix(in srgb, var(--sky) 76%, #fff) 22%,
+      color-mix(in srgb, var(--sky) 46%, #fff) 48%,
+      color-mix(in srgb, var(--paper) 72%, var(--sky)) 74%,
+      var(--paper) 100%);
 }
 .sky::after{
   content:"";
   position:absolute; left:0; right:0; bottom:0; height:30%;
-  background:linear-gradient(180deg, rgba(250,248,243,0) 0%, rgba(250,248,243,.9) 82%);
+  background:linear-gradient(180deg, color-mix(in srgb, var(--paper) 0%, transparent) 0%, color-mix(in srgb, var(--paper) 90%, transparent) 82%);
 }
 .sky__c{
   position:absolute;
@@ -158,7 +165,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   border-bottom:1px solid transparent;
 }
 .nav.is-stuck{
-  background:rgba(250,248,243,.86);
+  background:var(--paper-veil);
   backdrop-filter:blur(14px) saturate(140%);
   -webkit-backdrop-filter:blur(14px) saturate(140%);
   border-bottom-color:var(--line);
@@ -204,7 +211,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 
 .drawer{
   position:fixed; inset:0; z-index:200;
-  background:rgba(250,248,243,.97);
+  background:var(--paper-solid);
   backdrop-filter:blur(6px);
   padding:24px var(--pad);
   display:flex; flex-direction:column;
@@ -366,7 +373,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .unroll__head::before{  content:"";
   position:absolute; left:var(--pad); bottom:0;
   height:2px; width:calc(100% - var(--pad) * 2);
-  background:rgba(176,39,29,.13);
+  background:color-mix(in srgb, var(--red) 13%, transparent);
 }
 .unroll.is-open .unroll__head::after{ width:calc(100% - var(--pad) * 2); }
 .unroll__head::after{  content:"";
@@ -398,7 +405,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .unroll.is-open .unroll__frame::after{ opacity:0; }
 .unroll__frame::after{  content:"";
   position:absolute; inset:0; z-index:4;
-  background:rgba(20,21,26,.66);
+  background:color-mix(in srgb, var(--ink) 66%, transparent);
   opacity:.66;
   transition:opacity 4s ease;
   pointer-events:none;
@@ -419,14 +426,14 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .unroll__img::after{
   content:""; position:absolute; inset:0;
   background:
-    linear-gradient(180deg, rgba(20,21,26,.28), transparent 22%, transparent 74%, rgba(20,21,26,.42)),
-    linear-gradient(90deg, rgba(20,21,26,.22), transparent 10%, transparent 90%, rgba(20,21,26,.22));
+    linear-gradient(180deg, color-mix(in srgb, var(--ink) 28%, transparent), transparent 22%, transparent 74%, color-mix(in srgb, var(--ink) 42%, transparent)),
+    linear-gradient(90deg, color-mix(in srgb, var(--ink) 22%, transparent), transparent 10%, transparent 90%, color-mix(in srgb, var(--ink) 22%, transparent));
 }
 
 .unroll__card{
   position:absolute; inset:0;
   display:grid; place-items:center;
-  background:radial-gradient(130% 96% at 50% 0%, #FCFAF4, #EDE5D4 82%);
+  background:radial-gradient(130% 96% at 50% 0%, color-mix(in srgb, var(--paper) 92%, #fff), var(--paper-3) 82%);
   opacity:0;
   transition:opacity .34s cubic-bezier(.22,.7,.3,1);
 }
@@ -457,18 +464,27 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .roller{
   position:absolute; top:-4%; bottom:-4%;
   width:22px; z-index:5;
-  background:linear-gradient(90deg,#4E0905 0%,#8E1A12 22%,#C0301F 46%,#E0674A 56%,#8E1A12 80%,#4E0905 100%);
+  background:linear-gradient(90deg,
+    color-mix(in srgb, var(--red) 46%, #000) 0%,
+    color-mix(in srgb, var(--red) 78%, #000) 22%,
+    var(--red) 46%,
+    color-mix(in srgb, var(--red) 62%, #fff) 56%,
+    color-mix(in srgb, var(--red) 78%, #000) 80%,
+    color-mix(in srgb, var(--red) 46%, #000) 100%);
   box-shadow:
-    0 22px 50px rgba(20,21,26,.34),
-    0 0 0 1px rgba(250,248,243,.5),
+    0 22px 50px color-mix(in srgb, var(--ink) 34%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--paper) 50%, transparent),
     inset 0 0 0 1px rgba(255,255,255,.26);
   border-radius:3px;
 }
 .roller::before,.roller::after{
   content:""; position:absolute; left:-7px; right:-7px; height:13px;
-  background:linear-gradient(180deg,#E6C489,#B08A4E 42%,#7A5726);
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--gold) 62%, #fff),
+    var(--gold) 42%,
+    color-mix(in srgb, var(--gold) 62%, #000));
   border-radius:2px;
-  box-shadow:0 2px 8px rgba(20,21,26,.22);
+  box-shadow:0 2px 8px color-mix(in srgb, var(--ink) 22%, transparent);
 }
 .roller::before{ top:-8px; }
 .roller::after{ bottom:-8px; }
@@ -493,7 +509,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 }
 
 .sec{ position:relative; padding:clamp(72px,11vh,140px) 0; }
-.sec--paper{ background:rgba(255,255,255,.30); }
+.sec--paper{ background:var(--band); }
 .sec__head{
   display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
   gap:clamp(24px,5vw,72px);
@@ -632,8 +648,8 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .plan__frame{ fill:none; stroke:var(--line); stroke-width:.8; }
 .plan__road{ fill:none; stroke:var(--line); stroke-width:.8; stroke-dasharray:3 4; }
 .plan__b{
-  fill:rgba(20,21,26,.035);
-  stroke:rgba(20,21,26,.20);
+  fill:color-mix(in srgb, var(--ink) 4%, transparent);
+  stroke:color-mix(in srgb, var(--ink) 20%, transparent);
   stroke-width:.9;
   transition:fill .5s ease, stroke .5s ease;
 }
@@ -888,7 +904,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   width:5px; height:1px; background:var(--line-2);
 }
 
-.foot{ background:rgba(255,255,255,.38); border-top:1px solid var(--line); padding:clamp(48px,7vh,76px) 0 26px; }
+.foot{ background:color-mix(in srgb, var(--paper-2) 48%, transparent); border-top:1px solid var(--line); padding:clamp(48px,7vh,76px) 0 26px; }
 .foot__top{
   display:grid; grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,.6fr));
   gap:clamp(24px,4vw,56px);
@@ -942,6 +958,14 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   --ink-3: color-mix(in srgb, var(--ink) calc(48% * var(--contrast)), transparent);
   --line:  color-mix(in srgb, var(--ink) calc(13% * var(--contrast)), transparent);
   --line-2:color-mix(in srgb, var(--ink) calc(28% * var(--contrast)), transparent);
+  /* 深红与浅纸也从主色派生，换色后各处不会残留旧色 */
+  --red-2: color-mix(in srgb, var(--red) 78%, #000);
+  --red-3: color-mix(in srgb, var(--red) 18%, transparent);
+  --paper-3: color-mix(in srgb, var(--paper) 88%, var(--ink) 12%);
+  --paper-soft: color-mix(in srgb, var(--paper) 66%, transparent);
+  --paper-veil: color-mix(in srgb, var(--paper) 88%, transparent);
+  --paper-solid: color-mix(in srgb, var(--paper) 97%, transparent);
+  --band: color-mix(in srgb, var(--paper-2) 62%, transparent);
 }
 
 /* --- L1 标题：深、重、紧 --- */
@@ -1172,7 +1196,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   height:var(--nav-h);
   display:flex; align-items:center; justify-content:space-between;
   padding:0 var(--pad);
-  background:rgba(250,248,243,.88);
+  background:var(--paper-veil);
   backdrop-filter:blur(14px);
   border-bottom:1px solid var(--line);
 }
@@ -1301,20 +1325,20 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   display:inline-flex; align-items:center; gap:10px;
   padding:8px 18px 8px 8px;
   border:1px solid var(--line-2); border-radius:999px;
-  background:rgba(255,255,255,.9);
+  background:color-mix(in srgb, var(--paper) 90%, transparent);
   -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
-  box-shadow:0 10px 28px rgba(20,21,26,.12), 0 1px 0 rgba(255,255,255,.9) inset;
+  box-shadow:0 10px 28px color-mix(in srgb, var(--ink) 12%, transparent), 0 1px 0 color-mix(in srgb, #fff 90%, transparent) inset;
   color:var(--ink); font:inherit; cursor:pointer;
   transition:transform .35s cubic-bezier(.2,.7,.3,1), box-shadow .35s;
 }
-.ask:hover{ transform:translateY(-2px); box-shadow:0 18px 38px rgba(20,21,26,.16), 0 1px 0 rgba(255,255,255,.9) inset; }
+.ask:hover{ transform:translateY(-2px); box-shadow:0 18px 38px color-mix(in srgb, var(--ink) 16%, transparent), 0 1px 0 color-mix(in srgb, #fff 90%, transparent) inset; }
 .ask__seal{
   width:32px; height:32px; flex:none; border-radius:50%;
   background:var(--red); color:#fff;
   display:grid; place-items:center;
   font-family:var(--serif); font-size:16px; line-height:1;
   letter-spacing:0;
-  box-shadow:0 2px 6px rgba(176,39,29,.35);
+  box-shadow:0 2px 6px color-mix(in srgb, var(--red) 35%, transparent);
 }
 .ask__tx{ text-align:left; line-height:1.25; }
 .ask__tx b{ display:block; font-family:var(--serif); font-weight:600; font-size:13.5px; letter-spacing:.06em; }
@@ -1332,10 +1356,13 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   position:relative;
   width:min(880px,calc(100% - 48px)); height:min(640px,calc(100% - 64px));
   display:flex; flex-direction:column;
-  background:linear-gradient(180deg,rgba(255,255,255,.72) 0%,rgba(238,246,252,.62) 46%,rgba(250,250,244,.7) 100%);
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--paper) 92%, transparent) 0%,
+    color-mix(in srgb, var(--paper-2) 74%, transparent) 46%,
+    color-mix(in srgb, var(--paper) 88%, transparent) 100%);
   -webkit-backdrop-filter:blur(22px) saturate(1.2); backdrop-filter:blur(22px) saturate(1.2);
-  border:1px solid rgba(255,255,255,.75); border-top:2px solid var(--red);
-  box-shadow:0 40px 90px rgba(24,48,72,.20), 0 1px 0 rgba(255,255,255,.8) inset;
+  border:1px solid color-mix(in srgb, #fff 75%, transparent); border-top:2px solid var(--red);
+  box-shadow:0 40px 90px color-mix(in srgb, var(--ink) 20%, transparent), 0 1px 0 color-mix(in srgb, #fff 80%, transparent) inset;
   opacity:0; transform:translateY(18px) scale(.985);
   transition:opacity .4s, transform .45s cubic-bezier(.2,.7,.3,1);
   overflow:hidden;
@@ -1344,7 +1371,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 
 .askbox__hd{
   display:flex; align-items:center; justify-content:space-between; gap:16px;
-  padding:18px 22px; border-bottom:1px solid rgba(20,21,26,.10);
+  padding:18px 22px; border-bottom:1px solid var(--line);
 }
 .askbox__ttl b{
   display:block; font-family:var(--serif); font-size:19px; letter-spacing:.12em; font-weight:600;
@@ -1380,10 +1407,10 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
 .msg--me .msg__av{ background:var(--ink); }
 .msg__b{
   padding:12px 15px; font-size:13.5px; line-height:1.85; color:var(--ink-2);
-  background:rgba(255,255,255,.86); border:1px solid rgba(20,21,26,.10); border-radius:2px;
+  background:color-mix(in srgb, var(--paper) 86%, transparent); border:1px solid var(--line); border-radius:2px;
   -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
 }
-.msg--me .msg__b{ background:rgba(255,255,255,.9); border-color:rgba(176,39,29,.26); color:var(--ink); box-shadow:0 1px 0 rgba(176,39,29,.08) inset; }
+.msg--me .msg__b{ background:color-mix(in srgb, var(--paper) 92%, transparent); border-color:color-mix(in srgb, var(--red) 26%, transparent); color:var(--ink); box-shadow:0 1px 0 color-mix(in srgb, var(--red) 8%, transparent) inset; }
 .msg__b b{ color:var(--ink); font-weight:600; }
 .msg__dots{ display:inline-flex; gap:4px; padding:4px 0; }
 .msg__dots i{
@@ -1399,19 +1426,19 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
   padding:10px 22px 12px;
 }
 .chip{
-  padding:7px 13px; border:1px solid rgba(20,21,26,.18); border-radius:999px;
-  background:rgba(255,255,255,.62); color:var(--ink-2); font:inherit; font-size:12px;
+  padding:7px 13px; border:1px solid var(--line-2); border-radius:999px;
+  background:color-mix(in srgb, var(--paper) 62%, transparent); color:var(--ink-2); font:inherit; font-size:12px;
   cursor:pointer; transition:all .22s; white-space:nowrap;
 }
 .chip:hover{ border-color:var(--red); color:var(--red); }
 
 .askbox__form{
   display:flex; gap:10px; padding:14px 22px 20px;
-  border-top:1px solid rgba(20,21,26,.10);
+  border-top:1px solid var(--line);
 }
 .askbox__form input{
   flex:1; height:42px; padding:0 15px;
-  border:1px solid rgba(20,21,26,.18); background:rgba(255,255,255,.82); color:var(--ink);
+  border:1px solid var(--line-2); background:color-mix(in srgb, var(--paper) 82%, transparent); color:var(--ink);
   font:inherit; font-size:13.5px; outline:none; transition:border-color .25s;
 }
 .askbox__form input:focus{ border-color:var(--red); }

@@ -7,7 +7,7 @@
     "themeColor": "#FAF8F3",
     "favicon": "assets/img/emblem.png",
     "version": "2026.11-b",
-    "updatedAt": "2026-11-17 11:21"
+    "updatedAt": "2026-11-17 11:44"
   },
   "theme": {
     "paper": "#FAF8F3",
@@ -17,7 +17,8 @@
     "gold": "#B08A4E",
     "contrast": 1,
     "density": 1,
-    "imageGray": 0.12
+    "imgGray": 0.12,
+    "sky": "#BBD7EC"
   },
   "sections": [
     {
