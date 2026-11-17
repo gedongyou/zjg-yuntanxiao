@@ -7,17 +7,31 @@
 
   var D = window.__CONTENT__;
 
-  /* 离线后台（双击 admin/index.html）改的内容存在浏览器的 localStorage 里。
-   * 只有从 file:// 打开时才用它覆盖，线上和本地服务一律以编译好的文件为准。 */
-  if (location.protocol === 'file:' && D) {
+  /* 浏览器里可能存着后台改过的草稿（双击 admin/index.html 或用网址打开后台时保存的）。
+   * 只有当它比编译好的 site-data.js 更新时才用它 —— 这样用「启动后台.bat」改文件之后，
+   * 旧的浏览器草稿不会把新内容盖回去。 */
+  (function () {
     try {
       var raw = localStorage.getItem('yyt_content_v1');
-      if (raw) {
-        var lo = JSON.parse(raw);
-        if (lo && lo.hero && lo.theme) D = lo;
-      }
+      if (!raw || !D) return;
+      var lo = JSON.parse(raw);
+      if (!lo || !lo.hero || !lo.theme) return;
+      // 草稿的保存时刻（毫秒）。没有就退回用 meta.updatedAt 的字符串比。
+      var ts = parseInt(localStorage.getItem('yyt_content_v1_ts') || '0', 10) || 0;
+      var built = String((D.meta || {}).updatedAt || '');
+      var builtMs = built ? (Date.parse(built.replace(' ', 'T') + ':00') || 0) : 0;
+      var newer;
+      if (ts > 0) newer = ts > builtMs;
+      else newer = String((lo.meta || {}).updatedAt || '') > built;
+      if (newer) D = lo;
     } catch (e) {}
-  }
+  })();
+
+  /* 后台在另一个标签页里保存时，这里自动刷新一下，不用手动按 F5。
+   * storage 事件只在"别的标签页"改动时触发，正好对应这种场景。 */
+  window.addEventListener('storage', function (e) {
+    if (e.key === 'yyt_content_v1' || e.key === 'yyt_content_v1_ts') location.reload();
+  });
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
   var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };

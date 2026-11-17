@@ -250,6 +250,8 @@
     data.meta = data.meta || {};
     data.meta.updatedAt = fmtNow();
     lsSet(LS_KEY, JSON.stringify(data));
+    // 再单独记一个毫秒时间戳：前台靠它判断草稿和文件谁更新，避免同一分钟分不出先后
+    try { localStorage.setItem(LS_KEY + '_ts', String(Date.now())); } catch (e) {}
     return { ok: true, updatedAt: data.meta.updatedAt };
   }
   /* 图片压到最大 1600px、jpeg 0.82，直接转成 data: 内嵌，不依赖任何服务 */
@@ -1100,7 +1102,10 @@
         toast('已提交 · ' + (j.updatedAt || '') + ' · 约 1 分钟后线上生效');
         reloadPreview();
       } else if (MODE === 'offline') {
-        toast('已存到这台电脑 · ' + (j.updatedAt || '') + ' · 前台刷新就变了');
+        var t = j.updatedAt || '';
+        toast(location.protocol === 'file:'
+          ? '已存到这台电脑 · ' + t + ' · 双击前台刷新就变了'
+          : '已存本机浏览器 · ' + t + ' · 线上要发布请点「导出文件」');
         reloadPreview();
       } else {
         toast('已保存 · ' + (j.updatedAt || ''));
