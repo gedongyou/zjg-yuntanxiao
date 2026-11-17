@@ -9,7 +9,6 @@ if not errorlevel 1 (
   echo.
   echo   后台已经在运行，直接打开页面……
   start "" http://127.0.0.1:7717/admin/
-  timeout /t 2 >nul
   exit /b 0
 )
 
@@ -30,13 +29,14 @@ echo   前台  http://127.0.0.1:7717/
 echo   后台  http://127.0.0.1:7717/admin/
 echo   口令  首次为 admin123
 echo.
-echo   关掉这个黑窗口就等于关掉后台。
+echo   这个黑窗口就是服务本身，关掉它后台就停了。
 echo.
 
-start /b "" node server.mjs
-timeout /t 3 >nul
-start "" http://127.0.0.1:7717/admin/
+rem 三秒后自动打开后台页面：另起一个最小化窗口等，不挡着服务器启动
+start "" /min cmd /c "ping -n 3 127.0.0.1 >nul & explorer http://127.0.0.1:7717/admin/"
+
+node server.mjs
 
 echo.
-echo   后台在后台运行中，关掉本窗口即停止。
+echo   后台已停止。按任意键关闭。
 pause >nul

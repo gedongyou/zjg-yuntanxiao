@@ -114,7 +114,7 @@
         </tbody>
       </table>
       <p>导航只留五项，页脚补上设计说明与学校相关链接。手机上导航收进抽屉，七站仍是点击展开，示意图缩到列表上方，长卷照旧可以拉开。</p>
-      <p>另外，右下角常驻一个「问校园」按钮：点开是一层面板，22 组固定问答按关键词命中，答不上来直接说不知道，并把这句话记进后台的「访客提问」；后台可以把它一键转成新问答。</p>
+      <p>另外，右下角常驻一个「问校园」按钮：点开是一层面板，22 组固定问答按关键词命中，答不上来就直说不知道，并建议换个问法或去官网、问招生办。</p>
     </section>
 
     <section class="doc__sec" id="s4">
@@ -127,7 +127,7 @@
         <li><b>七站展开</b>：点标题给该条加 <span style="font-family:var(--mono);font-size:12px">.is-open</span>，用 <span style="font-family:var(--mono);font-size:12px">grid-template-rows: 0fr → 1fr</span> 做高度过渡，同时把示意图对应楼高亮、定位点移过去</li>
         <li><b>示意图联动</b>：SVG 每块写 <span style="font-family:var(--mono);font-size:12px">data-block</span>，JS 按名字找块，把定位点移到块的右上角，标签同时转白</li>
         <li><b>数字补间</b>：IntersectionObserver 只触发一次，rAF 里按 easeOutCubic 跑 1300ms</li>
-        <li><b>问校园</b>：每条问答有关键词表，访客的话去和关键词比对，命中词越长、命中个数越多得分越高，再叠一个后台可调的权重；最高分低于阈值就当答不上来，如实说不知道，同时把这句话发给后台攒着</li>
+        <li><b>问校园</b>：每条问答有关键词表，访客的话去和关键词比对，命中词越长、命中个数越多得分越高，再叠一个后台可调的权重；最高分低于阈值就当答不上来，如实说不知道，并建议换个问法或去学校官网、问招生办</li>
         <li><b>版式层次</b>：全站分三级——标题深黑、正文中灰（对墨色 74%）、辅助更淡（48%），透明度和字距同步拉开，灰阶全部由主色 mix 出来，换了主色层次不会散</li>
         <li><b>优雅降级</b>：系统开启"减少动态效果"时，所有过渡与视差关闭，内容直接呈现</li>
         <li><b>可访问性</b>：语义化标签、<span style="font-family:var(--mono);font-size:12px">aria-expanded</span>、键盘可聚焦、正文对比度按 AA 校对</li>
@@ -176,7 +176,7 @@
           <tr><td>主件</td><td>index.html</td><td>线上展厅，可直接发链接，手机与电脑同一套代码</td></tr>
           <tr><td>内容后台</td><td>server.mjs + admin/</td><td>本机运行，改文案、改排版、加问答；不装依赖</td></tr>
           <tr><td>内容源</td><td>content.json</td><td>全部文案与图片路径；后台改的就是它，也可以直接用记事本改</td></tr>
-          <tr><td>发布包</td><td>dist/ · 云探校-发布包.zip</td><td>后台「导出」生成，纯静态，双击能开，也能直接推 GitHub Pages</td></tr>
+          <tr><td>发布包</td><td>dist/ · 云探校-发布包.zip</td><td>在文件夹里跑 <span style="font-family:var(--mono);font-size:12px">node tools/build.mjs</span> 生成，纯静态，双击能开，也能直接推 GitHub Pages</td></tr>
           <tr><td>存档</td><td>素材 / 说明.txt</td><td>原始图片、素材清单、文件夹用途说明</td></tr>
         </tbody>
       </table>
@@ -197,29 +197,26 @@ node server.mjs
 口令  首次启动是 admin123，进后台后右上角「改口令」</div>
       <p>后台页面必须从 <span style="font-family:var(--mono);font-size:12px">http://127.0.0.1:7717/admin/</span> 进。直接双击 <span style="font-family:var(--mono);font-size:12px">admin/index.html</span> 是从文件系统打开的，连不上服务，页面会直接提示这一点——这个坑我自己踩过，所以专门做了拦截提示。</p>
       <p>后台只用 Node 自带的 <span style="font-family:var(--mono);font-size:12px">http / fs / crypto</span> 三个模块，不装任何依赖，不用数据库——内容就是 <span style="font-family:var(--mono);font-size:12px">content.json</span> 这个文件本身。所以换台电脑把文件夹拷过去，<span style="font-family:var(--mono);font-size:12px">node server.mjs</span> 一样能跑。</p>
-      <h3>六个页面各管什么</h3>
+      <h3>三个页面各管什么</h3>
       <table class="doc__tb doc__tb--3">
         <thead>
           <tr><th>页面</th><th>能改什么</th><th>对应老师说的哪一条</th></tr>
         </thead>
         <tbody>
-          <tr><td>板块排版</td><td>七段的上下顺序、显示或隐藏；主色、次色、墨色、对比度、疏密、图片灰度</td><td>"再加其实已经乱了"——顺序和显隐收在一处管；"颜色、字体、灰度分度"——三个滑竿直接调层次</td></tr>
+          <tr><td>板块排版</td><td>七段的上下顺序、显示或隐藏；纸色、墨色、主红、金五个颜色（带预设和取色器，可一键恢复默认）、对比度、疏密、图片灰度</td><td>"再加其实已经乱了"——顺序和显隐收在一处管；"颜色、字体、灰度分度"——颜色和三个滑竿直接调层次</td></tr>
           <tr><td>内容编辑</td><td>页头、首屏、长卷八帧、八个数字、七站、五个系部、时间线与新闻、招生流程与时段表、页脚，每一句文字和每一张配图</td><td>"不如把原有的东西层次做丰富"——层次先用样式做好，内容再按段填</td></tr>
           <tr><td>问答库</td><td>增、删、改、排序、启停；每条有分类、权重、关键词表、答案</td><td>"可以给 ai 加入新的问答回答"</td></tr>
-          <tr><td>访客提问</td><td>前台答不上来的问题都攒在这，问了几次、什么时候问的都记着；点「转成问答」带着原话新增一条</td><td>让问答库自己长大，不用猜家长会问什么</td></tr>
-          <tr><td>版本</td><td>每次保存留一份快照，最多 40 份，改坏了点「恢复」退回上一版</td><td>答辩现场乱点也不怕</td></tr>
-          <tr><td>导出</td><td>一键生成 <span style="font-family:var(--mono);font-size:12px">dist/</span> 静态包和「云探校-发布包.zip」，另附推送到 GitHub Pages 的命令</td><td>后台只管改，发布还是静态的</td></tr>
         </tbody>
       </table>
       <h3>为什么这么设计</h3>
       <ul>
         <li><b>后台不接管前台</b>：后台只写 <span style="font-family:var(--mono);font-size:12px">content.json</span>，前台只读编译好的 <span style="font-family:var(--mono);font-size:12px">site-data.js</span>。关掉服务，前台照样双击能看，也能扔到 GitHub Pages 上</li>
-        <li><b>问答是可编辑的数据，不是模型</b>：没有调用任何在线大模型，判断靠关键词匹配加权重。好处是断网能用、答什么完全可控、不会瞎编；代价是问法太偏就答不上来——所以有了「访客提问」这一页，把漏掉的问法补进关键词表</li>
+        <li><b>问答是可编辑的数据，不是模型</b>：没有调用任何在线大模型，判断靠关键词匹配加权重。好处是断网能用、答什么完全可控、不会瞎编；代价是问法太偏就答不上来——所以新增问答时关键词要写全，把家长可能的问法都列进去</li>
         <li><b>登录够用就行</b>：口令用 scrypt 加盐存哈希，会话放在内存里，服务只听 127.0.0.1——它本来就是给招生办在自己电脑上用的，不对外开</li>
         <li><b>顺手补的两处安全</b>：静态文件走白名单，<span style="font-family:var(--mono);font-size:12px">server.mjs</span>、口令文件、版本快照不会被当网页发出去；上传只收图片并限制大小</li>
       </ul>
       <h3>答辩时怎么演示</h3>
-      <p>开两个窗口：左边后台改一句文案、点保存；右边前台刷新，字变了。再打开「问答库」加一条新问答，回前台问一句，答案就出来了。最后点「访客提问」，指给老师看"答不上来的问题会攒在这里，点一下就变成新问答"。</p>
+      <p>开两个窗口：左边后台改一句文案、点保存；右边前台刷新，字变了。再到「板块排版」把纸色从宣纸换成米白、主红换成胭脂，保存后前台马上换色；最后打开「问答库」加一条新问答，回前台问一句，答案就出来了。</p>
     </section>
 
     <section class="doc__sec" id="s8">

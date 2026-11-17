@@ -673,21 +673,7 @@
     setTimeout(function () {
       b.innerHTML = res.html;
       log.scrollTop = log.scrollHeight;
-      report(q, res);
     }, 520);
-  }
-
-  /* 未命中的问题记到后台，方便老师补问答（静态部署时静默失败） */
-  function report(q, res) {
-    if (res.hit) return;
-    try {
-      if (location.protocol === 'file:') return;
-      fetch('api/ask-miss', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q: q, at: new Date().toISOString() })
-      }).catch(function () {});
-    } catch (e) {}
   }
 
   var greeted = false;

@@ -4,11 +4,10 @@
  * 启动：node server.mjs
  * 打开：http://127.0.0.1:7717/admin/    （前台是 http://127.0.0.1:7717/）
  *
- * 后台能做四件事：
+ * 后台能做三件事：
  *   1. 改前台每一段的文案、数字、图片，存盘后前台刷新即变
- *   2. 调整板块顺序与显隐
- *   3. 维护"问校园"的问答库（增删改关键词与答案），并看访客没问到答案的问题
- *   4. 图片上传、历史版本回滚、导出可直接发布的静态包
+ *   2. 调整板块顺序与显隐，调配色、对比度、疏密、图片灰度
+ *   3. 维护"问校园"的问答库（增删改关键词与答案）
  */
 import http from 'node:http';
 import fs from 'node:fs';
@@ -26,7 +25,6 @@ const P = {
   data: path.join(ROOT, 'assets', 'js', 'site-data.js'),
   cfg: path.join(ROOT, 'admin.config.json'),
   vers: path.join(ROOT, 'content.versions'),
-  misses: path.join(ROOT, 'content.misses.json'),
   uploads: path.join(ROOT, 'assets', 'img', 'uploads'),
   admin: path.join(ROOT, 'admin'),
   dist: path.join(ROOT, 'dist'),
@@ -99,18 +97,6 @@ async function snapshot(data) {
   for (const f of list.slice(0, Math.max(0, list.length - 40))) {
     await fsp.unlink(path.join(P.vers, f)).catch(() => {});
   }
-}
-
-/* ---------------- 未命中的提问 ---------------- */
-async function readMisses() {
-  try { return JSON.parse(await fsp.readFile(P.misses, 'utf8')); } catch { return []; }
-}
-async function addMiss(q) {
-  const list = await readMisses();
-  const found = list.find((x) => x.q === q);
-  if (found) { found.n += 1; found.last = new Date().toISOString(); }
-  else list.unshift({ q, n: 1, last: new Date().toISOString(), done: false });
-  await fsp.writeFile(P.misses, JSON.stringify(list.slice(0, 400), null, 2), 'utf8');
 }
 
 /* ---------------- 小工具 ---------------- */
@@ -262,11 +248,6 @@ const server = http.createServer(async (req, res) => {
 
   try {
     /* --- 公开接口 --- */
-    if (p === '/api/ask-miss' && req.method === 'POST') {
-      const b = await bodyJson(req);
-      if (b && b.q) await addMiss(String(b.q).slice(0, 80));
-      return json(res, 200, { ok: true });
-    }
     if (p === '/api/login' && req.method === 'POST') {
       const b = await bodyJson(req);
       if (!b || !b.pw) return json(res, 400, { ok: false, msg: '请输入口令' });
@@ -307,33 +288,6 @@ const server = http.createServer(async (req, res) => {
         if (!b || typeof b !== 'object') return json(res, 400, { ok: false, msg: '内容格式不对' });
         const saved = await writeContent(b);
         return json(res, 200, { ok: true, updatedAt: saved.meta.updatedAt });
-      }
-
-      if (p === '/api/versions' && req.method === 'GET') {
-        await fsp.mkdir(P.vers, { recursive: true });
-        const list = (await fsp.readdir(P.vers)).filter((f) => f.endsWith('.json')).sort().reverse();
-        const out = [];
-        for (const f of list.slice(0, 30)) {
-          const st = await fsp.stat(path.join(P.vers, f));
-          out.push({ f, at: st.mtime.toISOString(), kb: Math.round(st.size / 1024) });
-        }
-        return json(res, 200, out);
-      }
-      if (p === '/api/restore' && req.method === 'POST') {
-        const b = await bodyJson(req);
-        const name = String(b.f || '');
-        if (!/^[\w.\-:]+\.json$/.test(name)) return json(res, 400, { ok: false, msg: '版本名不合法' });
-        const raw = await fsp.readFile(path.join(P.vers, name), 'utf8');
-        const data = JSON.parse(raw);
-        await writeContent(data);
-        return json(res, 200, { ok: true });
-      }
-
-      if (p === '/api/misses' && req.method === 'GET') return json(res, 200, await readMisses());
-      if (p === '/api/misses' && req.method === 'POST') {
-        const b = await bodyJson(req);
-        await fsp.writeFile(P.misses, JSON.stringify(Array.isArray(b) ? b : [], null, 2), 'utf8');
-        return json(res, 200, { ok: true });
       }
 
       if (p === '/api/upload' && req.method === 'POST') {

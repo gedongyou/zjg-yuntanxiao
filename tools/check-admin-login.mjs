@@ -1,4 +1,4 @@
-/* 后台登录实测：用真实地址打开后台，输口令，确认进得去、六个 tab 都在
+/* 后台登录实测：用真实地址打开后台，输口令，确认进得去、三个 tab 都在
  * 用法：node tools/check-admin-login.mjs
  */
 import { spawn } from 'node:child_process';

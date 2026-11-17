@@ -8,7 +8,7 @@
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
 
-  var S = { data: null, dirty: false, tab: 'layout', misses: [], versions: [] };
+  var S = { data: null, dirty: false, tab: 'layout' };
 
   /* ---------------- 接口 ---------------- */
   function api(path, opt) {
@@ -93,6 +93,13 @@
     markDirty(true);
   }
 
+  // 默认配色（出厂值，「恢复默认」用这一份，不是当前值）
+  var THEME0 = {
+    paper: '#FAF8F3', paper2: '#F2EDE1', ink: '#14151A',
+    red: '#B0271D', gold: '#B08A4E',
+    contrast: 1, density: 1, imgGray: 0.12
+  };
+
   function boot() {
     api('/api/content').then(function (d) {
       S.data = d;
@@ -100,8 +107,7 @@
     }).catch(function (e) { toast(e.message, true); });
   }
 
-  /* ---------------- 字段工厂 ---------------- */
-  function fText(label, path, hint, rows) {
+  /* ---------------- 字段工厂 ---------------- */  function fText(label, path, hint, rows) {
     var v = get(path) == null ? '' : get(path);
     var id = 'f_' + path.replace(/\./g, '_');
     if (rows) {
@@ -119,6 +125,30 @@
     return '<div class="f"><label>' + label + '</label>' +
       '<input type="number" step="any" value="' + (v == null ? '' : esc(String(v))) + '" data-p="' + path + '" data-num="1">' +
       (hint ? '<span class="f__hint">' + hint + '</span>' : '') + '</div>';
+  }
+
+  /* 颜色：色块 + 十六进制 + 一组预设 */
+  var PRESET = {
+    paper: [['宣纸', '#FAF8F3'], ['米白', '#F7F3EA'], ['冷白', '#F6F7F9'], ['灰纸', '#EFEEE9']],
+    paper2: [['竹青', '#F2EDE1'], ['浅米', '#EDE6D6'], ['浅灰', '#E9EAEC']],
+    ink: [['松烟', '#14151A'], ['藏青', '#1B2733'], ['深褐', '#2A211B']],
+    red: [['朱砂', '#B0271D'], ['胭脂', '#A33048'], ['赭石', '#9C4A2F']],
+    gold: [['金', '#B08A4E'], ['黄铜', '#A98135'], ['暗金', '#8C6B39']]
+  };
+
+  function fColor(label, path) {
+    var v = get(path) == null ? '' : String(get(path));
+    var key = path.split('.').pop();
+    var pre = (PRESET[key] || []).map(function (p) {
+      return '<button type="button" class="swatch' + (p[1].toUpperCase() === v.toUpperCase() ? ' is-on' : '') +
+        '" data-swatch="' + path + '" data-v="' + p[1] + '" title="' + p[0] + '">' +
+        '<i style="background:' + p[1] + '"></i><b>' + p[0] + '</b></button>';
+    }).join('');
+    return '<div class="f"><label>' + label + '</label>' +
+      '<div class="colf"><input type="color" value="' + esc(v) + '" data-p="' + path + '" data-color="1">' +
+        '<input type="text" value="' + esc(v) + '" data-p="' + path + '" data-color-txt="1" maxlength="7"></div>' +
+      (pre ? '<div class="swatches">' + pre + '</div>' : '') +
+      '</div>';
   }
 
   function fImg(label, path) {
@@ -292,15 +322,18 @@
         fText('图标', 'meta.favicon');
     },
     theme: function () {
-      return '<div class="grid3">' +
-          fText('纸色', 'theme.paper') + fText('次纸色', 'theme.paper2') + fText('墨色', 'theme.ink') + '</div>' +
-        '<div class="grid3">' +
-          fText('主红', 'theme.red') + fText('金', 'theme.gold') + '</div>' +
+      return '<div class="grid2">' +
+          fColor('纸色', 'theme.paper') + fColor('次纸色', 'theme.paper2') + '</div>' +
+        '<div class="grid2">' +
+          fColor('墨色', 'theme.ink') + fColor('主红', 'theme.red') + '</div>' +
+        '<div class="grid2">' +
+          fColor('金', 'theme.gold') + '<div></div>' + '</div>' +
         '<div class="grid3">' +
           fNum('对比度', 'theme.contrast', '1 正常，1.15 更硬') +
           fNum('疏密', 'theme.density', '1 正常，1.15 更松') +
           fNum('图片灰度', 'theme.imgGray', '0 彩色，1 全灰') + '</div>' +
-        '<p class="hint">层次靠对比度、疏密、灰度三个数一起调；改完保存，前台立刻能看到。</p>';
+        '<div class="reset"><p class="hint">层次靠对比度、疏密、灰度三个数一起调；改完保存，前台立刻能看到。</p>' +
+          '<button class="btn" type="button" id="themeReset">恢复默认配色</button></div>';
     },
     nav: function () {
       return fImg('校徽', 'nav.brandImg') +
@@ -336,12 +369,9 @@
   /* ---------------- 渲染 ---------------- */
   function render() {
     var pane = $('#pane');
-    if (S.tab === 'layout') pane.innerHTML = viewLayout();
-    else if (S.tab === 'content') pane.innerHTML = viewContent();
+    if (S.tab === 'content') pane.innerHTML = viewContent();
     else if (S.tab === 'ask') pane.innerHTML = viewAsk();
-    else if (S.tab === 'miss') { pane.innerHTML = viewMiss(); loadMisses(); }
-    else if (S.tab === 'hist') { pane.innerHTML = viewHist(); loadVersions(); }
-    else pane.innerHTML = viewOut();
+    else pane.innerHTML = viewLayout();
     bindPane();
   }
 
@@ -363,7 +393,7 @@
     return '<div class="h"><h2>板块排版</h2><span>上下调整顺序，开关控制显隐</span></div>' +
       '<p class="hint">前台是按这个顺序从上往下铺的。关掉的板块不会出现在页面上，导航里对应的锚点也会失效，记得一起改。</p>' +
       '<div class="lay">' + rows + '</div>' +
-      '<div class="h" style="margin-top:28px"><h2>配色与疏密</h2><span>老师说的层次，主要靠这三个数</span></div>' +
+      '<div class="h" style="margin-top:28px"><h2>配色与疏密</h2><span>改完点右上角「保存」生效</span></div>' +
       '<div class="card"><div class="card__bd">' + SCHEMA.theme() + '</div></div>';
   }
 
@@ -424,43 +454,9 @@
     }).join('');
 
     return '<div class="h"><h2>问答库</h2><span>共 ' + entries.length + ' 条</span></div>' +
-      '<p class="hint">访客的问题会拿去和关键词比对，命中得分最高的那条。答不上来的问题会进「访客提问」，从那里可以直接转成新条目。分类分布：' + catLine + '</p>' +
+      '<p class="hint">访客的问题会拿去和关键词比对，命中得分最高的那条。按分类看分布：' + catLine + '</p>' +
       '<button class="btn btn--solid" id="qAdd" style="margin-bottom:14px">+ 新增问答</button>' +
       (list || '<div class="empty">还没有问答条目</div>');
-  }
-
-  function viewMiss() {
-    return '<div class="h"><h2>访客提问</h2><span>答不上来的问题都记在这里</span></div>' +
-      '<p class="hint">前台答不上来时会把原问题发回来。这里能看到问了什么、问了几次。点「转成问答」会带着这句话去新增一条。</p>' +
-      '<div id="missBox"><div class="empty">读取中…</div></div>';
-  }
-
-  function viewHist() {
-    return '<div class="h"><h2>历史版本</h2><span>每次保存都会留一份，最多 40 份</span></div>' +
-      '<p class="hint">改坏了就回到上一版。点「恢复」会用那一版覆盖当前内容，恢复前建议先保存一次。</p>' +
-      '<div class="card"><div id="verBox"><div class="empty">读取中…</div></div></div>';
-  }
-
-  function viewOut() {
-    return '<div class="h"><h2>导出与发布</h2><span>把后台改完的东西变成能发出去的静态包</span></div>' +
-      '<div class="out">' +
-        '<div class="out__box"><h3>1. 导出静态包</h3>' +
-          '<p>生成 <code>dist/</code> 文件夹和一个 <code>云探校-发布包.zip</code>。里面是纯静态文件，双击能开，也能直接丢到 GitHub Pages。</p>' +
-          '<button class="btn btn--solid" id="exportBtn">生成发布包</button>' +
-          '<div id="exportOut" style="margin-top:12px"></div>' +
-        '</div>' +
-        '<div class="out__box"><h3>2. 发布到 GitHub Pages</h3>' +
-          '<p>仓库是 <code>gxglad/yyt</code>。把 dist 里的东西拷进仓库根目录，提交推送即可。国内网络记得走代理。</p>' +
-          '<div class="code">cd 源码\n' +
-'git add -A\n' +
-'git commit -m "后台改版：内容可维护"\n' +
-'git -c http.proxy=http://127.0.0.1:7897 -c https.proxy=http://127.0.0.1:7897 push origin main</div>' +
-        '</div>' +
-        '<div class="out__box"><h3>3. 答辩时怎么演示后台</h3>' +
-          '<p>现场开两个窗口：左边后台改一句文案，点保存；右边前台刷新，字变了。再打开「问答库」加一条新问答，回前台问一句，答案就出来了。</p>' +
-          '<div class="code">node server.mjs\n前台 http://127.0.0.1:7717/\n后台 http://127.0.0.1:7717/admin/</div>' +
-        '</div>' +
-      '</div>';
   }
 
   /* ---------------- 交互绑定 ---------------- */
@@ -481,6 +477,67 @@
         }
       });
     });
+
+    // 配色预设 / 取色器
+    $$('[data-swatch]', pane).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var path = b.getAttribute('data-swatch');
+        var v = b.getAttribute('data-v');
+        set(path, v);
+        $$('[data-p="' + path + '"]', pane).forEach(function (i) {
+          if (i.hasAttribute('data-p')) i.value = v;
+        });
+        $$('[data-swatch="' + path + '"]', pane).forEach(function (s) {
+          s.classList.toggle('is-on', s === b);
+        });
+        markDirty(true);
+      });
+    });
+    $$('[data-color]', pane).forEach(function (i) {
+      i.addEventListener('input', function () {
+        var path = i.getAttribute('data-p');
+        set(path, i.value.toUpperCase());
+        var t = pane.querySelector('[data-p="' + path + '"][data-color-txt]');
+        if (t) t.value = i.value.toUpperCase();
+        $$('[data-swatch="' + path + '"]', pane).forEach(function (s) {
+          s.classList.toggle('is-on', s.getAttribute('data-v').toUpperCase() === i.value.toUpperCase());
+        });
+        markDirty(true);
+      });
+    });
+    $$('[data-color-txt]', pane).forEach(function (i) {
+      i.addEventListener('change', function () {
+        var path = i.getAttribute('data-p');
+        var v = i.value.trim();
+        if (!/^#[0-9a-fA-F]{6}$/.test(v)) {
+          // 写错就退回当前值，别把错的留在框里
+          i.value = get(path) || '';
+          toast('颜色要写成 #RRGGBB，比如 #B0271D', true);
+          return;
+        }
+        v = v.toUpperCase();
+        i.value = v;
+        set(path, v);
+        var c = pane.querySelector('[data-p="' + path + '"][data-color]');
+        if (c) c.value = v;
+        $$('[data-swatch="' + path + '"]', pane).forEach(function (s) {
+          s.classList.toggle('is-on', s.getAttribute('data-v').toUpperCase() === v);
+        });
+        markDirty(true);
+      });
+    });
+
+    // 恢复默认配色
+    var tr = $('#themeReset', pane);
+    if (tr) {
+      tr.addEventListener('click', function () {
+        if (!confirm('把颜色、对比度、疏密、图片灰度都恢复成出厂默认？')) return;
+        Object.keys(THEME0).forEach(function (k) { S.data.theme[k] = THEME0[k]; });
+        markDirty(true);
+        render();
+        toast('已恢复默认，记得保存');
+      });
+    }
 
     // 图片上传
     $$('[data-up]', pane).forEach(function (b) {
@@ -684,100 +741,6 @@
         render();
       });
     });
-
-    // 版本恢复
-    $$('[data-ver]', pane).forEach(function (b) {
-      b.addEventListener('click', function () {
-        var f = b.getAttribute('data-ver');
-        if (!confirm('用这一版覆盖当前内容？')) return;
-        api('/api/restore', { method: 'POST', body: { f: f } })
-          .then(function () { return api('/api/content'); })
-          .then(function (d) { S.data = d; markDirty(false); render(); toast('已恢复'); })
-          .catch(function (e) { toast(e.message, true); });
-      });
-    });
-
-    // 导出
-    var ex = $('#exportBtn');
-    if (ex) {
-      ex.addEventListener('click', function () {
-        ex.disabled = true;
-        ex.textContent = '正在打包…';
-        api('/api/export', { method: 'POST' }).then(function (j) {
-          $('#exportOut').innerHTML = '<div class="code">已生成：\n' + esc(j.dir) +
-            '\n' + esc(j.zip) + '\n共 ' + j.files + ' 个文件</div>';
-          ex.disabled = false;
-          ex.textContent = '重新生成';
-        }).catch(function (e) {
-          toast(e.message, true);
-          ex.disabled = false;
-          ex.textContent = '生成发布包';
-        });
-      });
-    }
-
-    // 未命中：转成问答
-    $$('[data-tomiss]', pane).forEach(function (b) {
-      b.addEventListener('click', function () {
-        var q = b.getAttribute('data-tomiss');
-        S.data.ask.entries.unshift({
-          id: 'e' + Date.now(), cat: '待补', on: true, weight: 0,
-          q: q, keywords: [q], answer: '（在这里写答案，前台马上就能答上）'
-        });
-        markDirty(true);
-        S.tab = 'ask';
-        syncTabs();
-        render();
-        toast('已加到问答库，填好答案后记得保存');
-      });
-    });
-    $$('[data-mdel]', pane).forEach(function (b) {
-      b.addEventListener('click', function () {
-        var q = b.getAttribute('data-mdel');
-        S.misses = S.misses.filter(function (x) { return x.q !== q; });
-        api('/api/misses', { method: 'POST', body: S.misses }).then(function () { render(); });
-      });
-    });
-  }
-
-  /* ---------------- 未命中 / 版本 ---------------- */
-  function loadMisses() {
-    api('/api/misses').then(function (list) {
-      S.misses = list || [];
-      var box = $('#missBox');
-      if (!box) return;
-      if (!S.misses.length) {
-        box.innerHTML = '<div class="empty">还没有人问到答不上来的问题。<br>前台问一句没收录的，这里就会出现。</div>';
-        return;
-      }
-      box.innerHTML = S.misses.map(function (m) {
-        return '<div class="ver">' +
-          '<div style="flex:1;min-width:0"><b style="font-family:var(--sans);font-size:13px">' + esc(m.q) + '</b>' +
-          '<span style="display:block;font-size:11.5px;color:var(--ink-3)">问了 ' + (m.n || 1) + ' 次 · ' +
-          (m.last ? new Date(m.last).toLocaleString('zh-CN') : '') + '</span></div>' +
-          '<button class="btn" data-tomiss="' + esc(m.q) + '">转成问答</button>' +
-          '<button class="mini mini--red" data-mdel="' + esc(m.q) + '">×</button>' +
-        '</div>';
-      }).join('');
-      bindPane();
-    }).catch(function () {});
-  }
-
-  function loadVersions() {
-    api('/api/versions').then(function (list) {
-      S.versions = list || [];
-      var box = $('#verBox');
-      if (!box) return;
-      if (!S.versions.length) { box.innerHTML = '<div class="empty">还没有历史版本</div>'; return; }
-      box.innerHTML = S.versions.map(function (v) {
-        return '<div class="ver">' +
-          '<b>' + new Date(v.at).toLocaleString('zh-CN') + '</b>' +
-          '<span>' + v.kb + ' KB</span>' +
-          '<div style="margin-left:auto"><button class="btn" data-ver="' + esc(v.f) + '">恢复</button></div>' +
-        '</div>';
-      }).join('');
-      bindPane();
-    }).catch(function () {});
   }
 
   /* ---------------- Tab / 保存 / 预览 ---------------- */

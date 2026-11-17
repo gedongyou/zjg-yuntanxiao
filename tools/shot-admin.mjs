@@ -103,12 +103,23 @@ await sleep(1500);
 await shot('a1-layout');
 
 // 逐个 tab
-const tabs = ['content', 'ask', 'miss', 'hist', 'out'];
+const tabs = ['content', 'ask'];
 for (let i = 0; i < tabs.length; i++) {
   await evalJs(`document.querySelector('#tabs [data-tab="${tabs[i]}"]').click(); 1`);
   await sleep(700);
   await shot('a' + (i + 2) + '-' + tabs[i]);
 }
+
+// 回到排版页，单独截配色卡片（含预设与恢复默认按钮）
+await evalJs(`document.querySelector('#tabs [data-tab="layout"]').click(); 1`);
+await sleep(500);
+const themeTop = await evalJs(`(function(){
+  var h = document.querySelectorAll('#pane .h');
+  return h.length > 1 ? Math.max(0, h[1].getBoundingClientRect().top + window.scrollY - 24) : 0;
+})()`);
+await evalJs(`window.scrollTo(0, ${themeTop}); 1`);
+await sleep(400);
+await shot('a4-theme');
 
 // 检查有没有 JS 报错
 const errs = await evalJs(`(window.__errs||[]).join('|')`);

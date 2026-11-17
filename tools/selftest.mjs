@@ -81,21 +81,7 @@ let data;
   await call('/api/content', { method: 'POST', body: data });
 }
 
-// 5. 版本
-{
-  const r = await call('/api/versions');
-  log('有历史版本', r.status === 200 && r.val.length > 0, r.val.length + ' 个');
-}
-
-// 6. 未命中
-{
-  await call('/api/ask-miss', { method: 'POST', body: { q: '学校能不能带手机' } });
-  const r = await call('/api/misses');
-  const hit = r.val.find((m) => m.q === '学校能不能带手机');
-  log('未命中被记录', !!hit, hit ? '问了 ' + hit.n + ' 次' : '');
-}
-
-// 7. 上传
+// 5. 上传
 {
   const png = Buffer.from(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
@@ -113,7 +99,7 @@ let data;
   }
 }
 
-// 8. 导出
+// 6. 导出
 {
   const r = await call('/api/export', { method: 'POST' });
   log('导出发布包', r.status === 200 && r.val.ok, (r.val.files || 0) + ' 个文件');
@@ -123,13 +109,13 @@ let data;
   }
 }
 
-// 9. 路径穿越
+// 7. 路径穿越
 {
   const r = await fetch(BASE + '/../server.mjs');
   log('挡掉路径穿越', r.status === 403 || r.status === 404, 'status=' + r.status);
 }
 
-// 10. 静态
+// 8. 静态
 {
   for (const p of ['/', '/admin/', '/assets/js/site-data.js', '/assets/js/site.js', '/设计说明.html', '/content.json']) {
     const r = await fetch(BASE + encodeURI(p));
@@ -137,7 +123,7 @@ let data;
   }
 }
 
-// 11. site-data.js 是合法 JS 数据
+// 9. site-data.js 是合法 JS 数据
 {
   const t = await (await fetch(BASE + '/assets/js/site-data.js')).text();
   const ok = t.includes('window.__CONTENT__');
@@ -147,6 +133,14 @@ let data;
     parsed = JSON.parse(m[1]);
   } catch (e) {}
   log('site-data.js 可解析', ok && !!parsed && !!parsed.hero);
+}
+
+// 10. 已删的接口应当不存在
+{
+  const r1 = await call('/api/versions');
+  const r2 = await call('/api/misses');
+  log('版本接口已下线', r1.status === 404, 'status=' + r1.status);
+  log('访客提问接口已下线', r2.status === 404, 'status=' + r2.status);
 }
 
 console.log('\n  自测完成');
