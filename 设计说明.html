@@ -176,7 +176,7 @@
           <tr><td>主件</td><td>index.html</td><td>线上展厅，可直接发链接，手机与电脑同一套代码</td></tr>
           <tr><td>内容后台</td><td>server.mjs + admin/</td><td>本机运行，改文案、改排版、加问答；不装依赖</td></tr>
           <tr><td>内容源</td><td>content.json</td><td>全部文案与图片路径；后台改的就是它，也可以直接用记事本改</td></tr>
-          <tr><td>发布包</td><td>dist/ · 云探校-发布包.zip</td><td>在文件夹里跑 <span style="font-family:var(--mono);font-size:12px">node tools/build.mjs</span> 生成，纯静态，双击能开，也能直接推 GitHub Pages</td></tr>
+          <tr><td>发布包</td><td>dist/ · 云探校-发布包.zip</td><td>跑 <span style="font-family:var(--mono);font-size:12px">node tools/export.mjs</span> 生成，纯静态，双击能开；线上已挂在 <span style="font-family:var(--mono);font-size:12px">gxglad.github.io/yyt</span>，仓库根目录就是这个文件夹，push 即发布</td></tr>
           <tr><td>存档</td><td>素材 / 说明.txt</td><td>原始图片、素材清单、文件夹用途说明</td></tr>
         </tbody>
       </table>
@@ -217,6 +217,13 @@ node server.mjs
       </ul>
       <h3>答辩时怎么演示</h3>
       <p>开两个窗口：左边后台改一句文案、点保存；右边前台刷新，字变了。再到「板块排版」把纸色从宣纸换成米白、主红换成胭脂，保存后前台马上换色；最后打开「问答库」加一条新问答，回前台问一句，答案就出来了。</p>
+      <h3>改完怎么上线</h3>
+      <p>线上挂在 GitHub Pages：展厅 <span style="font-family:var(--mono);font-size:12px">https://gxglad.github.io/yyt/</span>，仓库 <span style="font-family:var(--mono);font-size:12px">github.com/gxglad/yyt</span>，主分支 <span style="font-family:var(--mono);font-size:12px">main</span>，Pages 直接读仓库根目录——而仓库根目录就是这个「源码」文件夹。所以不用再往别处拷文件，在 源码 里提交推送就等于发布：</p>
+      <div class="doc__code">node tools\build.mjs          ← 改过 content.json 才需要（后台保存会自动做）
+git add -A
+git commit -m "改了什么"
+git push origin main          ← 本机要走代理，见说明.txt 第五节的完整命令</div>
+      <p>等一两分钟线上就是新的。后台的 <span style="font-family:var(--mono);font-size:12px">server.mjs</span> 和 <span style="font-family:var(--mono);font-size:12px">admin/</span> 会一起被传上去，但 Pages 只当静态文件存着，不会被当接口调用——它始终是本地工具。</p>
     </section>
 
     <section class="doc__sec" id="s8">
