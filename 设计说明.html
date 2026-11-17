@@ -139,7 +139,7 @@
 ├─ content.json        全部文案与图片路径（唯一数据源）
 ├─ server.mjs          内容后台（零依赖，node server.mjs 启动）
 ├─ admin/              后台界面：index.html / admin.js / admin.css
-├─ tools/              构建与自检：build.mjs / selftest.mjs / shot*.mjs / interact.mjs
+├─ tools/              构建与自检：build.mjs / selftest.mjs / shot*.mjs / interact.mjs / check-*.mjs
 └─ assets/
    ├─ css/style.css     全部样式（含响应式三档断点）
    ├─ js/site-data.js   由 content.json 生成，别手改
@@ -184,19 +184,20 @@
 
     <section class="doc__sec" id="s7">
       <h2><i>07</i>内容后台</h2>
-      <p>老师提了一个很实际的问题：这个页面是死的，招生办想换句话、换张图、加一条问答，都得找人改代码。所以补了一套后台——前台照旧是纯静态页面，后台是本地跑的一个小服务，改完点保存，前台刷新就变。</p>
-      <h3>怎么开</h3>
-      <div class="doc__code">双击 源码\启动后台.bat      ← 最省事，浏览器会自动跳转
+      <p>老师提了一个很实际的问题：这个页面是死的，招生办想换句话、换张图、加一条问答，都得找人改代码。所以补了一套后台。后台有两种用法，界面完全相同，只是保存通道不同：本地模式写本机文件，网页模式直接提交到仓库。</p>
+      <h3>怎么开（两种都可以）</h3>
+      <div class="doc__code">① 本地模式：双击 源码\启动后台.bat      ← 最省事，浏览器会自动跳转
+   前台  http://127.0.0.1:7717/
+   后台  http://127.0.0.1:7717/admin/
+   口令  首次启动是 admin123，进后台后右上角「改口令」
 
-等价的手动做法：
-cd 源码
-node server.mjs
+   等价的手动做法：cd 源码 && node server.mjs
 
-前台  http://127.0.0.1:7717/
-后台  http://127.0.0.1:7717/admin/
-口令  首次启动是 admin123，进后台后右上角「改口令」</div>
-      <p>后台页面必须从 <span style="font-family:var(--mono);font-size:12px">http://127.0.0.1:7717/admin/</span> 进。直接双击 <span style="font-family:var(--mono);font-size:12px">admin/index.html</span> 是从文件系统打开的，连不上服务，页面会直接提示这一点——这个坑我自己踩过，所以专门做了拦截提示。</p>
-      <p>后台只用 Node 自带的 <span style="font-family:var(--mono);font-size:12px">http / fs / crypto</span> 三个模块，不装任何依赖，不用数据库——内容就是 <span style="font-family:var(--mono);font-size:12px">content.json</span> 这个文件本身。所以换台电脑把文件夹拷过去，<span style="font-family:var(--mono);font-size:12px">node server.mjs</span> 一样能跑。</p>
+② 线上模式：直接打开 https://gxglad.github.io/yyt/admin/
+   不需要命令行、不需要在本机跑任何东西，填一个 GitHub Token 就能改
+   保存会提交到仓库，约一分钟后线上生效</div>
+      <p>本地模式下后台页面必须从 <span style="font-family:var(--mono);font-size:12px">http://127.0.0.1:7717/admin/</span> 进。直接双击 <span style="font-family:var(--mono);font-size:12px">admin/index.html</span> 是从文件系统打开的，连不上服务，页面会直接提示这一点——这个坑我自己踩过，所以专门做了拦截提示。后台启动时先判断来源：<span style="font-family:var(--mono);font-size:12px">file:</span> 只给说明；<span style="font-family:var(--mono);font-size:12px">127.0.0.1 / localhost</span> 走本地模式；其他域名走线上模式。</p>
+      <p>本地模式只用 Node 自带的 <span style="font-family:var(--mono);font-size:12px">http / fs / crypto</span> 三个模块，不装任何依赖，不用数据库——内容就是 <span style="font-family:var(--mono);font-size:12px">content.json</span> 这个文件本身。线上模式没有服务器，它借 GitHub 的 Contents / Git Data 接口把文件写回仓库，所以也不需要部署后端。</p>
       <h3>三个页面各管什么</h3>
       <table class="doc__tb doc__tb--3">
         <thead>
@@ -212,19 +213,19 @@ node server.mjs
       <ul>
         <li><b>后台不接管前台</b>：后台只写 <span style="font-family:var(--mono);font-size:12px">content.json</span>，前台只读编译好的 <span style="font-family:var(--mono);font-size:12px">site-data.js</span>。关掉服务，前台照样双击能看，也能扔到 GitHub Pages 上</li>
         <li><b>问答是可编辑的数据，不是模型</b>：没有调用任何在线大模型，判断靠关键词匹配加权重。好处是断网能用、答什么完全可控、不会瞎编；代价是问法太偏就答不上来——所以新增问答时关键词要写全，把家长可能的问法都列进去</li>
-        <li><b>登录够用就行</b>：口令用 scrypt 加盐存哈希，会话放在内存里，服务只听 127.0.0.1——它本来就是给招生办在自己电脑上用的，不对外开</li>
+        <li><b>登录够用就行</b>：本地模式的口令用 scrypt 加盐存哈希，会话放在内存里，服务只听 127.0.0.1；线上模式用仓库自带的权限体系（GitHub token 只授 Contents 读写），不自建账号系统。两种都是两个人用的规模，不对外开</li>
         <li><b>顺手补的两处安全</b>：静态文件走白名单，<span style="font-family:var(--mono);font-size:12px">server.mjs</span>、口令文件、版本快照不会被当网页发出去；上传只收图片并限制大小</li>
       </ul>
       <h3>答辩时怎么演示</h3>
-      <p>开两个窗口：左边后台改一句文案、点保存；右边前台刷新，字变了。再到「板块排版」把纸色从宣纸换成米白、主红换成胭脂，保存后前台马上换色；最后打开「问答库」加一条新问答，回前台问一句，答案就出来了。</p>
+      <p>开两个窗口：左边后台改一句文案、点保存；右边前台刷新，字变了。再到「板块排版」把纸色从宣纸换成米白、主红换成胭脂，保存后前台马上换色；最后打开「问答库」加一条新问答，回前台问一句，答案就出来了。如果现场是别人的电脑，直接用手机打开 <span style="font-family:var(--mono);font-size:12px">gxglad.github.io/yyt/admin/</span> 演示线上模式也行——同一套界面，只是保存要等一分钟。</p>
       <h3>改完怎么上线</h3>
       <p>线上挂在 GitHub Pages：展厅 <span style="font-family:var(--mono);font-size:12px">https://gxglad.github.io/yyt/</span>，仓库 <span style="font-family:var(--mono);font-size:12px">github.com/gxglad/yyt</span>，主分支 <span style="font-family:var(--mono);font-size:12px">main</span>，Pages 直接读仓库根目录——而仓库根目录就是这个「源码」文件夹。所以不用再往别处拷文件，在 源码 里提交推送就等于发布：</p>
       <div class="doc__code">node tools\build.mjs          ← 改过 content.json 才需要（后台保存会自动做）
 git add -A
 git commit -m "改了什么"
 git push origin main          ← 本机要走代理，见说明.txt 第五节的完整命令</div>
-      <p>等一两分钟线上就是新的。后台的 <span style="font-family:var(--mono);font-size:12px">server.mjs</span> 和 <span style="font-family:var(--mono);font-size:12px">admin/</span> 会一起被传上去，但 Pages 只当静态文件存着，不会被当接口调用——它始终是本地工具。</p>
-      <p>所以线上打开 <span style="font-family:var(--mono);font-size:12px">gxglad.github.io/yyt/admin/</span> 只会看到一句说明，没有口令框：没有服务可连，输口令也没用。这里做了判断——来源是文件系统或线上域名时，直接把口令框收起来，只说明该去本地跑；只有 <span style="font-family:var(--mono);font-size:12px">127.0.0.1 / localhost</span> 才放行。要改内容就双击「启动后台.bat」，进本地那个地址。</p>
+      <p>线上还能直接改内容，不用碰命令行：打开 <span style="font-family:var(--mono);font-size:12px">gxglad.github.io/yyt/admin/</span>，填一个对这个仓库有 Contents 读写权限的 GitHub 细粒度 token，进去就是同一套界面。点保存时它不走服务，而是用 Git Data 接口一次提交同时写 <span style="font-family:var(--mono);font-size:12px">content.json</span> 和 <span style="font-family:var(--mono);font-size:12px">site-data.js</span>——两个文件在同一个 commit 里，不会出现一个变了一个没变的中间状态；分支更新用 <span style="font-family:var(--mono);font-size:12px">force:false</span>，别人刚推过就会失败并提示再点一次，不会覆盖掉别人的提交。token 只存在浏览器的 localStorage 里，不写进仓库，也不进任何请求体。</p>
+      <p>这个模式是给"人在外面、手边没装 Node"的情况准备的。平时还是本地模式更快：改完立刻生效，不用等 Pages 那一分钟。</p>
     </section>
 
     <section class="doc__sec" id="s8">

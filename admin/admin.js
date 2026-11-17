@@ -41,6 +41,218 @@
   var HINT = '连不上后台服务。请先在「源码」文件夹里执行 node server.mjs，'
     + '再打开 http://127.0.0.1:7717/admin/（不要直接双击 admin/index.html）。';
 
+  /* ================= 两种模式 =================
+   * local：从 127.0.0.1 打开，后面有 server.mjs 顶着，保存写本机文件，秒生效。
+   * gh   ：从线上地址打开（github.io 等），没有服务，保存直接调 GitHub 接口
+   *        提交到仓库，Pages 自动重建 —— 所以换台电脑、用手机也能改。
+   * 界面、字段、操作两边完全一样，只有「保存走哪条路」不同。
+   * 测试用：任意地址加 ?gh=1 可以强制走线上模式。
+   */
+  var LOCAL_HOST = { '127.0.0.1': 1, 'localhost': 1, '::1': 1, '[::1]': 1 };
+  var MODE = (function () {
+    if (location.protocol === 'file:') return 'file';
+    if (/[?&]gh=1\b/.test(location.search)) return 'gh';
+    return LOCAL_HOST[location.hostname] ? 'local' : 'gh';
+  })();
+
+  /* ---------------- GitHub 通道 ---------------- */
+  var GH = {
+    owner: 'gxglad', repo: 'yyt', branch: 'main',
+    tk: '', api: 'https://api.github.com'
+  };
+  var TK_KEY = 'yyt_gh_token';
+
+  function ghLoad() {
+    try { GH.tk = localStorage.getItem(TK_KEY) || ''; } catch (e) { GH.tk = ''; }
+    return GH.tk;
+  }
+  function ghSaveTk(v) {
+    GH.tk = v || '';
+    try { v ? localStorage.setItem(TK_KEY, v) : localStorage.removeItem(TK_KEY); } catch (e) {}
+  }
+
+  function gh(path, opt) {
+    opt = opt || {};
+    var cfg = {
+      method: opt.method || 'GET',
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    };
+    if (GH.tk) cfg.headers.Authorization = 'Bearer ' + GH.tk;
+    if (opt.body !== undefined) {
+      cfg.headers['Content-Type'] = 'application/json';
+      cfg.body = JSON.stringify(opt.body);
+    }
+    var url = (opt.raw ? '' : GH.api) + path;
+    return fetch(url, cfg).then(function (r) {
+      return r.text().then(function (t) {
+        var j = {};
+        try { j = t ? JSON.parse(t) : {}; } catch (e) { j = { message: t }; }
+        if (!r.ok) {
+          var m = j.message || ('GitHub 返回 ' + r.status);
+          var left = r.headers.get('x-ratelimit-remaining');
+          if (r.status === 401) m = 'Token 不对或已过期，重新生成一个再试';
+          else if (r.status === 403 && left === '0') {
+            m = 'GitHub 的接口次数用完了（没登录时一小时只有 60 次），过一会儿再试，'
+              + '或者确认 Token 已经填进去（填了以后次数多得多）';
+          } else if (r.status === 403) m = 'Token 权限不够：需要对这个仓库的 Contents 读写权限';
+          else if (r.status === 404) m = '找不到仓库 ' + GH.owner + '/' + GH.repo + '，或者 Token 没给它权限';
+          else if (r.status === 409 || r.status === 422) m = '仓库刚被改过，请再点一次保存';
+          throw new Error(m);
+        }
+        return j;
+      });
+    }).catch(function (err) {
+      if (err instanceof TypeError || /fetch|network/i.test(err.message)) {
+        throw new Error('连不上 GitHub（api.github.com）。检查一下网络；'
+          + '如果是没填 Token 时被 GitHub 拒了（没登录一小时只有 60 次请求），'
+          + '过一会儿再试，或者先把 Token 填上。');
+      }
+      throw err;
+    });
+  }
+
+  var REPO = '/repos/' + GH.owner + '/' + GH.repo;
+
+  /* UTF-8 字符串 ↔ base64（中文不能直接用 btoa） */
+  function b64(str) {
+    var bytes = new TextEncoder().encode(str);
+    var bin = '';
+    for (var i = 0; i < bytes.length; i += 0x8000) {
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(bin);
+  }
+  function unb64(s) {
+    var bin = atob(String(s).replace(/\s/g, ''));
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+  function fmtNow() {
+    var d = new Date(), p = function (n) { return String(n).padStart(2, '0'); };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) +
+      ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+  function dataJsText(data) {
+    var stamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    return '/* 自动生成，请勿手改 —— 改 content.json 后执行 node tools/build.mjs\n' +
+      ' * 由后台保存时会自动重新生成。生成时间：' + stamp + ' */\n' +
+      'window.__CONTENT__ = ' + JSON.stringify(data, null, 2) + ';\n';
+  }
+
+  function ghReadContent() {
+    return gh(REPO + '/contents/content.json?ref=' + GH.branch).then(function (j) {
+      return JSON.parse(unb64(j.content));
+    });
+  }
+
+  /* 一次提交同时写 content.json 和 site-data.js —— 走 Git Data API，
+     避免两个文件分开提交时中间那一瞬间对不上。 */
+  function ghWriteContent(data) {
+    data.meta = data.meta || {};
+    data.meta.updatedAt = fmtNow();
+    var json = JSON.stringify(data, null, 2);
+    var jsData = dataJsText(data);
+    var ref = null;
+    return gh(REPO + '/git/ref/heads/' + GH.branch)
+      .then(function (r) {
+        ref = r;
+        return gh(REPO + '/git/commits/' + ref.object.sha);
+      })
+      .then(function (cm) {
+        var baseTree = cm.tree.sha;
+        return Promise.all([
+          gh(REPO + '/git/blobs', { method: 'POST', body: { content: b64(json), encoding: 'base64' } }),
+          gh(REPO + '/git/blobs', { method: 'POST', body: { content: b64(jsData), encoding: 'base64' } })
+        ]).then(function (bl) {
+          return gh(REPO + '/git/trees', {
+            method: 'POST',
+            body: {
+              base_tree: baseTree,
+              tree: [
+                { path: 'content.json', mode: '100644', type: 'blob', sha: bl[0].sha },
+                { path: 'assets/js/site-data.js', mode: '100644', type: 'blob', sha: bl[1].sha }
+              ]
+            }
+          });
+        });
+      })
+      .then(function (tree) {
+        return gh(REPO + '/git/commits', {
+          method: 'POST',
+          body: {
+            message: '后台更新内容 · ' + fmtNow(),
+            tree: tree.sha,
+            parents: [ref.object.sha]
+          }
+        });
+      })
+      .then(function (commit) {
+        return gh(REPO + '/git/refs/heads/' + GH.branch, {
+          method: 'PATCH',
+          body: { sha: commit.sha, force: false }
+        });
+      })
+      .then(function () { return data; });
+  }
+
+  /* 本地模式用 0 字节的二进制转 base64 会溢出，分块处理 */
+  function bytesToB64(bytes) {
+    var bin = '';
+    for (var i = 0; i < bytes.length; i += 0x8000) {
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(bin);
+  }
+
+  /* ---------------- 统一的数据通道 ---------------- */
+  var NET = {
+    mode: MODE,
+    login: function (cred) {
+      if (MODE === 'gh') {
+        if (!cred) return Promise.reject(new Error('先把 GitHub Token 粘进来'));
+        ghSaveTk(cred);
+        // 读一次确认 token 有效（顺便把内容拿回来）
+        return ghReadContent().then(function (d) { return d; });
+      }
+      return api('/api/login', { method: 'POST', body: { pw: cred } });
+    },
+    load: function () {
+      if (MODE === 'gh') return ghReadContent();
+      return api('/api/content');
+    },
+    save: function (data) {
+      if (MODE === 'gh') return ghWriteContent(data).then(function (d) { return { ok: true, updatedAt: d.meta.updatedAt }; });
+      return api('/api/content', { method: 'POST', body: data });
+    },
+    upload: function (name, bytes) {
+      if (MODE === 'gh') {
+        var safe = 'assets/img/uploads/' + String(name).replace(/[^\w.\-]/g, '_').replace(/^\.+/, '');
+        var body = { message: '后台换图 · ' + safe, content: bytesToB64(bytes), branch: GH.branch };
+        return gh(REPO + '/contents/' + safe, { method: 'GET' })
+          .then(function (j) { body.sha = j.sha; })
+          .catch(function () {})
+          .then(function () { return gh(REPO + '/contents/' + safe, { method: 'PUT', body: body }); })
+          .then(function () { return { ok: true, src: safe }; });
+      }
+      return fetch('/api/upload?name=' + encodeURIComponent(name), {
+        method: 'POST', body: bytes, credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/octet-stream' }
+      }).then(function (r) { return r.json(); });
+    },
+    logout: function () {
+      if (MODE === 'gh') { ghSaveTk(''); return Promise.resolve({ ok: true }); }
+      return api('/api/logout', { method: 'POST' });
+    },
+    setPw: function (v) {
+      if (MODE === 'gh') return Promise.reject(new Error('线上模式没有口令，改用「换 Token」'));
+      return api('/api/pw', { method: 'POST', body: { pw: v } });
+    }
+  };
+
   function toast(msg, isErr) {
     var t = $('#toast');
     t.textContent = msg;
@@ -67,9 +279,19 @@
   $('#gateForm').addEventListener('submit', function (e) {
     e.preventDefault();
     $('#gateErr').textContent = '';
-    api('/api/login', { method: 'POST', body: { pw: $('#gatePw').value } })
-      .then(function () { showApp(); boot(); })
-      .catch(function (err) { $('#gateErr').textContent = err.message; });
+    var cred = $('#gatePw').value.trim();
+    var b = $('#gateForm .gate__b');
+    if (b) { b.disabled = true; b.textContent = '验证中…'; }
+    NET.login(cred)
+      .then(function (d) {
+        if (b) { b.disabled = false; b.textContent = MODE === 'gh' ? '连上仓库' : '进入后台'; }
+        if (MODE === 'gh' && d) { S.data = d; showApp(); render(); return; }
+        showApp(); boot();
+      })
+      .catch(function (err) {
+        if (b) { b.disabled = false; b.textContent = MODE === 'gh' ? '连上仓库' : '进入后台'; }
+        $('#gateErr').textContent = err.message;
+      });
   });
 
   /* ---------------- 数据读取 ---------------- */
@@ -101,7 +323,7 @@
   };
 
   function boot() {
-    api('/api/content').then(function (d) {
+    NET.load().then(function (d) {
       S.data = d;
       render();
     }).catch(function (e) { toast(e.message, true); });
@@ -555,10 +777,7 @@
             var bin = atob(String(fr.result).split(',')[1]);
             var buf = new Uint8Array(bin.length);
             for (var i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
-            fetch('/api/upload?name=' + encodeURIComponent(f.name), {
-              method: 'POST', body: buf, credentials: 'same-origin',
-              headers: { 'Content-Type': 'application/octet-stream' }
-            }).then(function (r) { return r.json(); }).then(function (j) {
+            NET.upload(f.name, buf).then(function (j) {
               if (!j.ok) throw new Error(j.msg || '上传失败');
               set(path, j.src);
               var inp = pane.querySelector('[data-p="' + path + '"]');
@@ -567,7 +786,7 @@
                 var pv = inp.closest('.imgf').querySelector('.imgf__pv');
                 pv.innerHTML = '<img src="../' + esc(j.src) + '" alt="">';
               }
-              toast('图片已上传');
+              toast(MODE === 'gh' ? '图片已提交，稍后生效' : '图片已上传');
             }).catch(function (e) { toast(e.message, true); });
           };
           fr.readAsDataURL(f);
@@ -580,22 +799,20 @@
     $$('[data-pick]', pane).forEach(function (b) {
       b.addEventListener('click', function () {
         var path = b.getAttribute('data-pick');
-        api('/api/content').then(function () {
-          var list = ['assets/img/campus-gate.jpg', 'assets/img/campus-aerial.jpg', 'assets/img/campus-green.jpg',
-            'assets/img/campus-lawn.jpg', 'assets/img/campus-plaza.jpg', 'assets/img/campus-yard.jpg',
-            'assets/img/emblem.png', 'assets/img/logo.png', 'assets/img/qr-wx.png',
-            'assets/img/news-1.png', 'assets/img/news-2.jpg', 'assets/img/news-3.png',
-            'assets/img/news-4.png', 'assets/img/news-5.png'];
-          var v = prompt('填图片路径，或从下面挑一个：\n\n' + list.join('\n'), get(path) || '');
-          if (v == null) return;
-          set(path, v.trim());
-          var inp = pane.querySelector('[data-p="' + path + '"]');
-          if (inp) {
-            inp.value = v.trim();
-            var pv = inp.closest('.imgf').querySelector('.imgf__pv');
-            pv.innerHTML = v.trim() ? '<img src="../' + esc(v.trim()) + '" alt="">' : '<span>无图</span>';
-          }
-        });
+        var list = ['assets/img/campus-gate.jpg', 'assets/img/campus-aerial.jpg', 'assets/img/campus-green.jpg',
+          'assets/img/campus-lawn.jpg', 'assets/img/campus-plaza.jpg', 'assets/img/campus-yard.jpg',
+          'assets/img/emblem.png', 'assets/img/logo.png', 'assets/img/qr-wx.png',
+          'assets/img/news-1.png', 'assets/img/news-2.jpg', 'assets/img/news-3.png',
+          'assets/img/news-4.png', 'assets/img/news-5.png'];
+        var v = prompt('填图片路径，或从下面挑一个：\n\n' + list.join('\n'), get(path) || '');
+        if (v == null) return;
+        set(path, v.trim());
+        var inp = pane.querySelector('[data-p="' + path + '"]');
+        if (inp) {
+          inp.value = v.trim();
+          var pv = inp.closest('.imgf').querySelector('.imgf__pv');
+          pv.innerHTML = v.trim() ? '<img src="../' + esc(v.trim()) + '" alt="">' : '<span>无图</span>';
+        }
       });
     });
 
@@ -762,12 +979,17 @@
     var b = $('#saveBtn');
     b.disabled = true;
     b.textContent = '保存中…';
-    api('/api/content', { method: 'POST', body: S.data }).then(function (j) {
+    NET.save(S.data).then(function (j) {
       markDirty(false);
       b.disabled = false;
       b.textContent = '保存';
-      toast('已保存 · ' + (j.updatedAt || ''));
-      reloadPreview();
+      if (MODE === 'gh') {
+        toast('已提交 · ' + (j.updatedAt || '') + ' · 约 1 分钟后线上生效');
+        reloadPreview();
+      } else {
+        toast('已保存 · ' + (j.updatedAt || ''));
+        reloadPreview();
+      }
     }).catch(function (e) {
       b.disabled = false;
       b.textContent = '保存';
@@ -793,14 +1015,22 @@
   });
 
   $('#outBtn').addEventListener('click', function () {
-    api('/api/logout', { method: 'POST' }).then(function () {
+    NET.logout().then(function () {
       location.reload();
     });
   });
   $('#pwBtn').addEventListener('click', function () {
+    if (MODE === 'gh') {
+      var nv = prompt('换一个 GitHub Token（留空表示清除）');
+      if (nv === null) return;
+      ghSaveTk(nv.trim());
+      toast(nv.trim() ? 'Token 已换，刷新后生效' : 'Token 已清除');
+      setTimeout(function () { location.reload(); }, 900);
+      return;
+    }
     var v = prompt('新口令（至少 6 位）');
     if (!v) return;
-    api('/api/pw', { method: 'POST', body: { pw: v } })
+    NET.setPw(v)
       .then(function () { toast('口令已改，请重新登录'); setTimeout(function () { location.reload(); }, 900); })
       .catch(function (e) { toast(e.message, true); });
   });
@@ -810,33 +1040,63 @@
   });
 
   /* ---------------- 启动 ---------------- */
-  /* 后台只能在装好 Node 的本机跑。文件系统打开、或者从线上地址（github.io 等）
-     打开，都没有服务可连，直接给一句明白话，别让人对着登录框输口令。 */
-  var LOCAL = { '127.0.0.1': 1, 'localhost': 1, '::1': 1, '[::1]': 1 };
-  function notLocalReason() {
-    if (location.protocol === 'file:') {
-      return '这是从文件系统打开的，没有服务可连。请先双击「启动后台.bat」（或在「源码」文件夹里执行 node server.mjs），'
-        + '然后打开 http://127.0.0.1:7717/admin/ —— 不要直接双击 admin/index.html。';
-    }
-    if (!LOCAL[location.hostname]) {
-      return '这是线上地址（' + location.hostname + '），线上只有静态页面，没有后台服务。'
-        + '后台只能在自己电脑上跑：双击「启动后台.bat」，或在「源码」文件夹里执行 node server.mjs，'
-        + '再打开 http://127.0.0.1:7717/admin/ 。';
-    }
-    return '';
-  }
+  /* 三种打开方式：
+   *   file://  → 没有服务也没有仓库，直接说清楚
+   *   127.0.0.1 → 本地模式，口令登录，写本机文件
+   *   线上域名  → 线上模式，填 GitHub Token，保存提交到仓库
+   */
+  var FILE_REASON = '这是从文件系统打开的，没有服务可连。请先双击「启动后台.bat」'
+    + '（或在「源码」文件夹里执行 node server.mjs），然后打开 http://127.0.0.1:7717/admin/ '
+    + '—— 不要直接双击 admin/index.html。';
 
-  var blocked = notLocalReason();
-  if (blocked) {
-    showGate();
-    // 连口令框都藏掉，只留说明——省得人一直试口令
-    var f = $('#gateForm');
-    if (f) {
-      f.querySelectorAll('.gate__f, .gate__b').forEach(function (e) { e.hidden = true; });
+  function applyModeUI() {
+    var lbl = document.querySelector('.gate__f span');
+    var inp = $('#gatePw');
+    var b = $('#gateForm .gate__b');
+    var sub = document.querySelector('.gate__sub');
+    var hd = document.querySelector('#app .top__l span');
+    var pwB = $('#pwBtn');
+    if (MODE === 'gh') {
+      document.title = '内容后台（线上）· 云探校';
+      if (lbl) lbl.textContent = 'GitHub Token';
+      if (inp) {
+        inp.type = 'password';
+        inp.placeholder = '粘贴一个能写这个仓库的 token';
+        inp.value = ghLoad();
+      }
+      if (b) b.textContent = '连上仓库';
+      if (sub) sub.innerHTML = '线上模式：保存会提交到这个仓库，约 1 分钟后线上生效。<br>'
+        + 'Token 只存在这台电脑的浏览器里，不会写进仓库。';
+      if (hd) hd.textContent = '内容后台 · 线上';
+      if (pwB) pwB.textContent = '换 Token';
+      var tip = document.querySelector('.prev__tip');
+      if (tip) tip.textContent = '线上模式：这里显示的是已发布的版本，保存后约 1 分钟才会变。';
+    } else if (MODE === 'local') {
+      if (hd) hd.textContent = '内容后台 · 本地';
+      if (pwB) pwB.textContent = '改口令';
     }
+  }
+  applyModeUI();
+
+  if (MODE === 'file') {
+    showGate();
+    var f = $('#gateForm');
+    if (f) f.querySelectorAll('.gate__f, .gate__b').forEach(function (e) { e.hidden = true; });
     var sub = document.querySelector('.gate__sub');
     if (sub) sub.hidden = true;
-    $('#gateErr').textContent = blocked;
+    $('#gateErr').textContent = FILE_REASON;
+  } else if (MODE === 'gh') {
+    // 有 token 就直接试读一次，读通了免登录进主界面
+    if (ghLoad()) {
+      ghReadContent().then(function (d) {
+        S.data = d; showApp(); render();
+      }).catch(function (err) {
+        showGate();
+        $('#gateErr').textContent = err.message;
+      });
+    } else {
+      showGate();
+    }
   } else {
     api('/api/me')
       .then(function () { showApp(); boot(); })
