@@ -2,10 +2,11 @@
  * 用法：node tools/interact.mjs
  */
 import { spawn } from 'node:child_process';
-import { writeFile } from 'node:fs/promises';
+import { writeFile, mkdir } from 'node:fs/promises';
 import { setTimeout as sleep } from 'node:timers/promises';
 
 const OUT = 'C:\\Users\\gx\\OneDrive\\Desktop\\殷宇彤\\_shots';
+await mkdir(OUT, { recursive: true });
 
 const CHROME = 'C:\\Users\\gx\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe';
 const port = 9700 + Math.floor(Math.random() * 200);
