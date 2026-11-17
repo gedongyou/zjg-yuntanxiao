@@ -186,12 +186,16 @@
       <h2><i>07</i>内容后台</h2>
       <p>老师提了一个很实际的问题：这个页面是死的，招生办想换句话、换张图、加一条问答，都得找人改代码。所以补了一套后台——前台照旧是纯静态页面，后台是本地跑的一个小服务，改完点保存，前台刷新就变。</p>
       <h3>怎么开</h3>
-      <div class="doc__code">cd 源码
+      <div class="doc__code">双击 源码\启动后台.bat      ← 最省事，浏览器会自动跳转
+
+等价的手动做法：
+cd 源码
 node server.mjs
 
 前台  http://127.0.0.1:7717/
 后台  http://127.0.0.1:7717/admin/
 口令  首次启动是 admin123，进后台后右上角「改口令」</div>
+      <p>后台页面必须从 <span style="font-family:var(--mono);font-size:12px">http://127.0.0.1:7717/admin/</span> 进。直接双击 <span style="font-family:var(--mono);font-size:12px">admin/index.html</span> 是从文件系统打开的，连不上服务，页面会直接提示这一点——这个坑我自己踩过，所以专门做了拦截提示。</p>
       <p>后台只用 Node 自带的 <span style="font-family:var(--mono);font-size:12px">http / fs / crypto</span> 三个模块，不装任何依赖，不用数据库——内容就是 <span style="font-family:var(--mono);font-size:12px">content.json</span> 这个文件本身。所以换台电脑把文件夹拷过去，<span style="font-family:var(--mono);font-size:12px">node server.mjs</span> 一样能跑。</p>
       <h3>六个页面各管什么</h3>
       <table class="doc__tb doc__tb--3">

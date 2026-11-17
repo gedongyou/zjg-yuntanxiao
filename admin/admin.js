@@ -20,12 +20,26 @@
     }
     return fetch(path, cfg).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (j) {
-        if (r.status === 401) { showGate(); throw new Error('登录已过期'); }
+        // 登录接口的 401 是「口令不对」，不能当成登录过期，否则真正的错因会被盖掉
+        if (r.status === 401 && path !== '/api/login') {
+          showGate();
+          throw new Error('登录已过期，请重新输入口令');
+        }
         if (!r.ok) throw new Error(j.msg || ('请求失败 ' + r.status));
         return j;
       });
+    }).catch(function (err) {
+      // fetch 本身失败（不是 4xx/5xx）：多半是没启动服务，或者直接双击打开了文件
+      if (err instanceof TypeError || /fetch/i.test(err.message)) {
+        throw new Error(HINT);
+      }
+      throw err;
     });
   }
+
+  /* 打不开的时候说人话，别只甩一个 Failed to fetch */
+  var HINT = '连不上后台服务。请先在「源码」文件夹里执行 node server.mjs，'
+    + '再打开 http://127.0.0.1:7717/admin/（不要直接双击 admin/index.html）。';
 
   function toast(msg, isErr) {
     var t = $('#toast');
@@ -832,5 +846,16 @@
   });
 
   /* ---------------- 启动 ---------------- */
-  api('/api/me').then(function () { showApp(); boot(); }).catch(function () { showGate(); });
+  if (location.protocol === 'file:') {
+    // 直接双击打开了 admin/index.html，根本没有服务可连 —— 先把话说清楚
+    showGate();
+    $('#gateErr').textContent = HINT;
+  } else {
+    api('/api/me')
+      .then(function () { showApp(); boot(); })
+      .catch(function (err) {
+        showGate();
+        if (err && err.message === HINT) $('#gateErr').textContent = HINT;
+      });
+  }
 })();
