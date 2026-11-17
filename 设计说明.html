@@ -224,6 +224,7 @@ git add -A
 git commit -m "改了什么"
 git push origin main          ← 本机要走代理，见说明.txt 第五节的完整命令</div>
       <p>等一两分钟线上就是新的。后台的 <span style="font-family:var(--mono);font-size:12px">server.mjs</span> 和 <span style="font-family:var(--mono);font-size:12px">admin/</span> 会一起被传上去，但 Pages 只当静态文件存着，不会被当接口调用——它始终是本地工具。</p>
+      <p>所以线上打开 <span style="font-family:var(--mono);font-size:12px">gxglad.github.io/yyt/admin/</span> 只会看到一句说明，没有口令框：没有服务可连，输口令也没用。这里做了判断——来源是文件系统或线上域名时，直接把口令框收起来，只说明该去本地跑；只有 <span style="font-family:var(--mono);font-size:12px">127.0.0.1 / localhost</span> 才放行。要改内容就双击「启动后台.bat」，进本地那个地址。</p>
     </section>
 
     <section class="doc__sec" id="s8">
