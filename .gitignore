@@ -1,0 +1,15 @@
+# 后台运行时产生的，不进仓库
+admin.config.json
+content.misses.json
+content.versions/
+dist/
+云探校-发布包.zip
+assets/img/uploads/
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.bak
+*.tmp

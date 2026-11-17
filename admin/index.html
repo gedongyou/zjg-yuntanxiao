@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>内容后台 · 云探校</title>
+<link rel="icon" href="../assets/img/emblem.png">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- 登录 -->
+<section class="gate" id="gate">
+  <form class="gate__card" id="gateForm">
+    <img class="gate__logo" src="../assets/img/emblem.png" alt="">
+    <h1>云探校 · 内容后台</h1>
+    <p class="gate__sub">改文案、换图、加问答，存盘后前台刷新即变</p>
+    <label class="gate__f">
+      <span>口令</span>
+      <input id="gatePw" type="password" placeholder="首次为 admin123" autocomplete="current-password">
+    </label>
+    <button class="gate__b" type="submit">进入后台</button>
+    <p class="gate__err" id="gateErr"></p>
+  </form>
+</section>
+
+<!-- 主界面 -->
+<div class="app" id="app" hidden>
+  <header class="top">
+    <div class="top__l">
+      <img src="../assets/img/emblem.png" alt="">
+      <b>云探校</b>
+      <span>内容后台</span>
+      <i class="dot" id="dirtyDot" hidden></i>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-tab="layout" class="is-on">板块排版</button>
+      <button data-tab="content">内容编辑</button>
+      <button data-tab="ask">问答库</button>
+      <button data-tab="miss">访客提问</button>
+      <button data-tab="hist">版本</button>
+      <button data-tab="out">导出</button>
+    </nav>
+    <div class="top__r">
+      <button class="btn btn--ghost" id="previewBtn">预览前台</button>
+      <button class="btn btn--solid" id="saveBtn">保存</button>
+      <button class="btn btn--ghost" id="pwBtn">改口令</button>
+      <button class="btn btn--ghost" id="outBtn">退出</button>
+    </div>
+  </header>
+
+  <div class="body">
+    <main class="pane" id="pane"></main>
+    <aside class="prev" id="prev">
+      <div class="prev__hd">
+        <span>前台预览</span>
+        <div>
+          <button data-w="1440">电脑</button>
+          <button data-w="390">手机</button>
+          <button id="prevRe" title="刷新">↻</button>
+        </div>
+      </div>
+      <div class="prev__box"><iframe id="prevFrame" src="../index.html" title="前台预览"></iframe></div>
+      <p class="prev__tip">改完点「保存」，这里会自动刷新。</p>
+    </aside>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="admin.js"></script>
+</body>
+</html>

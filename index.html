@@ -19,27 +19,23 @@
   <span class="sky__c sky__c--5"></span>
 </div>
 
+<!-- 页头：内容由 site.js 按 content.json 渲染 -->
 <header class="nav" id="nav">
   <div class="nav__inner">
     <a class="brand" href="#top" aria-label="回到首屏">
-      <img src="assets/img/emblem.png" alt="校徽">
+      <img id="brandImg" src="assets/img/emblem.png" alt="校徽">
       <span class="brand__txt">
-        <span class="brand__cn">云探校</span>
+        <span class="brand__cn" id="brandCn">云探校</span>
+        <span class="brand__en" id="brandEn">CAMPUS ONLINE</span>
       </span>
     </a>
-    <nav class="nav__links" aria-label="页面导航">
-      <a href="#pan">校园长卷</a>
-      <a href="#stops">七站导览</a>
-      <a href="#majors">系部专业</a>
-      <a href="#craft">匠心与荣誉</a>
-      <a href="#admit">招生信息</a>
-    </nav>
-    <a class="nav__cta" href="#admit">
-      预约看校
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
+    <nav class="nav__links" id="navLinks" aria-label="页面导航"></nav>
+    <a class="nav__cta" id="navCta" href="#admit">
+      <span id="navCtaTx">预约看校</span>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg>
     </a>
     <button class="nav__burger" id="burger" aria-label="打开菜单" aria-expanded="false">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
     </button>
   </div>
 </header>
@@ -48,623 +44,33 @@
   <div class="drawer__hd">
     <span>目录</span>
     <button id="drawerClose" aria-label="关闭菜单">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
     </button>
   </div>
-  <nav class="drawer__nav">
-    <a href="#pan">校园长卷</a>
-    <a href="#stops">七站导览</a>
-    <a href="#majors">系部专业</a>
-    <a href="#craft">匠心与荣誉</a>
-    <a href="#admit">招生信息</a>
-    <a href="设计说明.html">设计说明</a>
-  </nav>
-  <p class="drawer__ft">江苏省张家港中等专业学校<br>江苏联合职业技术学院张家港分院</p>
+  <nav class="drawer__nav" id="drawerNav"></nav>
+  <p class="drawer__ft" id="drawerFoot"></p>
 </div>
 
-<main id="top">
-
-<section class="hero" id="hero">
-  <div class="hero__bg" id="heroBg"></div>
-  <div class="hero__veil"></div>
-  <div class="hero__grid"></div>
-  <div class="hero__seal" aria-hidden="true"><span>云探校</span></div>
-
-  <div class="wrap hero__inner">
-    <p class="hero__tag"><b>2026</b> 招生季 · 江苏省张家港中等专业学校</p>
-
-    <h1 class="hero__title">
-      云<span>探校</span>
-    </h1>
-
-    <div class="hero__row">
-      <div>
-        <p class="hero__sub">招生开放日 · 线上展厅</p>
-        <p class="hero__lead">不用等到开放日，也不用赶一趟车。三百六十亩校园、二十八个专业、一整面奖牌墙——在线上，一次看完。</p>
-      </div>
-      <div class="hero__acts">
-        <a class="btn btn--solid" href="#stops">
-          开始探校
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M4 9l4 4 4-4"/></svg>
-        </a>
-        <a class="btn btn--ghost" href="#admit">招生信息</a>
-      </div>
+<!-- 正文：整页由 content.json 驱动，后台改完刷新即变 -->
+<main id="app">
+  <noscript>
+    <div class="wrap" style="padding:120px 0">
+      <h1 class="sec__h">需要开启 JavaScript</h1>
+      <p class="sec__lead" style="margin-top:16px">这个展厅的内容由本地数据文件渲染。请在浏览器设置里启用 JavaScript，或改用 Chrome / Edge / Safari 打开。</p>
     </div>
-  </div>
-
-  <div class="wrap">
-    <dl class="hero__meta">
-      <div><dt>校址</dt><dd>张家港市福新路 2 号</dd></div>
-      <div><dt>建校</dt><dd>1984 年建校</dd></div>
-      <div><dt>新校区</dt><dd>2024 年迁入新校区</dd></div>
-      <div><dt>层次</dt><dd>五年一贯制 · 职教高考</dd></div>
-    </dl>
-  </div>
-
-  <div class="hero__scroll">向下看<i></i></div>
-</section>
-
-<section class="unroll" id="pan">
-  <div class="unroll__sticky">
-
-    <div class="unroll__head">
-      <h2>三百六十亩，<br><em>一条长卷铺到底</em></h2>
-    </div>
-
-    <div class="unroll__stage">
-      <div class="unroll__band" id="unrollBand">
-        <span class="roller roller--l" aria-hidden="true"></span>
-        <div class="unroll__frame">
-
-          
-
-          <div class="unroll__card is-on" data-cap="1980 年办班，1984 年建校">
-            <div class="unroll__cin">
-              <span class="unroll__yr">1984</span>
-              <h3 class="unroll__ev">从职教中心校起步</h3>
-              <p class="unroll__tx">1980 年开始办班，1984 年正式建校，校名为江苏省张家港职业教育中心校。那时候的校舍还是借的。</p>
-            </div>
-          </div>
-
-          <div class="unroll__card" data-cap="1988 年，国标省重点">
-            <div class="unroll__cin">
-              <span class="unroll__yr">1988</span>
-              <h3 class="unroll__ev">创国标省重点</h3>
-              <p class="unroll__tx">建校第四年通过国标省重点验收。苏南乡镇的职教，从这一步开始有了自己的样子。</p>
-            </div>
-          </div>
-
-          <div class="unroll__card" data-cap="1996 年，首批国家级重点职业高中">
-            <div class="unroll__cin">
-              <span class="unroll__yr">1996</span>
-              <h3 class="unroll__ev">首批国家级重点职业高中</h3>
-              <p class="unroll__tx">1994 年建中专，两年后进入全国首批国家级重点职业高中行列，招生范围第一次跨出张家港。</p>
-            </div>
-          </div>
-
-          <div class="unroll__card" data-cap="2009 年，首批省四星级">
-            <div class="unroll__cin">
-              <span class="unroll__yr">2009</span>
-              <h3 class="unroll__ev">首批省四星级、省高水平示范性</h3>
-              <p class="unroll__tx">1998 年成为首批省职教中心校，2009 年再进一步。实训楼就是那几年一间间盖起来的。</p>
-            </div>
-          </div>
-
-          <div class="unroll__card" data-cap="2015 年，升格为联院张家港分院">
-            <div class="unroll__cin">
-              <span class="unroll__yr">2015</span>
-              <h3 class="unroll__ev">升格江苏联合职业技术学院张家港分院</h3>
-              <p class="unroll__tx">2014 年成为首批国家中职改革发展示范校，次年升格分院。五年一贯制，从这一年开始招。</p>
-            </div>
-          </div>
-
-          <div class="unroll__card" data-cap="2020 年，省领航学校建设单位">
-            <div class="unroll__cin">
-              <span class="unroll__yr">2020</span>
-              <h3 class="unroll__ev">省领航学校建设单位</h3>
-              <p class="unroll__tx">2018 年成为省现代化示范性职业学校，两年后入选省领航计划。数控、机电、软件三个专业群先后立起来。</p>
-            </div>
-          </div>
-
-          <div class="unroll__card" data-cap="2024 年 7 月，整体迁入福新路 2 号">
-            <div class="unroll__cin">
-              <span class="unroll__yr">2024</span>
-              <h3 class="unroll__ev">整体迁入福新路 2 号</h3>
-              <p class="unroll__tx">三百六十亩、二十一万平方米。数控、机电、软件、汽车、化工的实训基地一次配齐，十个校内基地全搬了进来。</p>
-            </div>
-
-          </div>
-
-          <div class="unroll__img" data-cap="今天的校门，朝福新路开着"
-               style="background-image:url('assets/img/campus-gate.jpg');background-position:center 58%"></div>
-        </div>
-        <span class="roller roller--r" aria-hidden="true"></span>
-      </div>
-    </div>
-
-    <div class="unroll__foot">
-      <p class="unroll__cap" id="panCap">一条长卷，从 1984 铺到今天</p>
-      <p class="unroll__mark">图 / 学校官网</p>
-    </div>
-
-  </div>
-</section>
-
-<section class="sec sec--paper" id="numbers">
-  <div class="wrap">
-    <div class="sec__head">
-      <div class="reveal">
-        <h2 class="sec__h">先把数字<br>摆在这里</h2>
-      </div>
-      <p class="sec__lead reveal" data-d="1">数字是最简单明了的。</p>
-    </div>
-
-    <div class="stats">
-      <div class="stat reveal">
-        <p class="stat__n"><span data-count="360">0</span><i>亩</i></p>
-        <p class="stat__t">校园占地</p>
-        <p class="stat__d">2024 年 7 月整体迁入福新路 2 号</p>
-      </div>
-      <div class="stat reveal" data-d="1">
-        <p class="stat__n"><span data-count="21">0</span><i>万㎡</i></p>
-        <p class="stat__t">建筑面积</p>
-        <p class="stat__d">教学、实训、生活三区连成一片</p>
-      </div>
-      <div class="stat reveal" data-d="2">
-        <p class="stat__n"><span data-count="28">0</span><i>个</i></p>
-        <p class="stat__t">中高职专业</p>
-        <p class="stat__d">省品牌专业 4、省示范专业 5、省现代化专业群 3</p>
-      </div>
-      <div class="stat reveal" data-d="3">
-        <p class="stat__n"><span data-count="147">0</span><i>个</i></p>
-        <p class="stat__t">在校班级</p>
-        <p class="stat__d">在校学生 6200 余人</p>
-      </div>
-      <div class="stat reveal">
-        <p class="stat__n"><span data-count="419">0</span><i>名</i></p>
-        <p class="stat__t">专任教师</p>
-        <p class="stat__d">省名师工作室 2 个、苏州市名师工作室 5 个</p>
-      </div>
-      <div class="stat reveal" data-d="1">
-        <p class="stat__n"><span data-count="10">0</span><i>个</i></p>
-        <p class="stat__t">校内实践基地</p>
-        <p class="stat__d">数控技术应用为国家级实训基地</p>
-      </div>
-      <div class="stat reveal" data-d="2">
-        <p class="stat__n"><span data-count="78">0</span><i>金</i></p>
-        <p class="stat__t">全国职业院校技能大赛</p>
-        <p class="stat__d">另获 26 银 5 铜</p>
-      </div>
-      <div class="stat reveal" data-d="3">
-        <p class="stat__n"><span data-count="23">0</span><i>届</i></p>
-        <p class="stat__t">张家港市技能竞赛金杯</p>
-        <p class="stat__d">连续 10 年省技能大赛先进学校</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="walk" id="stops">
-  <div class="wrap">
-
-    <div class="sec__head">
-      <div class="reveal">
-        <h2 class="sec__h">七站，<br><em>点开就是实地</em></h2>
-      </div>
-      <p class="sec__lead reveal" data-d="1">想看哪一站，点开——这里在做什么、用什么设备、跟哪些企业一起带学生。看完一站，再点下一站。</p>
-    </div>
-
-    <div class="walk__grid">
-
-      <div class="walk__list" id="walkList">
-
-        <article class="walk__it is-open" data-block="graphic" data-nm="图文中心">
-          <button class="walk__hd" type="button" aria-expanded="true">
-            <span class="walk__no">01</span>
-            <span class="walk__nm">图文中心</span>
-            <span class="walk__ic" aria-hidden="true"></span>
-          </button>
-          <div class="walk__bd"><div class="walk__in"><div class="walk__body">
-            <p class="walk__desc">借书、自习、查资料，也躲一场雨。三年、五年读下来，待得最久的地方往往不是教室，而是靠窗那排桌子——晚自习前的两小时，这里最安静。</p>
-            <ul class="walk__tags"><li>借阅</li><li>自习</li><li>电子资源</li></ul>
-            <p class="walk__heart"><b>由此 · 恒心</b></p>
-          </div></div></div>
-        </article>
-
-        <article class="walk__it" data-block="train" data-nm="实训区">
-          <button class="walk__hd" type="button" aria-expanded="false">
-            <span class="walk__no">02</span>
-            <span class="walk__nm">实训区</span>
-            <span class="walk__ic" aria-hidden="true"></span>
-          </button>
-          <div class="walk__bd"><div class="walk__in"><div class="walk__body">
-            <p class="walk__desc">数控技术应用实训基地是国家级基地，机电一体化技术、软件与信息服务、加工制造技术是省现代化实训基地。设备一排排摆开，学生按工位轮转，一人一机；基地同时面向企业做职工培训和技能鉴定——港城的车间里，有不少师傅是从这里出去的。</p>
-            <ul class="walk__tags"><li>国家级基地 1 个</li><li>省现代化基地 3 个</li><li>对外培训与鉴定</li></ul>
-            <p class="walk__heart"><b>由此 · 红心</b></p>
-          </div></div></div>
-        </article>
-
-        <article class="walk__it" data-block="smart" data-nm="智造车间">
-          <button class="walk__hd" type="button" aria-expanded="false">
-            <span class="walk__no">03</span>
-            <span class="walk__nm">智造车间</span>
-            <span class="walk__ic" aria-hidden="true"></span>
-          </button>
-          <div class="walk__bd"><div class="walk__in"><div class="walk__body">
-            <p class="walk__desc">按教学与实训一体化标准建，产、学、研、训、赛、考一体，实训生产化——做出来的件是要过检验的。苏州市现代学徒制试点 7 项、优秀企业学院 3 个，都在这条线上落地：人在校就是学徒，师傅来自车间。</p>
-            <ul class="walk__tags"><li>产教融合</li><li>现代学徒制 7 项</li><li>企业学院 3 个</li></ul>
-            <p class="walk__heart"><b>由此 · 匠心</b></p>
-          </div></div></div>
-        </article>
-
-        <article class="walk__it" data-block="cloud" data-nm="云端机房">
-          <button class="walk__hd" type="button" aria-expanded="false">
-            <span class="walk__no">04</span>
-            <span class="walk__nm">云端机房</span>
-            <span class="walk__ic" aria-hidden="true"></span>
-          </button>
-          <div class="walk__bd"><div class="walk__in"><div class="walk__body">
-            <p class="walk__desc">计算机、软件与信息服务在这里上课。写代码、架服务、做界面，机房的灯常常亮到很晚。你现在看的这个“云探校”，也是照这个路子做出来的——没有视频、没有插件，一个文件发出去，手机和电脑都能走完全程。</p>
-            <ul class="walk__tags"><li>信息工程系</li><li>软件与信息服务</li><li>项目制课程</li></ul>
-            <p class="walk__heart"><b>由此 · 创心</b></p>
-          </div></div></div>
-        </article>
-
-        <article class="walk__it" data-block="sport" data-nm="运动场">
-          <button class="walk__hd" type="button" aria-expanded="false">
-            <span class="walk__no">05</span>
-            <span class="walk__nm">运动场</span>
-            <span class="walk__ic" aria-hidden="true"></span>
-          </button>
-          <div class="walk__bd"><div class="walk__in"><div class="walk__body">
-            <p class="walk__desc">塑胶跑道、球场、看台。体育课、晚跑、班级联赛都在这里。这所学校连续二十三届拿张家港市技能竞赛金杯，运动会也是同一个脾气——上场就得拼。</p>
-            <ul class="walk__tags"><li>塑胶跑道</li><li>球场</li><li>晚跑</li></ul>
-            <p class="walk__heart"><b>由此 · 恒心</b></p>
-          </div></div></div>
-        </article>
-
-        <article class="walk__it" data-block="dine" data-nm="食堂与宿舍">
-          <button class="walk__hd" type="button" aria-expanded="false">
-            <span class="walk__no">06</span>
-            <span class="walk__nm">食堂与宿舍</span>
-            <span class="walk__ic" aria-hidden="true"></span>
-          </button>
-          <div class="walk__bd"><div class="walk__in"><div class="walk__body">
-            <p class="walk__desc">食堂、超市、宿舍挤在生活区，和教学区只隔一条路——吃饭、回宿舍、再回教室，一天下来走不了几步。住校生的作息从六点半开始，熄灯后走廊里还有人在背单词。</p>
-            <ul class="walk__tags"><li>生活区</li><li>住校</li><li>超市</li></ul>
-            <p class="walk__heart"><b>由此 · 仁心</b></p>
-          </div></div></div>
-        </article>
-
-        <article class="walk__it" data-block="hall" data-nm="展厅">
-          <button class="walk__hd" type="button" aria-expanded="false">
-            <span class="walk__no">07</span>
-            <span class="walk__nm">展厅</span>
-            <span class="walk__ic" aria-hidden="true"></span>
-          </button>
-          <div class="walk__bd"><div class="walk__in"><div class="walk__body">
-            <p class="walk__desc">全国职业院校技能大赛累计 78 金 26 银 5 铜；连续二十三届市赛金杯；连续十年省技能大赛先进学校。展厅里除了奖牌，还有学生的作品——服装、模型、界面、视频，都是能拿出来看的东西。</p>
-            <ul class="walk__tags"><li>78 金 26 银 5 铜</li><li>23 届金杯</li><li>10 年先进</li></ul>
-            <p class="walk__heart"><b>由此 · 匠心</b></p>
-          </div></div></div>
-        </article>
-
-      </div>
-
-      <aside class="walk__side">
-        <div class="walk__num">
-          <span id="walkNo">01</span>
-          <b id="walkNm">图文中心</b>
-        </div>
-        <div class="plan" aria-label="校园导览示意图">
-          <svg viewBox="0 0 360 300" role="img">
-            <rect class="plan__frame" x="8" y="8" width="344" height="284" rx="4"/>
-            <path class="plan__road" d="M8 100 H352 M8 168 H352 M8 236 H352 M130 8 V292 M236 8 V292"/>
-
-            <rect class="plan__b" data-block="train"   x="34"  y="38"  width="84" height="62" rx="2"/>
-            <text class="plan__l" x="76" y="73" text-anchor="middle">实训区</text>
-
-            <rect class="plan__b" data-block="smart"   x="34"  y="106" width="84" height="62" rx="2"/>
-            <text class="plan__l" x="76" y="141" text-anchor="middle">智造车间</text>
-
-            <rect class="plan__b" data-block="dine"    x="34"  y="174" width="84" height="62" rx="2"/>
-            <text class="plan__l" x="76" y="209" text-anchor="middle">生活区</text>
-
-            <rect class="plan__b" data-block="graphic" x="140" y="38"  width="84" height="62" rx="2"/>
-            <text class="plan__l" x="182" y="73" text-anchor="middle">图文中心</text>
-
-            <rect class="plan__b" data-block="cloud"   x="140" y="106" width="84" height="62" rx="2"/>
-            <text class="plan__l" x="182" y="141" text-anchor="middle">云机房</text>
-
-            <rect class="plan__b" data-block="hall"    x="246" y="38"  width="84" height="62" rx="2"/>
-            <text class="plan__l" x="288" y="73" text-anchor="middle">展厅</text>
-
-            <rect class="plan__b" data-block="sport"   x="246" y="106" width="84" height="130" rx="42"/>
-            <ellipse class="plan__road" cx="288" cy="171" rx="26" ry="46"/>
-            <text class="plan__l" x="288" y="175" text-anchor="middle">运动场</text>
-
-            <circle class="plan__dot" id="planDot" cx="213" cy="49" r="3.4"/>
-          </svg>
-        </div>
-        <p class="plan__hint">校园示意 · 非实际比例</p>
-      </aside>
-
-    </div>
-  </div>
-</section>
-
-<section class="sec" id="majors">
-  <div class="wrap">
-    <div class="sec__head">
-      <div class="reveal">
-        <h2 class="sec__h">五个系部，<br>二十八个专业</h2>
-      </div>
-      <p class="sec__lead reveal" data-d="1">省品牌专业 4 个、省示范专业 5 个、省现代化专业群 3 个。点开任意一个系部，看它做什么、用什么设备、跟哪些企业一起带学生。</p>
-    </div>
-
-    <div class="majors__top reveal">
-      <span>办学层次 <b>4</b> 类</span>
-      <span>中高职专业 <b>28</b> 个</span>
-      <span>省现代化专业群 <b>3</b> 个</span>
-      <span>校内实践基地 <b>10</b> 个</span>
-    </div>
-
-    <div class="majors__list" id="depts">
-
-      <div class="dept is-open">
-        <button class="dept__hd" aria-expanded="true">
-          <span class="dept__no">01</span>
-          <span class="dept__nm">机械与汽车工程系</span>
-          <span class="dept__sm">机械制造 · 汽车运用与维修 · 新能源汽车</span>
-          <span class="dept__ic"></span>
-        </button>
-        <div class="dept__bd"><div class="dept__in"><div>
-          <ul class="chips">
-            <li>机械制造技术</li><li>数控技术应用</li><li>汽车运用与维修</li><li>新能源汽车运用与维修</li><li>模具制造技术</li>
-          </ul>
-          <p class="dept__note">数控技术应用实训基地为国家级基地；汽车运用与维修、加工制造技术为省现代化实训基地。</p>
-        </div></div></div>
-      </div>
-
-      <div class="dept">
-        <button class="dept__hd" aria-expanded="false">
-          <span class="dept__no">02</span>
-          <span class="dept__nm">智能控制系</span>
-          <span class="dept__sm">机电技术 · 电气自动化 · 工业机器人</span>
-          <span class="dept__ic"></span>
-        </button>
-        <div class="dept__bd"><div class="dept__in"><div>
-          <ul class="chips">
-            <li>机电技术应用</li><li>电气自动化技术</li><li>工业机器人技术应用</li><li>制冷与空调设备运行</li>
-          </ul>
-          <p class="dept__note">机电一体化技术为省现代化实训基地；自动化控制技术为苏州市公共实训基地。</p>
-        </div></div></div>
-      </div>
-
-      <div class="dept">
-        <button class="dept__hd" aria-expanded="false">
-          <span class="dept__no">03</span>
-          <span class="dept__nm">信息工程系</span>
-          <span class="dept__sm">计算机应用 · 软件与信息服务 · 数字媒体</span>
-          <span class="dept__ic"></span>
-        </button>
-        <div class="dept__bd"><div class="dept__in"><div>
-          <ul class="chips">
-            <li>计算机应用技术</li><li>软件与信息服务</li><li>计算机网络技术</li><li>数字媒体技术应用</li><li>云计算技术应用</li>
-          </ul>
-          <p class="dept__note">软件与信息服务为省现代化实训基地。这一版“云探校”，就是这个系部的学生作品方向。</p>
-        </div></div></div>
-      </div>
-
-      <div class="dept">
-        <button class="dept__hd" aria-expanded="false">
-          <span class="dept__no">04</span>
-          <span class="dept__nm">经济贸易系</span>
-          <span class="dept__sm">会计事务 · 市场营销 · 物流</span>
-          <span class="dept__ic"></span>
-        </button>
-        <div class="dept__bd"><div class="dept__in"><div>
-          <ul class="chips">
-            <li>会计事务</li><li>市场营销</li><li>电子商务</li><li>物流服务与管理</li><li>商务英语</li>
-          </ul>
-          <p class="dept__note">财贸实训基地为省级实训基地；与扬子江职教集团内 45 家骨干企业共建实习岗位。</p>
-        </div></div></div>
-      </div>
-
-      <div class="dept">
-        <button class="dept__hd" aria-expanded="false">
-          <span class="dept__no">05</span>
-          <span class="dept__nm">能源材料系</span>
-          <span class="dept__sm">应用化工 · 分析检验</span>
-          <span class="dept__ic"></span>
-        </button>
-        <div class="dept__bd"><div class="dept__in"><div>
-          <ul class="chips">
-            <li>应用化工技术</li><li>分析检验技术</li><li>化工装备技术</li><li>服装设计与工艺</li>
-          </ul>
-          <p class="dept__note">与张家港保税区化工园、德国瓦克化工学院深度合作办学，双语教学与职业培训考证同步开展。</p>
-        </div></div></div>
-      </div>
-
-    </div>
-
-    <div class="levels reveal">
-      <div class="level"><b>五年一贯制</b><span>江苏联合职业技术学院张家港分院，五年读完拿大专。</span></div>
-      <div class="level"><b>职教高考</b><span>走升学通道，本科达线人数位居全省前列。</span></div>
-      <div class="level"><b>三年制中专</b><span>技能为主，中级工获证率 99% 以上。</span></div>
-    </div>
-  </div>
-</section>
-
-<section class="sec" id="craft">
-  <div class="wrap">
-    <div class="sec__head">
-      <div class="reveal">
-        <h2 class="sec__h">四十年，<br>是一条手艺线</h2>
-      </div>
-      
-    </div>
-
-    <div class="craft">
-      <div class="reveal">
-        <div class="craft__big">
-          <div><b>78<i>金</i></b><span>全国技能大赛</span></div>
-          <div><b>23<i>届</i></b><span>市赛金杯</span></div>
-          <div><b>10<i>年</i></b><span>省赛先进学校</span></div>
-        </div>
-
-        <ul class="tl" id="timeline">
-          <li><b>1980</b><p>开始办班。</p></li>
-          <li><b>1984</b><p>正式建校。</p></li>
-          <li><b>1996</b><p>成为首批国家级重点职业高中。</p></li>
-          <li><b>2009</b><p>首批省四星级中等职业学校、省高水平示范性职业学校。</p></li>
-          <li><b>2014</b><p>首批国家中等职业教育改革发展示范校。</p></li>
-          <li><b>2015</b><p>升格为江苏联合职业技术学院张家港分院。</p></li>
-          <li><b>2020</b><p>获批江苏省领航学校建设单位。</p></li>
-          <li><b>2024</b><p>整体搬迁至福新路 2 号，三百六十亩新校区启用。</p></li>
-        </ul>
-
-        <ul class="intl">
-          <li>中澳 TAFE 合作班</li><li>印度 NIIT 项目</li><li>中韩班 · 湖南大学</li><li>日本不二越工业高校</li><li>德国 BBW / 瓦克 / 爱科特</li>
-        </ul>
-      </div>
-
-      <div class="reveal" data-d="1">
-        <div class="news">
-          <figure>
-            <img src="assets/img/news-1.png" alt="省中职学业水平考试技能考试专题会议" loading="lazy">
-            <figcaption>聚焦学考谋全局，锚定目标创一流</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/img/news-2.jpg" alt="应用化工技术专业专场招聘会" loading="lazy">
-            <figcaption>深化产教融合，共筑化工人才高地</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/img/news-4.png" alt="五年制大专毕业生企业宣讲会" loading="lazy">
-            <figcaption>校企同心，筑梦远航</figcaption>
-          </figure>
-        </div>
-        <p class="dept__note" style="margin-top:22px">技校的价值，一半在教室里，一半在车间和招聘会上。以上三则来自学校官网近期发布。</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="sec" id="admit">
-  <div class="wrap">
-    <div class="sec__head">
-      <div class="reveal">
-        <h2 class="sec__h">怎么来，<br>什么时候来</h2>
-      </div>
-      <p class="sec__lead reveal" data-d="1">招生季发一个链接，家长在手机上就能把学校看完；到现场那天，只需要确认一件事——孩子喜不喜欢这里。</p>
-    </div>
-
-    <div class="admit">
-      <div class="reveal">
-        <ol class="flow">
-          <li>
-            <b>01</b>
-            <div><h4>先看展</h4><p>把这条链接转给家长，七站走完大约十几分钟。看完还有问题，记下来，现场问。</p></div>
-          </li>
-          <li>
-            <b>02</b>
-            <div><h4>网上填报志愿</h4><p>待定</p></div>
-          </li>
-          <li>
-            <b>03</b>
-            <div><h4>待定</h4></div>
-          </li>
-          <li>
-            <b>04</b>
-            <div><h4>待定</h4></div>
-          </li>
-          <li>
-            <b>05</b>
-            <div><h4>待定</h4></div>
-          </li>
-        </ol>
-      </div>
-
-      <div class="reveal" data-d="1">
-        <div class="slot">
-          <h4>招生开放日 · 场次安排</h4>
-          <table>
-            <tr><th>场次与时间</th><td>待定</td></tr>
-            <tr><th>集合地点</th><td>待定</td></tr>
-            <tr><th>当日流程</th><td>待定</td></tr>
-          </table>
-          <p class="slot__note">开放日的场次、流程与集合安排都还没定，以学校当年公告为准。</p>
-        </div>
-
-        <div class="contact">
-          <img src="assets/img/qr-wx.png" alt="学校微信公众号二维码">
-          <dl>
-            <dt>地址</dt>
-            <dd>江苏省张家港市福新路 2 号</dd>
-            <dt>微信</dt>
-            <dd>扫码关注学校公众号，查看招生简章</dd>
-            <dt>邮箱</dt>
-            <dd>zjgzdzyxx@163.com</dd>
-          </dl>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+  </noscript>
 </main>
 
-<footer class="foot">
-  <div class="wrap">
-    <div class="foot__top">
-      <div class="foot__brand">
-        <img src="assets/img/emblem.png" alt="校徽">
-        <div>
-          <b>江苏省张家港中等专业学校<br>江苏联合职业技术学院张家港分院</b>
-          <span>张家港市福新路 2 号 · 2024 年迁入新校区<br>国家级重点职中 · 国家中等职业教育改革发展示范校</span>
-        </div>
-      </div>
-      <div>
-        <h5>展厅</h5>
-        <ul>
-          <li><a href="#pan">校园长卷</a></li>
-          <li><a href="#stops">七站导览</a></li>
-          <li><a href="#admit">招生信息</a></li>
-          <li><a href="#majors">系部专业</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>学校</h5>
-        <ul>
-          <li><a href="https://zjgzzx.zjgedu.cn/" target="_blank" rel="noopener">学校官网</a></li>
-          <li><a href="#craft">匠心与荣誉</a></li>
-          <li><a href="#admit">招生信息</a></li>
-          <li><a href="https://zjgzzx.zjgedu.cn/zsjy/zsxx" target="_blank" rel="noopener">招生公告</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>关于</h5>
-        <ul>
-          <li><a href="设计说明.html">设计说明</a></li>
-          <li><a href="设计说明.html#source">素材来源</a></li>
-          <li><a href="设计说明.html#tech">技术实现</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="foot__bot">
-      <p>© <span data-year>2026</span> 云探校 · 招生开放日线上展厅｜毕业设计作品 · 信息工程系 计算机223 殷宇彤</p>
-    </div>
-  </div>
-</footer>
+<footer class="foot" id="foot"></footer>
 
-<script src="assets/js/main.js"></script>
+<!-- 问校园 -->
 <div class="askbox" id="askbox" aria-hidden="true">
   <div class="askbox__veil" data-ask-close></div>
   <section class="askbox__panel" role="dialog" aria-modal="true" aria-label="校园问答">
     <header class="askbox__hd">
       <div class="askbox__ttl">
-        <b>问校园</b>
-        <span>关于这所学校最常被问到的几件事，先在这里问</span>
+        <b id="askTitle">问校园</b>
+        <span id="askSub">关于这所学校最常被问到的几件事，先在这里问</span>
       </div>
       <div class="askbox__acts">
         <button class="askbox__x askbox__x--plain" type="button" id="askClear">清空</button>
@@ -674,7 +80,7 @@
     <div class="askbox__log" id="askLog"></div>
     <div class="askbox__chips" id="askChips"></div>
     <form class="askbox__form" id="askForm">
-      <input id="askInput" type="text" placeholder="比如：学校有几个食堂？" autocomplete="off" maxlength="60">
+      <input id="askInput" type="text" placeholder="比如：学校有几个食堂？" autocomplete="off" maxlength="60" aria-label="输入你的问题">
       <button type="submit">发送</button>
     </form>
   </section>
@@ -685,6 +91,7 @@
   <span class="ask__tx"><b>问校园</b><span>食堂 · 系部 · 招生</span></span>
 </button>
 
-<script src="assets/js/ask.js"></script>
+<script src="assets/js/site-data.js"></script>
+<script src="assets/js/site.js"></script>
 </body>
 </html>
