@@ -80,7 +80,7 @@ await sleep(400);
 
 const sections = await ev(`(function(){
   var out = [];
-  var names = { hero:'01-首屏', pan:'02-校园长卷', numbers:'03-数字', walk:'04-七站导览',
+  var names = { hero:'01-首屏', pan:'02-校园长卷', numbers:'03-数字', stops:'04-七站导览', walk:'04-七站导览',
                 majors:'05-系部专业', craft:'06-匠心与荣誉', admit:'07-招生信息' };
   document.querySelectorAll('main > section, main > div').forEach(function(s){
     var r = s.getBoundingClientRect();
