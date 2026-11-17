@@ -1208,8 +1208,12 @@
       if (lbl) lbl.textContent = '口令';
       if (inp) { inp.type = 'password'; inp.placeholder = '首次为 admin123'; }
       if (b) b.textContent = '进入后台';
-      if (sub) sub.innerHTML = '免安装模式：双击就能用，不用装 Node、不用连网。<br>'
-        + '改完点「保存」前台刷新即变；要交给别人就点「导出文件」。';
+      if (sub) {
+        sub.innerHTML = (location.protocol === 'file:'
+          ? '免安装模式：双击就能用，不用装 Node、不用连网。<br>'
+          : '网页版：内容存在这台电脑的浏览器里，不上传任何服务器。<br>')
+          + '改完点「保存」前台刷新即变；要交给别人就点「导出文件」。';
+      }
       if (hd) hd.textContent = '内容后台 · 离线';
       if (pwB) pwB.textContent = '改口令';
       if (expB) expB.hidden = false;
