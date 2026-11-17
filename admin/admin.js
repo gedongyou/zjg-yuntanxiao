@@ -50,9 +50,9 @@
    */
   var LOCAL_HOST = { '127.0.0.1': 1, 'localhost': 1, '::1': 1, '[::1]': 1 };
   var MODE = (function () {
-    if (location.protocol === 'file:') return 'file';
     if (/[?&]gh=1\b/.test(location.search)) return 'gh';
-    return LOCAL_HOST[location.hostname] ? 'local' : 'gh';
+    if (location.protocol === 'file:') return 'offline';
+    return LOCAL_HOST[location.hostname] ? 'local' : 'offline';
   })();
 
   /* ---------------- GitHub 通道 ---------------- */
@@ -208,10 +208,92 @@
     return btoa(bin);
   }
 
+  /* ---------------- 离线模式：不连服务，也不连 GitHub ----------------
+   * 双击 admin/index.html 就能用。内容存在这台电脑的浏览器里（localStorage），
+   * 前台在 file:// 下打开时也读同一份，所以改完刷新前台就变了。
+   * 要交给别人 / 发布时，点「导出文件」，拿两个文件覆盖回「源码」文件夹即可。
+   */
+  var LS_KEY = 'yyt_content_v1';
+  var PW_KEY = 'yyt_admin_pw';
+  var DEF_PW = 'admin123';
+
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) {
+    try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {}
+  }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  /* 兜底内容：直接借前台那份编译好的 site-data.js，file:// 下也能加载 */
+  function loadBundled() {
+    return new Promise(function (res, rej) {
+      if (window.__CONTENT__) { res(clone(window.__CONTENT__)); return; }
+      var s = document.createElement('script');
+      s.src = '../assets/js/site-data.js';
+      s.onload = function () {
+        window.__CONTENT__ ? res(clone(window.__CONTENT__))
+          : rej(new Error('assets/js/site-data.js 里没有内容'));
+      };
+      s.onerror = function () { rej(new Error('读不到 assets/js/site-data.js，确认「源码」文件夹是完整的')); };
+      document.head.appendChild(s);
+    });
+  }
+  function offlineLoad() {
+    return loadBundled().then(function (base) {
+      var raw = lsGet(LS_KEY);
+      if (raw) {
+        try { var d = JSON.parse(raw); if (d && d.hero && d.theme) return d; } catch (e) {}
+      }
+      return base;
+    });
+  }
+  function offlineSave(data) {
+    data.meta = data.meta || {};
+    data.meta.updatedAt = fmtNow();
+    lsSet(LS_KEY, JSON.stringify(data));
+    return { ok: true, updatedAt: data.meta.updatedAt };
+  }
+  /* 图片压到最大 1600px、jpeg 0.82，直接转成 data: 内嵌，不依赖任何服务 */
+  function shrinkImage(file) {
+    return new Promise(function (res, rej) {
+      var fr = new FileReader();
+      fr.onerror = function () { rej(new Error('这张图读不出来')); };
+      fr.onload = function () {
+        var img = new Image();
+        img.onerror = function () { rej(new Error('这张图解码失败')); };
+        img.onload = function () {
+          var max = 1600;
+          var w = img.naturalWidth, h = img.naturalHeight;
+          var k = Math.min(1, max / Math.max(w, h));
+          var cv = document.createElement('canvas');
+          cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+          cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+          res(cv.toDataURL('image/jpeg', 0.82));
+        };
+        img.src = String(fr.result);
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+
+  function download(name, text, mime) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type: mime || 'application/json' }));
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+  }
+
   /* ---------------- 统一的数据通道 ---------------- */
   var NET = {
     mode: MODE,
     login: function (cred) {
+      if (MODE === 'offline') {
+        var pw = lsGet(PW_KEY) || DEF_PW;
+        return String(cred) === pw
+          ? Promise.resolve({ ok: true, mode: 'offline' })
+          : Promise.reject(new Error('口令不对'));
+      }
       if (MODE === 'gh') {
         if (!cred) return Promise.reject(new Error('先把 GitHub Token 粘进来'));
         ghSaveTk(cred);
@@ -221,14 +303,21 @@
       return api('/api/login', { method: 'POST', body: { pw: cred } });
     },
     load: function () {
+      if (MODE === 'offline') return offlineLoad();
       if (MODE === 'gh') return ghReadContent();
       return api('/api/content');
     },
     save: function (data) {
+      if (MODE === 'offline') {
+        return new Promise(function (res, rej) {
+          try { res(offlineSave(data)); } catch (e) { rej(e); }
+        });
+      }
       if (MODE === 'gh') return ghWriteContent(data).then(function (d) { return { ok: true, updatedAt: d.meta.updatedAt }; });
       return api('/api/content', { method: 'POST', body: data });
     },
     upload: function (name, bytes) {
+      if (MODE === 'offline') return Promise.reject(new Error('离线模式请用「上传图片」里的内嵌方式'));
       if (MODE === 'gh') {
         var safe = 'assets/img/uploads/' + String(name).replace(/[^\w.\-]/g, '_').replace(/^\.+/, '');
         var body = { message: '后台换图 · ' + safe, content: bytesToB64(bytes), branch: GH.branch };
@@ -244,10 +333,16 @@
       }).then(function (r) { return r.json(); });
     },
     logout: function () {
+      if (MODE === 'offline') { S.data = null; return Promise.resolve({ ok: true }); }
       if (MODE === 'gh') { ghSaveTk(''); return Promise.resolve({ ok: true }); }
       return api('/api/logout', { method: 'POST' });
     },
     setPw: function (v) {
+      if (MODE === 'offline') {
+        if (!v || String(v).length < 6) return Promise.reject(new Error('口令至少 6 位'));
+        lsSet(PW_KEY, String(v));
+        return Promise.resolve({ ok: true });
+      }
       if (MODE === 'gh') return Promise.reject(new Error('线上模式没有口令，改用「换 Token」'));
       return api('/api/pw', { method: 'POST', body: { pw: v } });
     }
@@ -773,6 +868,23 @@
         file.addEventListener('change', function () {
           var f = file.files && file.files[0];
           if (!f) return;
+          var apply = function (src) {
+            set(path, src);
+            var inp = pane.querySelector('[data-p="' + path + '"]');
+            if (inp) {
+              inp.value = src.indexOf('data:') === 0 ? '（已内嵌的新图）' : src;
+              var pv = inp.closest('.imgf').querySelector('.imgf__pv');
+              pv.innerHTML = '<img src="' + esc(src.indexOf('data:') === 0 ? src : '../' + src) + '" alt="">';
+            }
+          };
+          if (MODE === 'offline') {
+            // 离线模式：不存文件，把图压小后直接内嵌进内容里
+            shrinkImage(f).then(function (src) {
+              apply(src);
+              toast('图片已内嵌（约 ' + Math.round(src.length / 1024) + ' KB），记得保存');
+            }).catch(function (e) { toast(e.message, true); });
+            return;
+          }
           var fr = new FileReader();
           fr.onload = function () {
             var bin = atob(String(fr.result).split(',')[1]);
@@ -987,6 +1099,9 @@
       if (MODE === 'gh') {
         toast('已提交 · ' + (j.updatedAt || '') + ' · 约 1 分钟后线上生效');
         reloadPreview();
+      } else if (MODE === 'offline') {
+        toast('已存到这台电脑 · ' + (j.updatedAt || '') + ' · 前台刷新就变了');
+        reloadPreview();
       } else {
         toast('已保存 · ' + (j.updatedAt || ''));
         reloadPreview();
@@ -1003,6 +1118,38 @@
     if (f) f.src = '../index.html?t=' + Date.now();
   }
   $('#previewBtn').addEventListener('click', function () { window.open('../index.html', '_blank'); });
+
+  /* 离线模式：导出 / 导入（不需要 Node，也不需要账号） */
+  $('#expBtn').addEventListener('click', function () {
+    var data = JSON.parse(JSON.stringify(S.data));
+    data.meta = data.meta || {};
+    data.meta.updatedAt = fmtNow();
+    download('content.json', JSON.stringify(data, null, 2), 'application/json');
+    setTimeout(function () {
+      download('site-data.js', dataJsText(data), 'text/javascript');
+    }, 300);
+    toast('已导出 content.json 和 site-data.js，覆盖回「源码」里的同名文件');
+  });
+  $('#impBtn').addEventListener('click', function () { $('#impFile').click(); });
+  $('#impFile').addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      try {
+        var d = JSON.parse(String(fr.result));
+        if (!d || !d.hero || !d.theme) throw new Error('这个文件不像是 content.json');
+        S.data = d;
+        offlineSave(d);
+        markDirty(false);
+        render();
+        reloadPreview();
+        toast('已导入并保存');
+      } catch (e) { toast(e.message, true); }
+      $('#impFile').value = '';
+    };
+    fr.readAsText(f);
+  });
   $('#prevRe').addEventListener('click', reloadPreview);
   $$('.prev__hd [data-w]').forEach(function (b) {
     b.addEventListener('click', function () {
@@ -1042,14 +1189,11 @@
 
   /* ---------------- 启动 ---------------- */
   /* 三种打开方式：
-   *   file://  → 没有服务也没有仓库，直接说清楚
-   *   127.0.0.1 → 本地模式，口令登录，写本机文件
-   *   线上域名  → 线上模式，填 GitHub Token，保存提交到仓库
+   *   file:// 或普通网址 → 离线模式：双击就能用，内容存在这台电脑的浏览器里，
+   *                        改完点「导出文件」再覆盖回「源码」即可，不用装任何东西
+   *   127.0.0.1          → 本地模式：口令登录，直接写本机文件夹里的文件
+   *   ?gh=1             → 线上模式（可选，需 GitHub Token）
    */
-  var FILE_REASON = '这是从文件系统打开的，没有服务可连。请先双击「启动后台.bat」'
-    + '（或在「源码」文件夹里执行 node server.mjs），然后打开 http://127.0.0.1:7717/admin/ '
-    + '—— 不要直接双击 admin/index.html。';
-
   function applyModeUI() {
     var lbl = document.querySelector('.gate__f span');
     var inp = $('#gatePw');
@@ -1057,7 +1201,22 @@
     var sub = document.querySelector('.gate__sub');
     var hd = document.querySelector('#app .top__l span');
     var pwB = $('#pwBtn');
-    if (MODE === 'gh') {
+    var expB = $('#expBtn');
+    var impB = $('#impBtn');
+    if (MODE === 'offline') {
+      document.title = '内容后台 · 云探校';
+      if (lbl) lbl.textContent = '口令';
+      if (inp) { inp.type = 'password'; inp.placeholder = '首次为 admin123'; }
+      if (b) b.textContent = '进入后台';
+      if (sub) sub.innerHTML = '免安装模式：双击就能用，不用装 Node、不用连网。<br>'
+        + '改完点「保存」前台刷新即变；要交给别人就点「导出文件」。';
+      if (hd) hd.textContent = '内容后台 · 离线';
+      if (pwB) pwB.textContent = '改口令';
+      if (expB) expB.hidden = false;
+      if (impB) impB.hidden = false;
+      var tip = document.querySelector('.prev__tip');
+      if (tip) tip.textContent = '点「保存」后这里会自动刷新；双击前台文件也是改完的样子。';
+    } else if (MODE === 'gh') {
       document.title = '内容后台（线上）· 云探校';
       if (lbl) lbl.textContent = 'GitHub Token';
       if (inp) {
@@ -1081,13 +1240,8 @@
   }
   applyModeUI();
 
-  if (MODE === 'file') {
+  if (MODE === 'offline') {
     showGate();
-    var f = $('#gateForm');
-    if (f) f.querySelectorAll('.gate__f, .gate__b').forEach(function (e) { e.hidden = true; });
-    var sub = document.querySelector('.gate__sub');
-    if (sub) sub.hidden = true;
-    $('#gateErr').textContent = FILE_REASON;
   } else if (MODE === 'gh') {
     // 有 token 就直接试读一次，读通了免登录进主界面
     if (ghLoad()) {

@@ -6,6 +6,18 @@
   'use strict';
 
   var D = window.__CONTENT__;
+
+  /* 离线后台（双击 admin/index.html）改的内容存在浏览器的 localStorage 里。
+   * 只有从 file:// 打开时才用它覆盖，线上和本地服务一律以编译好的文件为准。 */
+  if (location.protocol === 'file:' && D) {
+    try {
+      var raw = localStorage.getItem('yyt_content_v1');
+      if (raw) {
+        var lo = JSON.parse(raw);
+        if (lo && lo.hero && lo.theme) D = lo;
+      }
+    } catch (e) {}
+  }
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
   var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };

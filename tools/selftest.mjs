@@ -84,6 +84,10 @@ let data;
   data.hero.lead = origLead;
   data.ask.entries = data.ask.entries.filter((e) => !String(e.id).startsWith('selftest'));
   await call('/api/content', { method: 'POST', body: data });
+  const clean = (await call('/api/content')).val;
+  log('自测改动已还原',
+    !String(clean.hero.lead).includes('【自测】') &&
+    !clean.ask.entries.some((e) => String(e.id).startsWith('selftest')));
 }
 
 // 5. 上传

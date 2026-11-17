@@ -106,14 +106,31 @@ out.badResult = await ev(`(() => ({
 }))()`);
 await shot('ok-2-bad-pw');
 
-/* 3. 模拟"直接双击 admin/index.html"（file:// 打开） */
+/* 3. 模拟"直接双击 admin/index.html"（file:// 打开）—— 离线模式，应该能直接进 */
 await send('Page.navigate', { url: 'file:///C:/Users/gx/OneDrive/Desktop/%E6%AE%B7%E5%AE%87%E5%BD%A4/%E6%BA%90%E7%A0%81/admin/index.html' });
 await sleep(1800);
 out.fileMode = await ev(`(() => ({
-  err: document.querySelector('#gateErr').textContent,
-  gate: !document.querySelector('#gate').hidden
+  gate: !document.querySelector('#gate').hidden,
+  mode: (document.querySelector('.top__l span') || {}).textContent,
+  exp: !document.querySelector('#expBtn').hidden,
+  imp: !document.querySelector('#impBtn').hidden,
+  err: document.querySelector('#gateErr').textContent
 }))()`);
-await shot('ok-3-file-protocol');
+out.fileLogin = await ev(`(() => {
+  const i = document.querySelector('#gatePw');
+  i.value = 'admin123';
+  document.querySelector('#gateForm').dispatchEvent(new Event('submit', { cancelable: true }));
+  return 'submitted';
+})()`);
+await sleep(1800);
+out.fileAfter = await ev(`(() => ({
+  gate: !document.querySelector('#gate').hidden,
+  app: !document.querySelector('#app').hidden,
+  err: document.querySelector('#gateErr').textContent,
+  cards: document.querySelectorAll('.card').length,
+  theme: (() => { const s = document.querySelector('#pane .card:last-child'); return !!s; })()
+}))()`);
+await shot('ok-3-offline');
 
 console.log(JSON.stringify(out, null, 1));
 
