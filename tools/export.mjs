@@ -13,10 +13,9 @@ const DIST = path.join(ROOT, 'dist');
 const ZIP = path.join(ROOT, '云探校-发布包.zip');
 
 const COPY_ITEMS = ['index.html', '设计说明.html', 'content.json', 'assets'];
-/* 后台自己用的东西不进发布包 */
-const SKIP = [
-  path.join('assets', 'img', 'uploads'),
-];
+/* 后台自己用的东西不进发布包。注意 assets/img/uploads/ 不能排除：
+   后台上传的图会被 content.json 引用，排掉的话发布包里图片就裂了。 */
+const SKIP = [];
 
 function skipped(rel) {
   return SKIP.some((s) => rel === s || rel.startsWith(s + path.sep));

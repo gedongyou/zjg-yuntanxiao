@@ -1,6 +1,11 @@
 /* 后台自测：登录 → 读内容 → 改名 → 保存 → 导出 → 校验
  * 用法：node tools/selftest.mjs
  */
+import fsp from 'node:fs/promises';
+import nodePath from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = nodePath.resolve(nodePath.dirname(fileURLToPath(import.meta.url)), '..');
 const BASE = 'http://127.0.0.1:7717';
 let cookie = '';
 
@@ -96,6 +101,10 @@ let data;
   if (r.val.ok) {
     const f = await fetch(BASE + '/' + r.val.src);
     log('上传后能访问', f.status === 200, f.headers.get('content-type'));
+    // 传完删掉，别把自测用的假图留在 assets/img/uploads 里
+    try { await fsp.rm(nodePath.join(ROOT, r.val.src), { force: true }); } catch (e) {}
+    const gone = await fetch(BASE + '/' + r.val.src);
+    log('自测图片已清理', gone.status === 404, 'status=' + gone.status);
   }
 }
 

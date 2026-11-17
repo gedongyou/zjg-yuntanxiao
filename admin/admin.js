@@ -329,7 +329,8 @@
     }).catch(function (e) { toast(e.message, true); });
   }
 
-  /* ---------------- 字段工厂 ---------------- */  function fText(label, path, hint, rows) {
+  /* ---------------- 字段工厂 ---------------- */
+  function fText(label, path, hint, rows) {
     var v = get(path) == null ? '' : get(path);
     var id = 'f_' + path.replace(/\./g, '_');
     if (rows) {
