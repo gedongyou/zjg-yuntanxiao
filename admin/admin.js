@@ -1105,7 +1105,7 @@
         var t = j.updatedAt || '';
         toast(location.protocol === 'file:'
           ? '已存到这台电脑 · ' + t + ' · 双击前台刷新就变了'
-          : '已存本机浏览器 · ' + t + ' · 线上要发布请点「导出文件」');
+          : '已保存 · ' + t + ' · 前台刷新就看到（正式发布再点「导出文件」）');
         reloadPreview();
       } else {
         toast('已保存 · ' + (j.updatedAt || ''));
