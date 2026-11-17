@@ -1,5 +1,5 @@
 /* 自动生成，请勿手改 —— 改 content.json 后执行 node tools/build.mjs
- * 由后台保存时会自动重新生成。生成时间：2026-11-17 03:44:13 */
+ * 由后台保存时会自动重新生成。生成时间：2026-11-17 03:57:30 */
 window.__CONTENT__ = {
   "meta": {
     "title": "云探校 · 招生开放日线上展厅｜江苏省张家港中等专业学校",
@@ -9,7 +9,7 @@ window.__CONTENT__ = {
     "themeColor": "#FAF8F3",
     "favicon": "assets/img/emblem.png",
     "version": "2026.11-b",
-    "updatedAt": "2026-11-17 11:44"
+    "updatedAt": "2026-11-17 11:52"
   },
   "theme": {
     "paper": "#FAF8F3",

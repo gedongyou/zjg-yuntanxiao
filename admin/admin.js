@@ -810,10 +810,33 @@
   });
 
   /* ---------------- 启动 ---------------- */
-  if (location.protocol === 'file:') {
-    // 直接双击打开了 admin/index.html，根本没有服务可连 —— 先把话说清楚
+  /* 后台只能在装好 Node 的本机跑。文件系统打开、或者从线上地址（github.io 等）
+     打开，都没有服务可连，直接给一句明白话，别让人对着登录框输口令。 */
+  var LOCAL = { '127.0.0.1': 1, 'localhost': 1, '::1': 1, '[::1]': 1 };
+  function notLocalReason() {
+    if (location.protocol === 'file:') {
+      return '这是从文件系统打开的，没有服务可连。请先双击「启动后台.bat」（或在「源码」文件夹里执行 node server.mjs），'
+        + '然后打开 http://127.0.0.1:7717/admin/ —— 不要直接双击 admin/index.html。';
+    }
+    if (!LOCAL[location.hostname]) {
+      return '这是线上地址（' + location.hostname + '），线上只有静态页面，没有后台服务。'
+        + '后台只能在自己电脑上跑：双击「启动后台.bat」，或在「源码」文件夹里执行 node server.mjs，'
+        + '再打开 http://127.0.0.1:7717/admin/ 。';
+    }
+    return '';
+  }
+
+  var blocked = notLocalReason();
+  if (blocked) {
     showGate();
-    $('#gateErr').textContent = HINT;
+    // 连口令框都藏掉，只留说明——省得人一直试口令
+    var f = $('#gateForm');
+    if (f) {
+      f.querySelectorAll('.gate__f, .gate__b').forEach(function (e) { e.hidden = true; });
+    }
+    var sub = document.querySelector('.gate__sub');
+    if (sub) sub.hidden = true;
+    $('#gateErr').textContent = blocked;
   } else {
     api('/api/me')
       .then(function () { showApp(); boot(); })
