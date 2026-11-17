@@ -361,6 +361,8 @@
   function markDirty(v) {
     S.dirty = v !== false;
     $('#dirtyDot').hidden = !S.dirty;
+    var bar = $('#saveBar');
+    if (bar) bar.hidden = !S.dirty;
   }
 
   /* ---------------- 登录 ---------------- */
@@ -714,7 +716,7 @@
     return '<div class="h"><h2>板块排版</h2><span>上下调整顺序，开关控制显隐</span></div>' +
       '<p class="hint">前台是按这个顺序从上往下铺的。关掉的板块不会出现在页面上，导航里对应的锚点也会失效，记得一起改。</p>' +
       '<div class="lay">' + rows + '</div>' +
-      '<div class="h" style="margin-top:28px"><h2>配色与疏密</h2><span>改完点右上角「保存」生效</span></div>' +
+      '<div class="h" style="margin-top:28px"><h2>配色与疏密</h2><span>改完点页面右上角黑色的「保存」</span></div>' +
       '<div class="card"><div class="card__bd">' + SCHEMA.theme() + '</div></div>';
   }
 
@@ -727,7 +729,7 @@
         '<div class="card__bd">' + SCHEMA[k]() + '</div>' +
       '</div>';
     }).join('');
-    return '<div class="h"><h2>内容编辑</h2><span>改完点右上角「保存」</span></div>' +
+    return '<div class="h"><h2>内容编辑</h2><span>改完点页面右上角黑色的「保存」</span></div>' +
       '<p class="hint">文字里可以夹 <code>&lt;b&gt;</code>、<code>&lt;br&gt;</code> 做加粗和换行；其他 HTML 会被当文字显示。</p>' +
       cards;
   }
@@ -1090,7 +1092,7 @@
     });
   });
 
-  $('#saveBtn').addEventListener('click', function () {
+  function doSave() {
     var b = $('#saveBtn');
     b.disabled = true;
     b.textContent = '保存中…';
@@ -1116,6 +1118,16 @@
       b.textContent = '保存';
       toast(e.message, true);
     });
+  }
+  $('#saveBtn').addEventListener('click', doSave);
+  var sb = $('#saveBarBtn');
+  if (sb) sb.addEventListener('click', doSave);
+  // Ctrl/Cmd + S 也能存
+  window.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+      e.preventDefault();
+      if (!$('#app').hidden) doSave();
+    }
   });
 
   function reloadPreview() {
