@@ -1070,6 +1070,8 @@
         + 'Token 只存在这台电脑的浏览器里，不会写进仓库。';
       if (hd) hd.textContent = '内容后台 · 线上';
       if (pwB) pwB.textContent = '换 Token';
+      var how = $('#gateHow');
+      if (how) how.hidden = false;
       var tip = document.querySelector('.prev__tip');
       if (tip) tip.textContent = '线上模式：这里显示的是已发布的版本，保存后约 1 分钟才会变。';
     } else if (MODE === 'local') {

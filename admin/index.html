@@ -20,6 +20,17 @@
       <input id="gatePw" type="password" placeholder="首次为 admin123" autocomplete="current-password">
     </label>
     <button class="gate__b" type="submit">进入后台</button>
+    <details class="gate__how" id="gateHow" hidden>
+      <summary>怎么弄这个 Token</summary>
+      <ol>
+        <li>打开 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>（要先登录 gxglad）</li>
+        <li>Token name 随便填；Expiration 给个够用的时间</li>
+        <li>Repository access 选 <b>Only select repositories</b>，只勾 <b>gxglad/yyt</b></li>
+        <li>Permissions → Repository permissions → 把 <b>Contents</b> 改成 <b>Read and write</b></li>
+        <li>点最下面 Generate token，复制 ghp_ 开头那串，粘到上面</li>
+      </ol>
+      <p>Token 只存在这台电脑的浏览器里，不会写进仓库。漏了就回那个页面 Revoke 作废再生成一个。</p>
+    </details>
     <p class="gate__err" id="gateErr"></p>
   </form>
 </section>
