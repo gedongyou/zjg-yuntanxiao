@@ -402,7 +402,8 @@
         '<div class="walk__bd"><div class="walk__in"><div class="walk__body">' +
           '<p class="walk__desc">' + esc(it.desc) + '</p>' +
           '<ul class="walk__tags">' + tags + '</ul>' +
-          '<p class="walk__heart"><b>' + esc(it.heart || '') + '</b></p>' +
+          (it.heart ? '<p class="walk__heart">' + esc(it.heart) + '</p>' : '') +
+          '<div class="walk__hs">' + hchipList(it.hearts, true) + '</div>' +
         '</div></div></div>' +
       '</article>';
     }).join('');
@@ -1125,7 +1126,7 @@
 
     qzBox.innerHTML =
       '<div class="qz__res">' +
-        '<h3>你的五心画像：<em>' + esc(topNames) + '</em></h3>' +
+        '<h3>你的画像：<em>' + esc(topNames) + '</em></h3>' +
         '<p>这两个心在你身上更明显。下面三个专业主要养的就是它们——但专业选不选，还要看你能不能接受它每天要做的事。</p>' +
         '<div class="qz__bars">' + bars + '</div>' +
         '<h4 class="blk__h">推荐专业</h4>' +
