@@ -7,7 +7,7 @@
     "themeColor": "#FAF8F3",
     "favicon": "assets/img/emblem.png",
     "version": "2026.11-c",
-    "updatedAt": "2026-11-19 18:59"
+    "updatedAt": "2026-11-19 19:03"
   },
   "theme": {
     "paper": "#FAF8F3",
@@ -1106,15 +1106,19 @@
           },
           {
             "t": "素材来源",
-            "href": "设计说明.html#s5"
+            "href": "设计说明.html#s6"
           },
           {
             "t": "技术实现",
-            "href": "设计说明.html#s4"
+            "href": "设计说明.html#s5"
           },
           {
             "t": "后台说明",
-            "href": "设计说明.html#s7"
+            "href": "设计说明.html#s8"
+          },
+          {
+            "t": "内容后台",
+            "href": "admin/index.html"
           }
         ]
       }
