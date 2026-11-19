@@ -1487,244 +1487,47 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
    2026.11-c 新增。沿用原有纸色、朱砂、衬线标题的语言。
    ============================================================ */
 
-.sec--wuxin{ background:linear-gradient(180deg,var(--paper) 0%,var(--band) 22%,var(--band) 72%,var(--paper) 100%); }
-
-/* ---------- 五心印章（首屏式招牌） ---------- */
-.wuxin__seal{
-  display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
-  border:1px solid var(--line-2);
-  margin-bottom:clamp(20px,3vh,30px);
+.sec--path{
+  background:linear-gradient(180deg,var(--paper) 0%,var(--band) 26%,var(--band) 74%,var(--paper) 100%);
+  padding-top:clamp(56px,9vh,104px);
 }
-.hs{
-  position:relative; display:flex; flex-direction:column;
-  align-items:flex-start; gap:6px;
-  padding:clamp(18px,2.4vw,30px) clamp(14px,2vw,26px) clamp(22px,3vw,34px);
-  background:none; border:0; border-left:1px solid var(--line);
-  font:inherit; text-align:left; cursor:pointer;
-  transition:background .4s ease,color .4s ease;
-}
-.hs:first-child{ border-left:0; }
-.hs::after{
-  content:""; position:absolute; left:0; right:0; bottom:0; height:2px;
-  background:var(--hc); transform:scaleX(0); transform-origin:left;
-  transition:transform .5s cubic-bezier(.22,1,.36,1);
-}
-.hs:hover{ background:color-mix(in srgb,var(--hc) 6%,transparent); }
-.hs:hover::after,.hs.is-on::after{ transform:scaleX(1); }
-.hs__no{
-  font-family:var(--mono); font-size:9.5px;
-  letter-spacing:.24em; color:var(--ink-3);
-  transition:color .4s;
-}
-.hs__nm{
-  font-family:var(--serif); font-size:clamp(21px,2.4vw,30px);
-  letter-spacing:.08em; line-height:1.2; color:var(--ink);
-  transition:color .4s;
-}
-.hs__nm::first-letter{ color:var(--hc); }
-.hs__vb{ font-size:11.5px; letter-spacing:.28em; color:var(--ink-3); }
-.hs:hover .hs__nm,.hs.is-on .hs__nm{ color:var(--hc); }
-.hs:hover .hs__no,.hs.is-on .hs__no{ color:var(--hc); }
-
-/* ---------- 校训 + 五心名 ---------- */
-.wuxin__ribbon{
-  display:flex; flex-wrap:wrap; align-items:center;
-  justify-content:space-between; gap:18px 28px;
-  padding:clamp(16px,2.4vw,24px) 0;
-  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-  margin-bottom:clamp(30px,5vh,52px);
-}
-.wuxin__ribbon > p{
-  font-family:var(--serif); font-size:clamp(14px,1.5vw,17px);
-  letter-spacing:.24em; color:var(--ink-2);
-}
-.wuxin__ribbon > div{ display:flex; flex-wrap:wrap; gap:8px; }
-.rb{
-  display:inline-flex; align-items:center; gap:7px;
-  height:32px; padding:0 13px;
-  border:1px solid var(--line-2); background:none;
-  font:inherit; font-size:12px; letter-spacing:.1em;
-  color:var(--ink-2); cursor:pointer;
-  transition:.35s ease;
-}
-.rb i{ width:5px; height:5px; border-radius:50%; background:var(--hc); flex:none; }
-.rb span{ font-size:10px; letter-spacing:.16em; color:var(--ink-3); }
-.rb:hover{ border-color:var(--hc); color:var(--hc); background:color-mix(in srgb,var(--hc) 5%,transparent); }
-.rb:hover span{ color:var(--hc); }
-
-/* ---------- 校长寄语 ---------- */
-.wuxin__quote{
-  margin:0 0 clamp(34px,6vh,58px);
-  padding:0 0 0 clamp(18px,2.4vw,30px);
-  border-left:2px solid var(--red);
-  max-width:52em;
-}
-.wuxin__quote p{
-  font-family:var(--serif); font-size:clamp(16px,1.9vw,22px);
-  line-height:1.85; letter-spacing:.02em; color:var(--ink);
-}
-.wuxin__quote cite{
-  display:block; margin-top:12px;
-  font-style:normal; font-family:var(--mono);
-  font-size:10px; letter-spacing:.2em; color:var(--ink-3);
-}
-
-/* ---------- 五心详情 ---------- */
-.wuxin__body{
-  display:grid; grid-template-columns:minmax(0,150px) minmax(0,1fr);
-  gap:clamp(20px,3.4vw,48px);
-  align-items:start;
-  padding-top:clamp(6px,1vh,12px);
-}
-.wuxin__tabs{
-  display:flex; flex-direction:column; gap:0;
-  position:sticky; top:calc(var(--nav-h) + 30px);
-  border-top:1px solid var(--line);
-}
-.hs--tab{
-  flex-direction:row; align-items:center; gap:10px;
-  padding:15px 0 15px 12px;
-  border-left:2px solid transparent; border-bottom:1px solid var(--line);
-}
-.hs--tab::after{ display:none; }
-.hs--tab .hs__no{ font-size:9px; letter-spacing:.18em; }
-.hs--tab .hs__nm{ font-size:16.5px; letter-spacing:.12em; }
-.hs--tab .hs__vb{ display:none; }
-.hs--tab:hover,.hs--tab.is-on{ background:none; }
-.hs--tab.is-on{ border-left-color:var(--hc); }
-
-.hd{ display:none; }
-.hd.is-on{ display:block; animation:hdin .5s cubic-bezier(.22,1,.36,1) both; }
-@keyframes hdin{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
-
-.hd__hd{
-  display:flex; align-items:baseline; flex-wrap:wrap; gap:10px 18px;
-  padding-bottom:16px; border-bottom:1px solid var(--line-2);
-}
-.hd__no{
-  font-family:var(--mono); font-size:10px;
-  letter-spacing:.26em; color:var(--hc);
-}
-.hd__nm{
-  font-family:var(--serif); font-size:clamp(28px,3.4vw,44px);
-  font-weight:400; letter-spacing:.06em; line-height:1.1;
-}
-.hd__nm em{
-  font-style:normal; font-size:clamp(15px,1.6vw,19px);
-  letter-spacing:.3em; color:var(--hc); margin-left:6px;
-}
-.hd__en{ margin-left:auto; font-family:var(--mono); font-size:9.5px; letter-spacing:.2em; color:var(--ink-3); }
-.hd__lead{
-  margin-top:20px; font-family:var(--serif);
-  font-size:clamp(16px,1.8vw,20px); line-height:1.9; color:var(--ink);
-}
-.hd__kernel{
-  margin-top:20px; padding:20px 22px;
-  background:color-mix(in srgb,var(--hc) 5%,transparent);
-  border-left:2px solid var(--hc);
-}
-.hd__kernel b{
-  font-family:var(--mono); font-weight:400;
-  font-size:9px; letter-spacing:.24em; color:var(--hc);
-}
-.hd__kernel p{ margin-top:9px; font-size:13.2px; line-height:2; color:var(--ink-2); }
-.hd__grid{
-  display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
-  gap:clamp(24px,4vw,54px); margin-top:clamp(24px,4vh,40px);
-}
-.hd__grid h4{
-  font-family:var(--mono); font-weight:400;
-  font-size:9.5px; letter-spacing:.22em; color:var(--ink-3);
-  margin-bottom:14px;
-}
-.hd__list{ border-top:1px solid var(--line); }
-.hd__list li{ padding:14px 0; border-bottom:1px solid var(--line); }
-.hd__list b{ font-family:var(--serif); font-size:14.5px; letter-spacing:.03em; font-weight:500; }
-.hd__list p{ margin-top:6px; font-size:12.4px; color:var(--ink-2); line-height:1.9; }
-.hd__places,.hd__majors{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:24px; }
-.pl,.mj{
-  height:29px; padding:0 11px; background:none;
-  border:1px solid var(--line-2); font:inherit;
-  font-size:11.5px; letter-spacing:.04em; color:var(--ink-2);
-  cursor:pointer; transition:.3s ease;
-}
-.pl:hover,.mj:hover{ border-color:var(--hc); color:var(--hc); }
-.hd__metric{
-  display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 6px;
-  padding-top:18px; border-top:1px solid var(--line);
-}
-.hd__metric b{
-  font-family:var(--serif); font-size:clamp(30px,3.4vw,44px);
-  font-weight:400; line-height:1; letter-spacing:-.02em; color:var(--hc);
-}
-.hd__metric i{ font-style:normal; font-size:12px; color:var(--hc); }
-.hd__metric span{ width:100%; font-size:12px; color:var(--ink-3); line-height:1.75; }
-
-/* ---------- 五心小签（专业 / 站点通用） ---------- */
-.hchip{
-  display:inline-flex; align-items:center; gap:6px;
-  height:26px; padding:0 10px;
-  border:1px solid color-mix(in srgb,var(--hc) 34%,transparent);
-  background:color-mix(in srgb,var(--hc) 7%,transparent);
-  font:inherit; font-size:11px; letter-spacing:.06em;
-  color:color-mix(in srgb,var(--hc) 82%,var(--ink));
-  cursor:pointer; transition:.3s ease;
-}
-.hchip i{ width:5px; height:5px; border-radius:50%; background:var(--hc); flex:none; }
-.hchip:hover{ background:var(--hc); border-color:var(--hc); color:#fff; }
-.hchip:hover i{ background:#fff; }
-.hchip[tabindex="-1"]{ cursor:default; }
-.hchip[tabindex="-1"]:hover{
-  background:color-mix(in srgb,var(--hc) 7%,transparent);
-  border-color:color-mix(in srgb,var(--hc) 34%,transparent);
-  color:color-mix(in srgb,var(--hc) 82%,var(--ink));
-}
-.hchip[tabindex="-1"]:hover i{ background:var(--hc); }
-
-/* ---------- 成长路径 ---------- */
-.wuxin__path{ margin-top:clamp(50px,9vh,96px); }
 .pathhead{
-  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.9fr);
-  gap:clamp(18px,4vw,56px); align-items:end;
-  padding-bottom:24px; border-bottom:1px solid var(--line-2);
-  margin-bottom:clamp(26px,4vh,40px);
+  display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  gap:clamp(18px,4vw,64px); align-items:end; margin-bottom:clamp(30px,5vh,54px);
 }
 .pathhead h3{
-  font-family:var(--serif); font-size:clamp(24px,3vw,36px);
-  font-weight:400; letter-spacing:-.01em; margin-top:12px; line-height:1.25;
+  font-family:var(--serif); font-weight:700; letter-spacing:-.02em;
+  font-size:clamp(28px,4.2vw,54px); line-height:1.14;
 }
 .pathhead h3 em{ font-style:normal; color:var(--red); }
 .pathhead > p{ font-size:12.8px; color:var(--ink-2); line-height:1.95; }
 .ppath{
   display:grid; grid-template-columns:repeat(6,minmax(0,1fr));
-  border-top:1px solid var(--line);
+  list-style:none; border-top:1px solid var(--line);
 }
 .pstep{
-  padding:22px 16px 26px 0; border-right:1px solid var(--line);
-  position:relative;
+  position:relative; padding:24px 16px 0 0;
+  border-right:1px solid var(--line);
 }
 .pstep:last-child{ border-right:0; padding-right:0; }
 .pstep::before{
-  content:""; position:absolute; top:-4px; left:0;
-  width:7px; height:7px; border-radius:50%;
-  background:var(--paper); border:1px solid var(--line-2);
+  content:""; position:absolute; top:-3.5px; left:0;
+  width:7px; height:7px; border-radius:50%; background:var(--red);
 }
 .pstep__top{ display:flex; align-items:baseline; gap:8px; }
 .pstep__top span{ font-family:var(--mono); font-size:9px; letter-spacing:.16em; color:var(--red); }
 .pstep__top b{
-  font-weight:400; font-size:10.5px; letter-spacing:.14em;
-  color:var(--ink-3); border:1px solid var(--line);
-  padding:1px 6px;
+  font-family:var(--sans); font-size:10px; font-weight:500;
+  letter-spacing:.12em; color:var(--ink-3);
 }
 .pstep h4{
-  font-family:var(--serif); font-size:17px; font-weight:500;
-  letter-spacing:.04em; margin:12px 0 9px;
+  font-family:var(--serif); font-size:clamp(15px,1.5vw,19px);
+  font-weight:700; margin:10px 0 8px; letter-spacing:-.01em;
 }
 .pstep p{ font-size:12px; color:var(--ink-2); line-height:1.9; padding-right:12px; }
 .pstep__hs{ display:flex; flex-wrap:wrap; gap:5px; margin-top:14px; }
 .pstep__hs .hchip{ height:22px; padding:0 8px; font-size:10px; }
 
-/* ---------- 数字段：先问后答 ---------- */
 .stat__q{
   display:flex; align-items:center; gap:8px;
   font-size:12.5px; letter-spacing:.04em; color:var(--red);
@@ -2055,37 +1858,11 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
   .pstep:nth-child(n+4){ border-top:1px solid var(--line); }
 }
 @media (max-width:980px){
-  .visit,.wuxin__body{ grid-template-columns:1fr; }
-  .wuxin__tabs{
-    position:static; flex-direction:row; flex-wrap:wrap;
-    border-top:0; border-bottom:1px solid var(--line);
-    margin-bottom:26px; gap:0;
-  }
-  .hs--tab{
-    flex:1 1 auto; justify-content:center; padding:12px 10px;
-    border-left:0; border-bottom:2px solid transparent;
-  }
-  .hs--tab.is-on{ border-bottom-color:var(--hc); }
-  .hd__grid{ grid-template-columns:1fr; }
+  .visit{ grid-template-columns:1fr; }
   .pathhead{ grid-template-columns:1fr; align-items:start; }
-  .wuxin__seal{ grid-template-columns:repeat(5,minmax(0,1fr)); }
-  .hs{ padding:14px 10px 18px; }
-  .hs__nm{ font-size:clamp(16px,3.4vw,22px); letter-spacing:.04em; }
   .qz__bar-row{ grid-template-columns:56px 1fr 30px; }
 }
 @media (max-width:760px){
-  .wuxin__seal{ grid-template-columns:1fr; border-left:1px solid var(--line-2); }
-  .hs{
-    flex-direction:row; align-items:baseline; gap:10px;
-    border-left:0; border-top:1px solid var(--line);
-    padding:14px 14px;
-  }
-  .hs:first-child{ border-top:0; }
-  .hs__nm{ font-size:19px; }
-  .hs__vb{ margin-left:auto; }
-  .wuxin__ribbon > p{ letter-spacing:.14em; font-size:13px; }
-  .hd__nm{ font-size:26px; }
-  .hd__en{ display:none; }
   .ppath{ grid-template-columns:1fr 1fr; }
   .pstep:nth-child(3n){ border-right:1px solid var(--line); padding-right:16px; }
   .pstep:nth-child(2n){ border-right:0; padding-right:0; }

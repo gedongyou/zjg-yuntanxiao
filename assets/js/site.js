@@ -220,64 +220,8 @@
     }).join('');
   }
 
-  RENDER.wuxin = function (w) {
-    var hearts = arr(w.hearts);
-
-    var seal = hearts.map(function (h) {
-      return '<button class="hs" type="button" style="--hc:' + esc(h.color) + '" data-heart="' + esc(h.id) + '">' +
-        '<span class="hs__no">' + esc(h.no) + '</span>' +
-        '<span class="hs__nm">' + esc(h.nm) + '</span>' +
-        '<span class="hs__vb">' + esc(h.verb || '') + '</span>' +
-      '</button>';
-    }).join('');
-
-    var ribbon = hearts.map(function (h) {
-      return '<button class="rb" type="button" style="--hc:' + esc(h.color) + '" data-heart="' + esc(h.id) + '">' +
-        '<i></i><b>' + esc(h.nm) + '</b><span>' + esc(h.verb || '') + '</span>' +
-      '</button>';
-    }).join('');
-
-    var detail = hearts.map(function (h, i) {
-      var list = arr(h.inSchool).map(function (x) {
-        return '<li><b>' + esc(x.t) + '</b><p>' + esc(x.d) + '</p></li>';
-      }).join('');
-      var places = arr(h.places).map(function (p) {
-        return '<button class="pl" type="button" data-place="' + esc(p) + '">' + esc(p) + '</button>';
-      }).join('');
-      var majors = arr(h.majors).map(function (id) {
-        var m = null, list2 = arr(D.majors && D.majors.list);
-        for (var k = 0; k < list2.length; k++) { if (list2[k].id === id) { m = list2[k]; break; } }
-        return m ? '<button class="mj" type="button" data-major="' + esc(m.id) + '">' + esc(m.nm) + '</button>' : '';
-      }).join('');
-
-      return '<article class="hd' + (i === 0 ? ' is-on' : '') + '" id="heart-' + esc(h.id) + '" ' +
-        'style="--hc:' + esc(h.color) + '" data-heart="' + esc(h.id) + '">' +
-        '<header class="hd__hd">' +
-          '<span class="hd__no">' + esc(h.no) + '</span>' +
-          '<h3 class="hd__nm">' + esc(h.nm) + '<em>' + esc(h.verb || '') + '</em></h3>' +
-          '<span class="hd__en">' + esc(h.en || '') + '</span>' +
-        '</header>' +
-        '<p class="hd__lead">' + esc(h.lead || '') + '</p>' +
-        '<div class="hd__kernel"><b>' + esc(h.kernel ? '体系表述' : '') + '</b><p>' + esc(h.kernel || '') + '</p></div>' +
-        '<div class="hd__grid">' +
-          '<div>' +
-            '<h4>在学校，它长这样</h4>' +
-            '<ul class="hd__list">' + list + '</ul>' +
-          '</div>' +
-          '<div>' +
-            '<h4>落到哪些地方</h4>' +
-            '<div class="hd__places">' + places + '</div>' +
-            '<h4>哪些专业主要养这颗心</h4>' +
-            '<div class="hd__majors">' + majors + '</div>' +
-            '<p class="hd__metric"><b>' + esc((h.metric || {}).n || '') + '</b>' +
-              '<i>' + esc((h.metric || {}).u || '') + '</i>' +
-              '<span>' + esc((h.metric || {}).t || '') + '</span></p>' +
-          '</div>' +
-        '</div>' +
-      '</article>';
-    }).join('');
-
-    var path = w.path || {};
+  RENDER.path = function (w) {
+    var path = w || {};
     var steps = arr(path.steps).map(function (s) {
       return '<li class="pstep reveal">' +
         '<div class="pstep__top"><span>' + esc(s.no) + '</span><b>' + esc(s.st) + '</b></div>' +
@@ -287,39 +231,14 @@
       '</li>';
     }).join('');
 
-    var q = w.quote || {};
-
-    return '<section class="sec sec--wuxin" id="wuxin">' +
+    return '<section class="sec sec--path" id="path">' +
       '<div class="wrap">' +
-        secHead(w.kicker, w.head, w.headEm, w.lead) +
-
-        '<div class="wuxin__seal reveal">' + seal + '</div>' +
-
-        '<div class="wuxin__ribbon reveal"><p>' + esc(w.motto || '') + '</p><div>' + ribbon + '</div></div>' +
-
-        '<blockquote class="wuxin__quote reveal">' +
-          '<p>' + esc(q.t || '') + '</p>' +
-          (q.by ? '<cite>' + esc(q.by) + '</cite>' : '') +
-        '</blockquote>' +
-
-        '<div class="wuxin__body">' +
-          '<nav class="wuxin__tabs" aria-label="五心切换">' + seal.replace(/<button class="hs[^"]*"/g, '<button class="hs hs--tab"') + '</nav>' +
-          '<div class="wuxin__detail" id="heartDetail">' + detail + '</div>' +
-        '</div>' +
-      '</div>' +
-
-      '<div class="wrap wuxin__path">' +
-        '<div class="pathhead reveal">' +
-          '<p class="kicker">' + esc(path.kicker || '') + '</p>' +
-          '<h3>' + esc(path.head || '') + (path.headEm ? '<em>' + esc(path.headEm) + '</em>' : '') + '</h3>' +
-          '<p>' + esc(path.lead || '') + '</p>' +
-        '</div>' +
+        secHead(path.kicker, path.head, path.headEm, path.lead) +
         '<ol class="ppath">' + steps + '</ol>' +
       '</div>' +
     '</section>';
   };
 
-  /* ---------- 专业自测 ---------- */
   RENDER.quiz = function (q) {
     return '<section class="sec sec--paper" id="quiz">' +
       '<div class="wrap">' +
@@ -644,7 +563,7 @@
 
 
   /* ---------- 按后台设定的顺序与显隐装配 ---------- */
-  var ORDER = ['hero', 'wuxin', 'pan', 'numbers', 'stops', 'majors', 'craft', 'quiz', 'visit', 'admit'];
+  var ORDER = ['hero', 'path', 'pan', 'numbers', 'stops', 'majors', 'craft', 'quiz', 'visit', 'admit'];
   var secCfg = arr(D.sections);
   if (!secCfg.length) {
     secCfg = ORDER.map(function (k) { return { key: k, on: true }; });
@@ -912,53 +831,26 @@
     window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
   }
 
-  /* ---------- 五心：切换 / 跳转 ---------- */
-  var heartBlocks = $$('.hd');
-  var heartTabs = $$('.hs--tab');
-  var heartSeals = $$('.wuxin__seal .hs');
-  var heartRibs = $$('.rb');
-
-  function showHeart(id, scroll) {
-    var hit = false;
-    heartBlocks.forEach(function (b) {
-      var on = b.getAttribute('data-heart') === id;
-      b.classList.toggle('is-on', on);
-      if (on) hit = true;
-    });
-    if (!hit) return;
-    heartTabs.forEach(function (t) {
-      t.classList.toggle('is-on', t.getAttribute('data-heart') === id);
-    });
-    heartSeals.forEach(function (t) {
-      t.classList.toggle('is-on', t.getAttribute('data-heart') === id);
-    });
-    var h = heartOf(id);
-    if (h) {
-      try { history.replaceState(null, '', '#heart-' + id); } catch (e) {}
-    }
-    if (scroll) goTo('#heart-' + id);
-  }
-
+  /* ---------- 心性小签：点了按这颗心筛专业 ---------- */
   function heartOf(id) {
     var hs = arr(D.wuxin && D.wuxin.hearts);
     for (var i = 0; i < hs.length; i++) { if (hs[i].id === id) return hs[i]; }
     return null;
   }
 
-  [heartTabs, heartSeals, heartRibs].forEach(function (group) {
-    group.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        showHeart(btn.getAttribute('data-heart'), true);
-      });
-    });
-  });
-
-  /* 五心小签：点一下跳到对应的五心详情 */
   document.addEventListener('click', function (e) {
     var chip = e.target.closest ? e.target.closest('.hchip') : null;
     if (!chip || chip.getAttribute('tabindex') === '-1') return;
     var id = chip.getAttribute('data-heart');
-    showHeart(id, true);
+    var btn = null;
+    $$('#mFilter .fbtn').forEach(function (b) { if (b.getAttribute('data-fh') === id) btn = b; });
+    goTo('#majors');
+    setTimeout(function () {
+      if (btn) btn.click();
+      else filterMajors('');
+    }, 380);
+    var h = heartOf(id);
+    toast(h ? ('已筛出主要养' + h.nm + '的专业') : '已定位到系部专业');
   });
 
   /* 落点标签：跳到七站 / 三维导览 */

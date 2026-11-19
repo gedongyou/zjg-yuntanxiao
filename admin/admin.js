@@ -527,35 +527,25 @@
 
   /* ---------------- 各段字段定义 ---------------- */
   var SCHEMA = {
-    wuxin: function () {
-      return fText('小标签', 'wuxin.kicker') +
-        '<div class="grid2">' + fText('标题前半', 'wuxin.head') + fText('标题红色后半', 'wuxin.headEm') + '</div>' +
-        fText('导语', 'wuxin.lead', null, 3) +
-        '<div class="grid2">' + fText('教育格言（横排那句）', 'wuxin.motto') + fText('寄语署名', 'wuxin.quote.by') + '</div>' +
-        fText('校长寄语', 'wuxin.quote.t', null, 2) +
-        fGroup('五心', 'wuxin.hearts', function (p) {
+    path: function () {
+      return '<div class="grid2">' + fText('小标签', 'path.kicker') + fText('标题红色后半', 'path.headEm') + '</div>' +
+        fText('标题前半', 'path.head') + fText('导语', 'path.lead', null, 3) +
+        fGroup('六个节点', 'path.steps', function (p) {
+          return '<div class="grid3">' + fText('序号', p + '.no') + fText('阶段（入学/课堂…）', p + '.st') +
+              fText('标题', p + '.nm') + '</div>' +
+            fText('说明', p + '.t', null, 2) +
+            fList('涉及的心性（一行一个：red / ren / heng / jiang / chuang）', p + '.hearts');
+        }, function (it) { return it.nm || ''; });
+    },
+    core: function () {
+      return fText('说明', 'wuxin.lead', null, 3) +
+        fGroup('五颗心（用于标注专业与成长路径，页面不再单独陈列）', 'wuxin.hearts', function (p) {
           return '<div class="grid3">' + fText('id（red/ren/heng/jiang/chuang，不要改）', p + '.id') +
               fText('序号', p + '.no') + fText('名称', p + '.nm') + '</div>' +
             '<div class="grid3">' + fText('动词（铸魂/修身…）', p + '.verb') + fText('英文', p + '.en') +
               fText('主色 #RRGGBB', p + '.color') + '</div>' +
-            fText('体系表述（官方口径那句）', p + '.kernel', null, 3) +
-            fText('一句话导语', p + '.lead', null, 2) +
-            fGroup('在学校它长这样', p + '.inSchool', function (q) {
-              return fText('标题', q + '.t') + fText('说明', q + '.d', null, 2);
-            }, function (it) { return it.t || ''; }) +
-            fList('落点（一行一个，与七站同名可互相跳）', p + '.places') +
-            '<div class="grid3">' + fText('数字', p + '.metric.n') + fText('单位', p + '.metric.u') +
-              fText('数字说明', p + '.metric.t') + '</div>' +
-            fList('主要养这颗心的专业 id（一行一个：m01…）', p + '.majors');
-        }, function (it) { return (it.nm || '') + (it.verb ? ' · ' + it.verb : ''); }) +
-        fGroup('成长路径', 'wuxin.path.steps', function (p) {
-          return '<div class="grid3">' + fText('序号', p + '.no') + fText('阶段（入学/课堂…）', p + '.st') +
-              fText('标题', p + '.nm') + '</div>' +
-            fText('说明', p + '.t', null, 2) +
-            fList('涉及的五心 id（一行一个）', p + '.hearts');
-        }, function (it) { return it.nm || ''; }) +
-        '<div class="grid2">' + fText('路径小标签', 'wuxin.path.kicker') + fText('路径标题后半', 'wuxin.path.headEm') + '</div>' +
-        fText('路径标题前半', 'wuxin.path.head') + fText('路径导语', 'wuxin.path.lead', null, 2);
+            fText('一句话导语（悬停提示用）', p + '.lead', null, 2);
+        }, function (it) { return (it.nm || '') + (it.verb ? ' · ' + it.verb : ''); });
     },
     hero: function () {
       return fText('年份小字', 'hero.kickerYear') + fText('顶部说明', 'hero.kicker') +
@@ -757,13 +747,14 @@
   };
 
   var SECTION_NAME = {
-    hero: '首屏', wuxin: '五心育人', pan: '校园长卷', numbers: '五个问题', stops: '七站导览',
+    hero: '首屏', path: '成长路径', pan: '校园长卷', numbers: '五个问题', stops: '七站导览',
     majors: '系部与专业', craft: '匠心与荣誉', quiz: '专业自测', visit: '预约探校',
     admit: '线上招生', footer: '页脚', nav: '页头', ask: '问校园面板', meta: '页面信息', theme: '配色与疏密'
   };
   var SECTION_DESC = {
     hero: '第一屏：标题、副标题、两个按钮、四格信息',
-    wuxin: '五心金字招牌：五个印章、五心详情、成长路径',
+    path: '从入学到就业的六个节点，每步标注在练哪几样东西',
+    core: '五颗心的名称与颜色（只在专业标签和路径里出现，不再单独成段）',
     pan: '滚到这一段自动拉开的红漆长卷',
     numbers: '五个家长提问 + 对应数字，进视口从 0 补间',
     stops: '七站手风琴 + 右侧校园示意图',
@@ -811,7 +802,7 @@
   }
 
   function viewContent() {
-    var order = ['nav', 'hero', 'wuxin', 'pan', 'numbers', 'stops', 'majors', 'craft', 'quiz', 'visit', 'admit', 'footer', 'ask', 'meta'];
+    var order = ['nav', 'hero', 'path', 'pan', 'numbers', 'stops', 'majors', 'craft', 'quiz', 'visit', 'admit', 'footer', 'ask', 'core', 'meta'];
     var cards = order.map(function (k) {
       return '<div class="card" data-sec="' + k + '">' +
         '<div class="card__hd"><b>' + SECTION_NAME[k] + '</b>' +
