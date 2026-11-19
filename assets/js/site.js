@@ -190,6 +190,7 @@
   RENDER.numbers = function (n) {
     var stats = arr(n.stats).map(function (s, i) {
       return '<div class="stat reveal" data-d="' + (i % 4) + '">' +
+        (s.q ? '<p class="stat__q">' + esc(s.q) + '</p>' : '') +
         '<p class="stat__n"><span data-count="' + esc(s.n) + '">0</span><i>' + esc(s.unit || '') + '</i></p>' +
         '<p class="stat__t">' + esc(s.t) + '</p>' +
         '<p class="stat__d">' + esc(s.d || '') + '</p>' +
@@ -199,11 +200,195 @@
     return '<section class="sec sec--paper" id="numbers">' +
       '<div class="wrap">' +
         secHead(n.kicker, n.head, n.headEm, n.lead) +
-        '<div class="stats">' + stats + '</div>' +
+        '<div class="stats' + (arr(n.stats).length % 4 === 0 ? '' : ' stats--fit') + '">' + stats + '</div>' +
       '</div>' +
     '</section>';
   };
 
+  /* ---------- 五心育人：首页招牌，可点进详情 ---------- */
+  var HEART_NAME = { red: '红心', ren: '仁心', heng: '恒心', jiang: '匠心', chuang: '创心' };
+
+  function hchipList(ids, onClick) {
+    var hs = arr(D.wuxin && D.wuxin.hearts);
+    return arr(ids).map(function (id) {
+      var h = null;
+      for (var i = 0; i < hs.length; i++) { if (hs[i].id === id) { h = hs[i]; break; } }
+      if (!h) return '';
+      return '<button class="hchip" type="button" style="--hc:' + esc(h.color) + '" ' +
+        'data-heart="' + esc(h.id) + '"' + (onClick ? '' : ' tabindex="-1"') + '>' +
+        '<i></i>' + esc(h.nm) + '</button>';
+    }).join('');
+  }
+
+  RENDER.wuxin = function (w) {
+    var hearts = arr(w.hearts);
+
+    var seal = hearts.map(function (h) {
+      return '<button class="hs" type="button" style="--hc:' + esc(h.color) + '" data-heart="' + esc(h.id) + '">' +
+        '<span class="hs__no">' + esc(h.no) + '</span>' +
+        '<span class="hs__nm">' + esc(h.nm) + '</span>' +
+        '<span class="hs__vb">' + esc(h.verb || '') + '</span>' +
+      '</button>';
+    }).join('');
+
+    var ribbon = hearts.map(function (h) {
+      return '<button class="rb" type="button" style="--hc:' + esc(h.color) + '" data-heart="' + esc(h.id) + '">' +
+        '<i></i><b>' + esc(h.nm) + '</b><span>' + esc(h.verb || '') + '</span>' +
+      '</button>';
+    }).join('');
+
+    var detail = hearts.map(function (h, i) {
+      var list = arr(h.inSchool).map(function (x) {
+        return '<li><b>' + esc(x.t) + '</b><p>' + esc(x.d) + '</p></li>';
+      }).join('');
+      var places = arr(h.places).map(function (p) {
+        return '<button class="pl" type="button" data-place="' + esc(p) + '">' + esc(p) + '</button>';
+      }).join('');
+      var majors = arr(h.majors).map(function (id) {
+        var m = null, list2 = arr(D.majors && D.majors.list);
+        for (var k = 0; k < list2.length; k++) { if (list2[k].id === id) { m = list2[k]; break; } }
+        return m ? '<button class="mj" type="button" data-major="' + esc(m.id) + '">' + esc(m.nm) + '</button>' : '';
+      }).join('');
+
+      return '<article class="hd' + (i === 0 ? ' is-on' : '') + '" id="heart-' + esc(h.id) + '" ' +
+        'style="--hc:' + esc(h.color) + '" data-heart="' + esc(h.id) + '">' +
+        '<header class="hd__hd">' +
+          '<span class="hd__no">' + esc(h.no) + '</span>' +
+          '<h3 class="hd__nm">' + esc(h.nm) + '<em>' + esc(h.verb || '') + '</em></h3>' +
+          '<span class="hd__en">' + esc(h.en || '') + '</span>' +
+        '</header>' +
+        '<p class="hd__lead">' + esc(h.lead || '') + '</p>' +
+        '<div class="hd__kernel"><b>' + esc(h.kernel ? '体系表述' : '') + '</b><p>' + esc(h.kernel || '') + '</p></div>' +
+        '<div class="hd__grid">' +
+          '<div>' +
+            '<h4>在学校，它长这样</h4>' +
+            '<ul class="hd__list">' + list + '</ul>' +
+          '</div>' +
+          '<div>' +
+            '<h4>落到哪些地方</h4>' +
+            '<div class="hd__places">' + places + '</div>' +
+            '<h4>哪些专业主要养这颗心</h4>' +
+            '<div class="hd__majors">' + majors + '</div>' +
+            '<p class="hd__metric"><b>' + esc((h.metric || {}).n || '') + '</b>' +
+              '<i>' + esc((h.metric || {}).u || '') + '</i>' +
+              '<span>' + esc((h.metric || {}).t || '') + '</span></p>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+    }).join('');
+
+    var path = w.path || {};
+    var steps = arr(path.steps).map(function (s) {
+      return '<li class="pstep reveal">' +
+        '<div class="pstep__top"><span>' + esc(s.no) + '</span><b>' + esc(s.st) + '</b></div>' +
+        '<h4>' + esc(s.nm) + '</h4>' +
+        '<p>' + esc(s.t) + '</p>' +
+        '<div class="pstep__hs">' + hchipList(s.hearts, true) + '</div>' +
+      '</li>';
+    }).join('');
+
+    var q = w.quote || {};
+
+    return '<section class="sec sec--wuxin" id="wuxin">' +
+      '<div class="wrap">' +
+        secHead(w.kicker, w.head, w.headEm, w.lead) +
+
+        '<div class="wuxin__seal reveal">' + seal + '</div>' +
+
+        '<div class="wuxin__ribbon reveal"><p>' + esc(w.motto || '') + '</p><div>' + ribbon + '</div></div>' +
+
+        '<blockquote class="wuxin__quote reveal">' +
+          '<p>' + esc(q.t || '') + '</p>' +
+          (q.by ? '<cite>' + esc(q.by) + '</cite>' : '') +
+        '</blockquote>' +
+
+        '<div class="wuxin__body">' +
+          '<nav class="wuxin__tabs" aria-label="五心切换">' + seal.replace(/<button class="hs[^"]*"/g, '<button class="hs hs--tab"') + '</nav>' +
+          '<div class="wuxin__detail" id="heartDetail">' + detail + '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="wrap wuxin__path">' +
+        '<div class="pathhead reveal">' +
+          '<p class="kicker">' + esc(path.kicker || '') + '</p>' +
+          '<h3>' + esc(path.head || '') + (path.headEm ? '<em>' + esc(path.headEm) + '</em>' : '') + '</h3>' +
+          '<p>' + esc(path.lead || '') + '</p>' +
+        '</div>' +
+        '<ol class="ppath">' + steps + '</ol>' +
+      '</div>' +
+    '</section>';
+  };
+
+  /* ---------- 专业自测 ---------- */
+  RENDER.quiz = function (q) {
+    return '<section class="sec sec--paper" id="quiz">' +
+      '<div class="wrap">' +
+        secHead(q.kicker, q.head, q.headEm, q.lead) +
+        '<div class="qz" id="quizBox">' +
+          '<noscript><p>这个自测需要浏览器开启 JavaScript。</p></noscript>' +
+        '</div>' +
+      '</div>' +
+    '</section>';
+  };
+
+  /* ---------- 预约探校 ---------- */
+  RENDER.visit = function (v) {
+    var slots = arr(v.slots).map(function (s) {
+      var left = Math.max(0, (s.cap || 0) - (s.booked || 0));
+      var pct = Math.round(((s.booked || 0) / (s.cap || 1)) * 100);
+      return '<button class="slot' + (left === 0 ? ' is-full' : '') + '" type="button" data-slot="' + esc(s.id) + '"' +
+        (left === 0 ? ' disabled' : '') + '>' +
+        '<span class="slot__d">' + esc(s.date) + '<i>' + esc(s.wk || '') + '</i></span>' +
+        '<span class="slot__t">' + esc(s.time) + '</span>' +
+        '<span class="slot__bar"><i style="width:' + pct + '%"></i></span>' +
+        '<span class="slot__l">' + (left === 0 ? '已约满' : '余 ' + left + ' 组') + '</span>' +
+      '</button>';
+    }).join('');
+
+    var route = arr(v.route).map(function (r, i) {
+      return '<li class="rt"><span class="rt__no">' + ('0' + (i + 1)).slice(-2) + '</span>' +
+        '<div><b>' + esc(r.t) + '</b><p>' + esc(r.d) + '</p></div>' +
+        '<span class="rt__m">' + esc(r.min || '') + '</span></li>';
+    }).join('');
+
+    var tips = arr(v.tips).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
+    var f = v.form || {};
+
+    return '<section class="sec" id="visit">' +
+      '<div class="wrap">' +
+        secHead(v.kicker, v.head, v.headEm, v.lead) +
+        '<div class="visit">' +
+          '<div class="reveal">' +
+            '<h4 class="blk__h">选一个场次</h4>' +
+            '<div class="slots" id="slotList">' + slots + '</div>' +
+            '<h4 class="blk__h">四十分钟怎么走</h4>' +
+            '<ol class="route">' + route + '</ol>' +
+            '<ul class="tips">' + tips + '</ul>' +
+          '</div>' +
+          '<div class="reveal" data-d="1">' +
+            '<form class="vform" id="visitForm" novalidate>' +
+              '<h4>' + esc(f.title || '') + '</h4>' +
+              '<p class="vform__sub">' + esc(f.sub || '') + '</p>' +
+              '<label class="fd"><span>学生姓名 *</span><input name="nm" required maxlength="20" placeholder="和户口本一致"></label>' +
+              '<label class="fd"><span>手机号 *</span><input name="tel" required inputmode="numeric" maxlength="11" placeholder="11 位手机号"></label>' +
+              '<label class="fd"><span>同行人数</span><select name="ppl"><option value="1">1 位学生 + 1 位家长</option><option value="2">1 位学生 + 2 位家长</option><option value="3">1 位学生 + 3 位家长</option></select></label>' +
+              '<label class="fd"><span>想看的系部</span><select name="dept">' +
+                arr(D.majors && D.majors.depts).map(function (d) { return '<option value="' + esc(d.nm) + '">' + esc(d.nm) + '</option>'; }).join('') +
+                '<option value="都看">都想看看</option>' +
+              '</select></label>' +
+              '<div class="fd fd--slot"><span>已选场次</span><b id="slotPicked">还没选，请在左边点一个</b></div>' +
+              '<button class="btn btn--solid vform__btn" type="submit">' + esc(f.submit || '提交预约') + '</button>' +
+              '<p class="vform__note">提交后会生成一组预约码，凭码到校签到。信息只用于本次探校安排。</p>' +
+              '<p class="vform__ok" id="visitOk" hidden></p>' +
+            '</form>' +
+            '<div class="place"><b>' + esc((v.place || {}).t || '') + '</b><span>' + esc((v.place || {}).v || '') + '</span></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</section>';
+  };
+
+  /* ---------- 线上招生：登记 / 查进度 / 流程 ---------- */
   RENDER.stops = function (s) {
     var items = arr(s.items).map(function (it, i) {
       var tags = arr(it.tags).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
@@ -265,22 +450,43 @@
   };
 
   RENDER.majors = function (m) {
+    var list = arr(m.list);
+    var hs = arr(D.wuxin && D.wuxin.hearts);
+
     var top = arr(m.top).map(function (t) {
       return '<span>' + esc(t.t) + ' <b>' + esc(t.b) + '</b> ' + esc(t.u || '') + '</span>';
     }).join('');
 
+    var filter = '<button class="fbtn is-on" type="button" data-fh="">全部 <i>' + list.length + '</i></button>' +
+      hs.map(function (h) {
+        var n = list.filter(function (x) { return arr(x.hearts).indexOf(h.id) > -1; }).length;
+        return '<button class="fbtn" type="button" data-fh="' + esc(h.id) + '" style="--hc:' + esc(h.color) + '">' +
+          '<em></em>' + esc(h.nm) + ' <i>' + n + '</i></button>';
+      }).join('');
+
     var depts = arr(m.depts).map(function (d, i) {
-      var chips = arr(d.chips).map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('');
-      return '<div class="dept' + (i === 0 ? ' is-open' : '') + '">' +
+      var mine = list.filter(function (x) { return x.dept === d.id; });
+      var rows = mine.map(function (x) {
+        var lv = '';
+        arr(m.levels).forEach(function (l) { if (l.id === x.level) lv = l.b; });
+        return '<li class="mrow" data-major="' + esc(x.id) + '" data-hearts="' + esc(arr(x.hearts).join(' ')) + '">' +
+          '<div class="mrow__hd"><b>' + esc(x.nm) + '</b><span>' + esc(lv) + '</span></div>' +
+          '<p>' + esc(x.one || '') + '</p>' +
+          '<div class="mrow__hs">' + hchipList(x.hearts, true) + '</div>' +
+        '</li>';
+      }).join('');
+      return '<div class="dept' + (i === 0 ? ' is-open' : '') + '" data-dept="' + esc(d.id) + '" data-hearts="' + esc(arr(d.hearts).join(' ')) + '">' +
         '<button class="dept__hd" aria-expanded="' + (i === 0 ? 'true' : 'false') + '">' +
           '<span class="dept__no">' + esc(d.no) + '</span>' +
           '<span class="dept__nm">' + esc(d.nm) + '</span>' +
           '<span class="dept__sm">' + esc(d.sm || '') + '</span>' +
+          '<span class="dept__n">' + mine.length + ' 个方向</span>' +
           '<span class="dept__ic"></span>' +
         '</button>' +
         '<div class="dept__bd"><div class="dept__in"><div>' +
-          '<ul class="chips">' + chips + '</ul>' +
+          '<ul class="chips">' + arr(d.chips).map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' +
           '<p class="dept__note">' + esc(d.note || '') + '</p>' +
+          '<ul class="mrows">' + rows + '</ul>' +
         '</div></div></div>' +
       '</div>';
     }).join('');
@@ -293,7 +499,9 @@
       '<div class="wrap">' +
         secHead(m.kicker, m.head, m.headEm, m.lead) +
         '<div class="majors__top reveal">' + top + '</div>' +
+        '<div class="mfilter reveal" id="mFilter">' + filter + '</div>' +
         '<div class="majors__list" id="depts">' + depts + '</div>' +
+        '<p class="mempty" id="mEmpty" hidden>没有同时养这颗心的专业。换成「全部」再看。</p>' +
         '<div class="levels reveal">' + levels + '</div>' +
       '</div>' +
     '</section>';
@@ -336,13 +544,24 @@
   };
 
   RENDER.admit = function (a) {
+    var channels = arr(a.channels).map(function (c) {
+      return '<a class="chn" href="' + esc(c.href) + '">' +
+        '<span class="chn__no">' + esc(c.no) + '</span>' +
+        '<b>' + esc(c.t) + '</b>' +
+        '<p>' + esc(c.d) + '</p>' +
+        '<span class="chn__act">' + esc(c.act || '去办') +
+          '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg>' +
+        '</span>' +
+      '</a>';
+    }).join('');
+
     var flow = arr(a.flow).map(function (f) {
       return '<li><b>' + esc(f.no) + '</b><div><h4>' + esc(f.t) + '</h4>' +
         (f.d ? '<p>' + esc(f.d) + '</p>' : '') + '</div></li>';
     }).join('');
 
-    var rows = arr((a.slot || {}).rows).map(function (r) {
-      return '<tr><th>' + esc(r.k) + '</th><td>' + esc(r.v) + '</td></tr>';
+    var levels = arr(a.levels).map(function (l) {
+      return '<div class="lv"><b>' + esc(l.b) + '</b><span>' + esc(l.s) + '</span></div>';
     }).join('');
 
     var contact = a.contact || {};
@@ -350,19 +569,70 @@
       return '<dt>' + esc(r.k) + '</dt><dd>' + esc(r.v) + '</dd>';
     }).join('');
 
-    return '<section class="sec" id="admit">' +
+    var f = a.form || {};
+    var ck = a.check || {};
+    var steps = arr(ck.steps).map(function (s, i) {
+      return '<li data-i="' + i + '"><b>' + esc(s) + '</b></li>';
+    }).join('');
+
+    return '<section class="sec sec--admit" id="admit">' +
       '<div class="wrap">' +
         secHead(a.kicker, a.head, a.headEm, a.lead) +
+
+        '<div class="chns">' + channels + '</div>' +
+
         '<div class="admit">' +
-          '<div class="reveal"><ol class="flow">' + flow + '</ol></div>' +
+          '<div class="reveal">' +
+            '<h4 class="blk__h">五步走完</h4>' +
+            '<ol class="flow">' + flow + '</ol>' +
+            '<div class="levels">' + levels + '</div>' +
+            '<p class="slot__note">' + esc(a.note || '') + '</p>' +
+          '</div>' +
+
           '<div class="reveal" data-d="1">' +
-            '<div class="slot">' +
-              '<h4>' + esc((a.slot || {}).title) + '</h4>' +
-              '<table>' + rows + '</table>' +
-              '<p class="slot__note">' + esc((a.slot || {}).note) + '</p>' +
-            '</div>' +
+            '<form class="aform" id="applyForm" novalidate>' +
+              '<h4>' + esc(f.title || '在线报名登记') + '</h4>' +
+              '<p class="aform__sub">' + esc(f.sub || '') + '</p>' +
+              '<div class="aform__row">' +
+                '<label class="fd"><span>学生姓名 *</span><input name="nm" required maxlength="20" placeholder="和户口本一致"></label>' +
+                '<label class="fd"><span>手机号 *</span><input name="tel" required inputmode="numeric" maxlength="11" placeholder="11 位手机号"></label>' +
+              '</div>' +
+              '<div class="aform__row">' +
+                '<label class="fd"><span>初中学校 *</span><input name="sch" required maxlength="30" placeholder="如：张家港市第X中学"></label>' +
+                '<label class="fd"><span>所在区县</span><input name="area" maxlength="20" placeholder="张家港 / 常熟 / 苏州城区…"></label>' +
+              '</div>' +
+              '<label class="fd"><span>想报的层次 *</span><select name="lv" required>' +
+                arr(a.levels).map(function (l) { return '<option value="' + esc(l.b) + '">' + esc(l.b) + '</option>'; }).join('') +
+              '</select></label>' +
+              '<div class="fd"><span>想报的专业（可多选）</span><div class="picks" id="majorPicks">' +
+                arr(D.majors && D.majors.list).map(function (m) {
+                  return '<button type="button" class="pk" data-id="' + esc(m.id) + '">' + esc(m.nm) + '</button>';
+                }).join('') +
+              '</div></div>' +
+              '<label class="fd"><span>想问的问题（选填）</span><textarea name="q" rows="3" maxlength="200" placeholder="比如：多少分能进？住宿怎么安排？能不能升本？"></textarea></label>' +
+              '<button class="btn btn--solid aform__btn" type="submit">' + esc(f.submit || '提交登记') + '</button>' +
+              '<p class="aform__note">线上预登记不占招生计划、不收费，也不替代教育局统一志愿填报。信息只用于招生咨询。</p>' +
+              '<div class="aform__ok" id="applyOk" hidden></div>' +
+            '</form>' +
+
+            '<form class="cform" id="checkForm" novalidate>' +
+              '<h4>' + esc(ck.title || '报名进度查询') + '</h4>' +
+              '<p class="aform__sub">' + esc(ck.sub || '') + '</p>' +
+              '<div class="aform__row">' +
+                '<label class="fd"><span>报名号 *</span><input name="no" required maxlength="14" placeholder="如 YT20271123001" style="letter-spacing:.06em"></label>' +
+                '<label class="fd"><span>手机号 *</span><input name="tel" required inputmode="numeric" maxlength="11" placeholder="登记时填的手机号"></label>' +
+              '</div>' +
+              '<button class="btn btn--ghost cform__btn" type="submit">查进度</button>' +
+              '<div class="track" id="trackBox" hidden>' +
+                '<div class="track__hd"><b id="trackNo"></b><span id="trackLv"></span></div>' +
+                '<ol class="track__steps">' + steps + '</ol>' +
+                '<p class="track__d" id="trackDesc"></p>' +
+              '</div>' +
+              '<p class="cform__miss" id="trackMiss" hidden>' + esc(ck.miss || '') + '</p>' +
+            '</form>' +
+
             '<div class="contact">' +
-              '<img src="' + esc(contact.qr) + '" alt="' + esc(contact.qrAlt) + '">' +
+              '<img src="' + esc(contact.qr) + '" alt="' + esc(contact.qrAlt) + '" loading="lazy">' +
               '<dl>' + crows + '</dl>' +
             '</div>' +
           '</div>' +
@@ -371,8 +641,9 @@
     '</section>';
   };
 
+
   /* ---------- 按后台设定的顺序与显隐装配 ---------- */
-  var ORDER = ['hero', 'pan', 'numbers', 'stops', 'majors', 'craft', 'admit'];
+  var ORDER = ['hero', 'wuxin', 'pan', 'numbers', 'stops', 'majors', 'craft', 'quiz', 'visit', 'admit'];
   var secCfg = arr(D.sections);
   if (!secCfg.length) {
     secCfg = ORDER.map(function (k) { return { key: k, on: true }; });
@@ -617,6 +888,430 @@
         btn.setAttribute('aria-expanded', 'true');
       }
     });
+  });
+
+  /* ---------- 轻提示 ---------- */
+  var toastEl = null, toastTimer = 0;
+  function toast(msg) {
+    if (!toastEl) {
+      toastEl = el('div', 'toast');
+      toastEl.setAttribute('role', 'status');
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.add('is-on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('is-on'); }, 2600);
+  }
+
+  function goTo(sel) {
+    var t = document.querySelector(sel);
+    if (!t) return;
+    var y = t.getBoundingClientRect().top + window.pageYOffset - 84;
+    window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+  }
+
+  /* ---------- 五心：切换 / 跳转 ---------- */
+  var heartBlocks = $$('.hd');
+  var heartTabs = $$('.hs--tab');
+  var heartSeals = $$('.wuxin__seal .hs');
+  var heartRibs = $$('.rb');
+
+  function showHeart(id, scroll) {
+    var hit = false;
+    heartBlocks.forEach(function (b) {
+      var on = b.getAttribute('data-heart') === id;
+      b.classList.toggle('is-on', on);
+      if (on) hit = true;
+    });
+    if (!hit) return;
+    heartTabs.forEach(function (t) {
+      t.classList.toggle('is-on', t.getAttribute('data-heart') === id);
+    });
+    heartSeals.forEach(function (t) {
+      t.classList.toggle('is-on', t.getAttribute('data-heart') === id);
+    });
+    var h = heartOf(id);
+    if (h) {
+      try { history.replaceState(null, '', '#heart-' + id); } catch (e) {}
+    }
+    if (scroll) goTo('#heart-' + id);
+  }
+
+  function heartOf(id) {
+    var hs = arr(D.wuxin && D.wuxin.hearts);
+    for (var i = 0; i < hs.length; i++) { if (hs[i].id === id) return hs[i]; }
+    return null;
+  }
+
+  [heartTabs, heartSeals, heartRibs].forEach(function (group) {
+    group.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        showHeart(btn.getAttribute('data-heart'), true);
+      });
+    });
+  });
+
+  /* 五心小签：点一下跳到对应的五心详情 */
+  document.addEventListener('click', function (e) {
+    var chip = e.target.closest ? e.target.closest('.hchip') : null;
+    if (!chip || chip.getAttribute('tabindex') === '-1') return;
+    var id = chip.getAttribute('data-heart');
+    showHeart(id, true);
+  });
+
+  /* 落点标签：跳到七站 / 三维导览 */
+  document.addEventListener('click', function (e) {
+    var p = e.target.closest ? e.target.closest('.pl') : null;
+    if (!p) return;
+    var nm = p.getAttribute('data-place') || '';
+    var target = null;
+    $$('.walk__it').forEach(function (it) {
+      if (it.getAttribute('data-nm') === nm) target = it;
+    });
+    if (target) {
+      $$('.walk__it').forEach(function (it) { it.classList.remove('is-open'); });
+      target.classList.add('is-open');
+      var hd = $('.walk__hd', target);
+      if (hd) hd.setAttribute('aria-expanded', 'true');
+      openWalk(target, true);
+      toast('已跳到「' + nm + '」这一站');
+    } else {
+      goTo('#majors');
+      toast('「' + nm + '」在这个页面上没有独立一站，先看系部专业');
+    }
+  });
+
+  /* 五心详情里的专业按钮 -> 系部专业里定位 */
+  document.addEventListener('click', function (e) {
+    var m = e.target.closest ? e.target.closest('.mj') : null;
+    if (!m) return;
+    var id = m.getAttribute('data-major');
+    goTo('#majors');
+    setTimeout(function () {
+      $$('.dept').forEach(function (d) {
+        var hit = false;
+        $$('.mrow', d).forEach(function (r) {
+          var on = r.getAttribute('data-major') === id;
+          r.classList.toggle('is-hit', on);
+          if (on) hit = true;
+        });
+        d.classList.toggle('is-open', hit);
+        var h = $('.dept__hd', d);
+        if (h && hit) h.setAttribute('aria-expanded', 'true');
+      });
+    }, 420);
+    toast('已定位到该专业');
+  });
+
+  /* ---------- 系部专业：按五心筛选 ---------- */
+  var fbtns = $$('#mFilter .fbtn');
+  function filterMajors(fh) {
+    fbtns.forEach(function (b) { b.classList.toggle('is-on', (b.getAttribute('data-fh') || '') === fh); });
+    var any = false;
+    $$('.dept').forEach(function (d) {
+      var dHit = false;
+      $$('.mrow', d).forEach(function (r) {
+        var hs = (r.getAttribute('data-hearts') || '').split(' ');
+        var on = !fh || hs.indexOf(fh) > -1;
+        r.hidden = !on;
+        if (on) { dHit = true; any = true; }
+      });
+      d.hidden = !dHit;
+      if (dHit) {
+        d.classList.add('is-open');
+        var h = $('.dept__hd', d);
+        if (h) h.setAttribute('aria-expanded', 'true');
+      }
+    });
+    var empty = $('#mEmpty');
+    if (empty) empty.hidden = any;
+  }
+  fbtns.forEach(function (b) {
+    b.addEventListener('click', function () { filterMajors(b.getAttribute('data-fh') || ''); });
+  });
+
+  /* ---------- 专业自测 ---------- */
+  var QZ = D.quiz || {};
+  var QS = arr(QZ.questions);
+  var qzBox = $('#quizBox');
+  var qzIdx = 0;
+  var qzPick = [];
+  var LETTER = ['A', 'B', 'C', 'D', 'E'];
+
+  function qzStart() {
+    qzIdx = 0; qzPick = [];
+    qzRender();
+  }
+
+  function qzRender() {
+    if (!qzBox || !QS.length) return;
+    if (qzIdx >= QS.length) { qzResult(); return; }
+    var q = QS[qzIdx] || {};
+    var opts = arr(q.opts).map(function (o, i) {
+      return '<button class="qo" type="button" data-i="' + i + '">' +
+        '<em>' + LETTER[i] + '</em><span>' + esc(o.t) + '</span></button>';
+    }).join('');
+    var pct = Math.round((qzIdx / QS.length) * 100);
+    qzBox.innerHTML =
+      '<div class="qz__meter"><span>' + ('0' + (qzIdx + 1)).slice(-2) + ' / ' + ('0' + QS.length).slice(-2) + '</span>' +
+        '<div class="qz__bar"><i style="width:' + pct + '%"></i></div></div>' +
+      '<p class="qz__q">' + esc(q.q) + '</p>' +
+      '<div class="qz__opts">' + opts + '</div>' +
+      (qzIdx > 0 ? '<button class="qz__back" type="button" data-back="1">上一题</button>' : '');
+
+    $$('.qo', qzBox).forEach(function (b) {
+      b.addEventListener('click', function () {
+        qzPick[qzIdx] = Number(b.getAttribute('data-i'));
+        qzIdx += 1;
+        qzRender();
+      });
+    });
+    var back = $('[data-back]', qzBox);
+    if (back) back.addEventListener('click', function () { qzIdx = Math.max(0, qzIdx - 1); qzRender(); });
+  }
+
+  function qzResult() {
+    var hs = arr(D.wuxin && D.wuxin.hearts);
+    var sum = {};
+    hs.forEach(function (h) { sum[h.id] = 0; });
+    QS.forEach(function (q, i) {
+      var o = arr(q.opts)[qzPick[i]];
+      if (!o || !o.w) return;
+      Object.keys(o.w).forEach(function (k) {
+        sum[k] = (sum[k] || 0) + Number(o.w[k]);
+      });
+    });
+    var max = 1;
+    Object.keys(sum).forEach(function (k) { if (sum[k] > max) max = sum[k]; });
+
+    var ranked = hs.slice().sort(function (a, b) { return (sum[b.id] || 0) - (sum[a.id] || 0); });
+    var top2 = ranked.slice(0, 2).map(function (h) { return h.id; });
+
+    var majors = arr(D.majors && D.majors.list).map(function (m) {
+      var sc = 0;
+      arr(m.hearts).forEach(function (h, i) {
+        if (top2.indexOf(h) > -1) sc += (3 - i) * 2;
+        sc += (sum[h] || 0) * .1;
+      });
+      return { m: m, s: sc };
+    }).filter(function (x) { return x.s > 0; })
+      .sort(function (a, b) { return b.s - a.s; })
+      .slice(0, 3);
+
+    var bars = hs.map(function (h) {
+      var v = sum[h.id] || 0;
+      var w = Math.round((v / max) * 100);
+      return '<div class="qz__bar-row" style="--hc:' + esc(h.color) + '">' +
+        '<b>' + esc(h.nm) + '</b>' +
+        '<div class="qz__bar"><i style="width:' + w + '%"></i></div>' +
+        '<span>' + v + '</span>' +
+      '</div>';
+    }).join('');
+
+    var majHtml = majors.map(function (x) {
+      var lv = '';
+      arr(D.majors && D.majors.levels).forEach(function (l) { if (l.id === x.m.level) lv = l.b; });
+      return '<button class="qz__maj" type="button" data-major="' + esc(x.m.id) + '">' +
+        '<b>' + esc(x.m.nm) + '</b><span>' + esc(lv) + '</span>' +
+        '<p>' + esc(x.m.one || '') + '</p>' +
+      '</button>';
+    }).join('');
+
+    var topNames = top2.map(function (id) {
+      var h = heartOf(id);
+      return h ? h.nm : '';
+    }).join('、');
+
+    qzBox.innerHTML =
+      '<div class="qz__res">' +
+        '<h3>你的五心画像：<em>' + esc(topNames) + '</em></h3>' +
+        '<p>这两个心在你身上更明显。下面三个专业主要养的就是它们——但专业选不选，还要看你能不能接受它每天要做的事。</p>' +
+        '<div class="qz__bars">' + bars + '</div>' +
+        '<h4 class="blk__h">推荐专业</h4>' +
+        '<div class="qz__majs">' + (majHtml || '<p style="padding:18px">没算出来，回去随便选一个也行。</p>') + '</div>' +
+        '<div class="qz__act">' +
+          '<a class="btn btn--solid" href="#applyForm" data-go="#applyForm">拿这个结果去报名' +
+            '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>' +
+          '<button class="btn btn--ghost" type="button" data-restart="1">重做一遍</button>' +
+        '</div>' +
+      '</div>';
+
+    $$('.qz__maj', qzBox).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var id = b.getAttribute('data-major');
+        goTo('#majors');
+        setTimeout(function () {
+          $$('.dept').forEach(function (d) {
+            var hit = false;
+            $$('.mrow', d).forEach(function (r) {
+              var on = r.getAttribute('data-major') === id;
+              r.classList.toggle('is-hit', on);
+              if (on) hit = true;
+            });
+            d.classList.toggle('is-open', hit);
+          });
+        }, 420);
+        toast('已定位到该专业');
+      });
+    });
+    var rs = $('[data-restart]', qzBox);
+    if (rs) rs.addEventListener('click', function () { qzStart(); goTo('#quiz'); });
+    var g = $('[data-go]', qzBox);
+    if (g) g.addEventListener('click', function (e) { e.preventDefault(); goTo('#applyForm'); });
+    qzBox.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+  }
+  qzStart();
+  qzBox && qzBox.addEventListener('click', function () {});
+
+  /* ---------- 预约探校 ---------- */
+  var VST = D.visit || {};
+  var vSlots = arr(VST.slots);
+  var pickedSlot = '';
+  var slotBtns = $$('#slotList .slot');
+  var slotPicked = $('#slotPicked');
+
+  slotBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      slotBtns.forEach(function (x) { x.classList.remove('is-pick'); });
+      b.classList.add('is-pick');
+      pickedSlot = b.getAttribute('data-slot');
+      var s = null;
+      vSlots.forEach(function (x) { if (x.id === pickedSlot) s = x; });
+      if (slotPicked) {
+        slotPicked.textContent = s ? (s.date + '（' + s.wk + '）' + s.time) : '';
+        slotPicked.classList.add('is-set');
+      }
+    });
+  });
+
+  var vForm = $('#visitForm');
+  if (vForm) {
+    vForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var nm = vForm.elements.nm, tel = vForm.elements.tel;
+      var bad = false;
+      [nm, tel].forEach(function (f) { f.classList.remove('is-bad'); });
+      if (!nm.value.trim()) { nm.classList.add('is-bad'); bad = true; }
+      if (!/^1\d{10}$/.test(tel.value.trim())) { tel.classList.add('is-bad'); bad = true; }
+      if (!pickedSlot) { toast('先在左边选一个场次'); bad = true; }
+      if (bad) return;
+      var s = null;
+      vSlots.forEach(function (x) { if (x.id === pickedSlot) s = x; });
+      var code = 'V' + (s ? s.id.toUpperCase() : 'X') + '-' +
+        String(Math.floor(Math.random() * 9000) + 1000);
+      try {
+        localStorage.setItem('yyt_visit_v1', JSON.stringify({
+          code: code, nm: nm.value.trim(), tel: tel.value.trim(),
+          slot: pickedSlot, dept: vForm.elements.dept.value, at: Date.now()
+        }));
+      } catch (err) {}
+      var ok = $('#visitOk');
+      ok.hidden = false;
+      ok.innerHTML = '预约成功，请记下预约码：<b>' + esc(code) + '</b>' +
+        '场次：' + esc(s ? s.date + '（' + s.wk + '）' + s.time : '') +
+        '<br>到校在正门签到时报这个码和姓名。如需改期，凭码重新约一场即可。';
+      vForm.querySelector('button[type=submit]').disabled = true;
+      toast('预约成功');
+      ok.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+
+  /* ---------- 在线报名登记 ---------- */
+  var aForm = $('#applyForm');
+  var pickedMajors = [];
+
+  $$('#majorPicks .pk').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var id = b.getAttribute('data-id');
+      var i = pickedMajors.indexOf(id);
+      if (i > -1) { pickedMajors.splice(i, 1); b.classList.remove('is-pick'); }
+      else { pickedMajors.push(id); b.classList.add('is-pick'); }
+    });
+  });
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  if (aForm) {
+    aForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = aForm.elements;
+      var nm = f.nm, tel = f.tel, sch = f.sch;
+      [nm, tel, sch].forEach(function (x) { x.classList.remove('is-bad'); });
+      var bad = false;
+      if (!nm.value.trim()) { nm.classList.add('is-bad'); bad = true; }
+      if (!/^1\d{10}$/.test(tel.value.trim())) { tel.classList.add('is-bad'); bad = true; }
+      if (!sch.value.trim()) { sch.classList.add('is-bad'); bad = true; }
+      if (bad) { toast('还有必填项没填好'); return; }
+
+      var d = new Date();
+      var no = 'YT' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) +
+        pad((d.getMonth() + 1) * 13 % 60 + d.getHours());
+      var rec = {
+        no: no, nm: nm.value.trim(), tel: tel.value.trim(),
+        sch: sch.value.trim(), area: f.area.value.trim(),
+        lv: f.lv.value, majors: pickedMajors.slice(),
+        q: f.q.value.trim(), step: 1, at: Date.now()
+      };
+      var all = [];
+      try { all = JSON.parse(localStorage.getItem('yyt_apply_v1') || '[]'); } catch (err) { all = []; }
+      all.unshift(rec);
+      try { localStorage.setItem('yyt_apply_v1', JSON.stringify(all.slice(0, 20))); } catch (err) {}
+
+      var ok = $('#applyOk');
+      ok.hidden = false;
+      ok.innerHTML = '登记成功，你的报名号是：<b>' + esc(no) + '</b>' +
+        '请截图保存。招生老师会在 1 个工作日内拨打 ' + esc(rec.tel) + '。' +
+        '<br>之后用报名号 + 手机号，在下面这一栏随时查进度。';
+      aForm.querySelector('button[type=submit]').disabled = true;
+      toast('登记成功，报名号 ' + no);
+
+      var cn = $('#checkForm').elements.no;
+      if (cn) cn.value = no;
+    });
+  }
+
+  /* ---------- 报名进度查询 ---------- */
+  var cForm = $('#checkForm');
+  if (cForm) {
+    cForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var no = cForm.elements.no.value.trim().toUpperCase();
+      var tel = cForm.elements.tel.value.trim();
+      var all = [];
+      try { all = JSON.parse(localStorage.getItem('yyt_apply_v1') || '[]'); } catch (err) { all = []; }
+      var hit = null;
+      all.forEach(function (r) { if (r.no === no && r.tel === tel) hit = r; });
+
+      var box2 = $('#trackBox'), miss = $('#trackMiss');
+      if (!hit) {
+        box2.hidden = true; miss.hidden = false;
+        return;
+      }
+      miss.hidden = true; box2.hidden = false;
+      $('#trackNo').textContent = hit.no;
+      var ck = D.admit && D.admit.check ? D.admit.check : {};
+      var labels = arr(ck.steps);
+      var step = Math.min(hit.step || 1, labels.length);
+      $('#trackLv').textContent = labels[step - 1] || '';
+      $$('.track__steps li').forEach(function (li, i) {
+        li.classList.toggle('is-on', i < step);
+      });
+      $('#trackDesc').textContent = arr(ck.desc)[step - 1] || '';
+      toast('查到一条记录');
+    });
+  }
+
+  /* 所有页内锚点：平滑滚动并留出导航高度 */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (!href || href === '#' || href.length < 2) return;
+    var t = document.querySelector(href);
+    if (!t) return;
+    e.preventDefault();
+    goTo(href);
   });
 
   /* ---------- 交互：滚动 ---------- */

@@ -527,6 +527,36 @@
 
   /* ---------------- 各段字段定义 ---------------- */
   var SCHEMA = {
+    wuxin: function () {
+      return fText('小标签', 'wuxin.kicker') +
+        '<div class="grid2">' + fText('标题前半', 'wuxin.head') + fText('标题红色后半', 'wuxin.headEm') + '</div>' +
+        fText('导语', 'wuxin.lead', null, 3) +
+        '<div class="grid2">' + fText('教育格言（横排那句）', 'wuxin.motto') + fText('寄语署名', 'wuxin.quote.by') + '</div>' +
+        fText('校长寄语', 'wuxin.quote.t', null, 2) +
+        fGroup('五心', 'wuxin.hearts', function (p) {
+          return '<div class="grid3">' + fText('id（red/ren/heng/jiang/chuang，不要改）', p + '.id') +
+              fText('序号', p + '.no') + fText('名称', p + '.nm') + '</div>' +
+            '<div class="grid3">' + fText('动词（铸魂/修身…）', p + '.verb') + fText('英文', p + '.en') +
+              fText('主色 #RRGGBB', p + '.color') + '</div>' +
+            fText('体系表述（官方口径那句）', p + '.kernel', null, 3) +
+            fText('一句话导语', p + '.lead', null, 2) +
+            fGroup('在学校它长这样', p + '.inSchool', function (q) {
+              return fText('标题', q + '.t') + fText('说明', q + '.d', null, 2);
+            }, function (it) { return it.t || ''; }) +
+            fList('落点（一行一个，与七站同名可互相跳）', p + '.places') +
+            '<div class="grid3">' + fText('数字', p + '.metric.n') + fText('单位', p + '.metric.u') +
+              fText('数字说明', p + '.metric.t') + '</div>' +
+            fList('主要养这颗心的专业 id（一行一个：m01…）', p + '.majors');
+        }, function (it) { return (it.nm || '') + (it.verb ? ' · ' + it.verb : ''); }) +
+        fGroup('成长路径', 'wuxin.path.steps', function (p) {
+          return '<div class="grid3">' + fText('序号', p + '.no') + fText('阶段（入学/课堂…）', p + '.st') +
+              fText('标题', p + '.nm') + '</div>' +
+            fText('说明', p + '.t', null, 2) +
+            fList('涉及的五心 id（一行一个）', p + '.hearts');
+        }, function (it) { return it.nm || ''; }) +
+        '<div class="grid2">' + fText('路径小标签', 'wuxin.path.kicker') + fText('路径标题后半', 'wuxin.path.headEm') + '</div>' +
+        fText('路径标题前半', 'wuxin.path.head') + fText('路径导语', 'wuxin.path.lead', null, 2);
+    },
     hero: function () {
       return fText('年份小字', 'hero.kickerYear') + fText('顶部说明', 'hero.kicker') +
         '<div class="grid2">' + fText('主标题（前半）', 'hero.title') + fText('主标题（红色后半）', 'hero.titleEm') + '</div>' +
@@ -556,8 +586,9 @@
         fText('导语', 'numbers.lead', null, 2) +
         fGroup('数字', 'numbers.stats', function (p) {
           return '<div class="grid3">' + fText('数字', p + '.n') + fText('单位', p + '.unit') + fText('标签', p + '.t') + '</div>' +
+            fText('家长问的那句话', p + '.q', '例如：学校有多大？') +
             fText('注释', p + '.d', null, 2);
-        }, function (it) { return (it.n || '') + ' ' + (it.t || ''); });
+        }, function (it) { return (it.q || '') + ' ' + (it.n || '') + ' ' + (it.t || ''); });
     },
     stops: function () {
       return fText('小标签', 'stops.kicker') +
@@ -567,6 +598,7 @@
           return '<div class="grid3">' + fText('序号', p + '.no') + fText('名称', p + '.nm') + fText('英文', p + '.block') + '</div>' +
             fText('描述', p + '.desc', null, 3) +
             fList('标签（一行一个）', p + '.tags') +
+            fList('关联五心（一行一个：red / ren / heng / jiang / chuang）', p + '.hearts') +
             fText('末尾一句（由此 · 某心）', p + '.heart');
         }, function (it) { return (it.no || '') + ' ' + (it.nm || ''); });
     },
@@ -580,10 +612,20 @@
         fGroup('系部', 'majors.depts', function (p) {
           return '<div class="grid3">' + fText('序号', p + '.no') + fText('系名', p + '.nm') + fText('方向概览', p + '.sm') + '</div>' +
             fList('专业标签（一行一个）', p + '.chips') +
+            fText('系部 id（jx / zk / xx / jm / ny，不要改）', p + '.id') +
+            fList('系部主养五心（一行一个）', p + '.hearts') +
             fText('注释', p + '.note', null, 2);
         }, function (it) { return (it.no || '') + ' ' + (it.nm || ''); }) +
+        fGroup('专业明细', 'majors.list', function (p) {
+          return '<div class="grid3">' + fText('编号', p + '.id') + fText('专业名', p + '.nm') +
+              fText('系部 id', p + '.dept') + '</div>' +
+            '<div class="grid2">' + fText('层次 id', p + '.level', 'w5 五年一贯制 / gk 职教高考 / z3 三年制中专') +
+              fText('一句话', p + '.one') + '</div>' +
+            fList('主要养的五心（一行一个：red / ren / heng / jiang / chuang）', p + '.hearts');
+        }, function (it) { return (it.id || '') + ' ' + (it.nm || ''); }) +
         fGroup('办学层次', 'majors.levels', function (p) {
-          return fText('标题', p + '.b') + fText('说明', p + '.s', null, 2);
+          return fText('层次 id（w5 / gk / z3）', p + '.id') + fText('标题', p + '.b') +
+            fText('说明', p + '.s', null, 2);
         }, function (it) { return it.b || ''; });
     },
     craft: function () {
@@ -605,20 +647,65 @@
     admit: function () {
       return fText('小标签', 'admit.kicker') +
         '<div class="grid2">' + fText('标题前半', 'admit.head') + fText('标题红色后半', 'admit.headEm') + '</div>' +
-        fText('导语', 'admit.lead', null, 2) +
+        fText('导语', 'admit.lead', null, 3) +
+        fGroup('四个线上通道', 'admit.channels', function (p) {
+          return '<div class="grid3">' + fText('序号', p + '.no') + fText('名称', p + '.t') +
+              fText('按钮字', p + '.act') + '</div>' +
+            fText('说明', p + '.d', null, 2) +
+            fText('链接', p + '.href', '#applyForm / #visit / #quiz / #checkForm');
+        }, function (it) { return (it.no || '') + ' ' + (it.t || ''); }) +
         fGroup('五步流程', 'admit.flow', function (p) {
           return '<div class="grid3">' + fText('序号', p + '.no') + fText('标题', p + '.t') + '</div>' +
             fText('说明', p + '.d', null, 2);
         }, function (it) { return (it.no || '') + ' ' + (it.t || ''); }) +
-        fText('场次表标题', 'admit.slot.title') +
-        fGroup('场次表行', 'admit.slot.rows', function (p) {
-          return '<div class="grid2">' + fText('项目', p + '.k') + fText('内容', p + '.v') + '</div>';
-        }, function (it) { return (it.k || '') + '：' + (it.v || ''); }) +
-        fText('场次表注释', 'admit.slot.note', null, 2) +
+        fGroup('办学层次', 'admit.levels', function (p) {
+          return fText('标题', p + '.b') + fText('说明', p + '.s', null, 2);
+        }, function (it) { return it.b || ''; }) +
+        fText('底部注释', 'admit.note', null, 3) +
+        '<div class="grid2">' + fText('报名表单标题', 'admit.form.title') + fText('提交按钮', 'admit.form.submit') + '</div>' +
+        fText('报名表单说明', 'admit.form.sub', null, 2) +
+        '<div class="grid2">' + fText('查进度标题', 'admit.check.title') +
+          fText('查进度说明', 'admit.check.sub') + '</div>' +
+        fList('查进度四步（一行一步）', 'admit.check.steps') +
+        fList('四步对应的说明（一行一条，与上面一一对应）', 'admit.check.desc') +
+        fText('查不到时的提示', 'admit.check.miss', null, 3) +
         fImg('二维码', 'admit.contact.qr') + fText('二维码说明', 'admit.contact.qrAlt') +
         fGroup('联系方式', 'admit.contact.rows', function (p) {
           return '<div class="grid2">' + fText('项目', p + '.k') + fText('内容', p + '.v') + '</div>';
         }, function (it) { return (it.k || '') + '：' + (it.v || ''); });
+    },
+    quiz: function () {
+      return fText('小标签', 'quiz.kicker') +
+        '<div class="grid2">' + fText('标题前半', 'quiz.head') + fText('标题红色后半', 'quiz.headEm') + '</div>' +
+        fText('导语', 'quiz.lead', null, 2) +
+        fGroup('题目', 'quiz.questions', function (p) {
+          return fText('题干', p + '.q', null, 2) +
+            fGroup('选项', p + '.opts', function (q) {
+              return fText('选项文字', q + '.t', null, 2) +
+                '<div class="grid3">' + fText('加权·红心', q + '.w.red') + fText('加权·仁心', q + '.w.ren') +
+                  fText('加权·恒心', q + '.w.heng') + '</div>' +
+                '<div class="grid2">' + fText('加权·匠心', q + '.w.jiang') + fText('加权·创心', q + '.w.chuang') + '</div>';
+            }, function (it) { return it.t || ''; });
+        }, function (it) { return it.q || ''; });
+    },
+    visit: function () {
+      return fText('小标签', 'visit.kicker') +
+        '<div class="grid2">' + fText('标题前半', 'visit.head') + fText('标题红色后半', 'visit.headEm') + '</div>' +
+        fText('导语', 'visit.lead', null, 2) +
+        fGroup('探校场次', 'visit.slots', function (p) {
+          return '<div class="grid3">' + fText('id（s1…，不要改）', p + '.id') + fText('日期', p + '.date') +
+              fText('星期', p + '.wk') + '</div>' +
+            '<div class="grid3">' + fText('时段', p + '.time') + fNum('名额', p + '.cap') +
+              fNum('已约', p + '.booked') + '</div>';
+        }, function (it) { return (it.date || '') + ' ' + (it.time || ''); }) +
+        fGroup('四十分钟路线', 'visit.route', function (p) {
+          return fText('名称', p + '.t') + fText('说明', p + '.d', null, 2) + fText('用时', p + '.min');
+        }, function (it) { return it.t || ''; }) +
+        fText('表单标题', 'visit.form.title') + fText('表单说明', 'visit.form.sub', null, 2) +
+        fText('提交按钮文字', 'visit.form.submit') +
+        fList('到校提醒（一行一条）', 'visit.tips') +
+        '<div class="grid2">' + fText('集合地点标题', 'visit.place.t') +
+          fText('集合地点内容', 'visit.place.v') + '</div>';
     },
     footer: function () {
       return fImg('校徽', 'footer.img') + fText('校名（两行用 <br>）', 'footer.name', null, 2) +
@@ -670,18 +757,21 @@
   };
 
   var SECTION_NAME = {
-    hero: '首屏', pan: '校园长卷', numbers: '可核对的数字', stops: '七站导览',
-    majors: '系部与专业', craft: '匠心与荣誉', admit: '招生信息',
-    footer: '页脚', nav: '页头', ask: '问校园面板', meta: '页面信息', theme: '配色与疏密'
+    hero: '首屏', wuxin: '五心育人', pan: '校园长卷', numbers: '五个问题', stops: '七站导览',
+    majors: '系部与专业', craft: '匠心与荣誉', quiz: '专业自测', visit: '预约探校',
+    admit: '线上招生', footer: '页脚', nav: '页头', ask: '问校园面板', meta: '页面信息', theme: '配色与疏密'
   };
   var SECTION_DESC = {
     hero: '第一屏：标题、副标题、两个按钮、四格信息',
+    wuxin: '五心金字招牌：五个印章、五心详情、成长路径',
     pan: '滚到这一段自动拉开的红漆长卷',
-    numbers: '八个数字，进视口从 0 补间',
+    numbers: '五个家长提问 + 对应数字，进视口从 0 补间',
     stops: '七站手风琴 + 右侧校园示意图',
-    majors: '五个系部手风琴 + 办学层次',
+    majors: '五个系部 + 二十三个专业 + 办学层次',
     craft: '三个大数字、八行时间线、国际合作、新闻图',
-    admit: '五步流程、场次表、地址与二维码',
+    quiz: '六道题、五心画像、推荐专业',
+    visit: '探校场次、四十分钟路线、预约表单',
+    admit: '四个线上通道、五步流程、报名与查进度',
     footer: '页脚三栏链接与版权',
     nav: '固定页头与手机抽屉',
     ask: '右下角问答面板的开场和兜底',
@@ -721,7 +811,7 @@
   }
 
   function viewContent() {
-    var order = ['nav', 'hero', 'pan', 'numbers', 'stops', 'majors', 'craft', 'admit', 'footer', 'ask', 'meta'];
+    var order = ['nav', 'hero', 'wuxin', 'pan', 'numbers', 'stops', 'majors', 'craft', 'quiz', 'visit', 'admit', 'footer', 'ask', 'meta'];
     var cards = order.map(function (k) {
       return '<div class="card" data-sec="' + k + '">' +
         '<div class="card__hd"><b>' + SECTION_NAME[k] + '</b>' +
