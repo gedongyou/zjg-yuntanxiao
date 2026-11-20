@@ -1875,3 +1875,204 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
   .qz__maj{ padding:14px; }
   .toast{ bottom:76px; width:calc(100vw - 32px); text-align:center; }
 }
+
+/* ============================================================
+   手机端收敛（2026.11-d）
+   目标：390 宽下把整页从一万八千多像素压下来，同时不牺牲可读性。
+   原则：① 段落留白统一收紧；② 每段只保留一层说明文字，删除重复的
+   引导语；③ 列表类内容改成两列或折叠，不让它一行占满整个屏幕。
+   ============================================================ */
+@media (max-width:760px){
+  /* 段落留白：桌面是 72–140px，手机上 44px 就够 */
+  .sec{ padding:44px 0; }
+  .sec__head{
+    padding-bottom:22px; margin-bottom:26px;
+    gap:12px;
+  }
+  .sec__h{ margin-top:10px; line-height:1.24; font-size:clamp(27px,8vw,34px); }
+  .sec__lead{ font-size:13.5px; line-height:1.85; }
+  .kicker{ font-size:9.5px; letter-spacing:.2em; }
+
+  /* 首屏：标题与信息条之间不再留 42px 空档 */
+  .hero{ min-height:auto; padding-top:calc(var(--nav-h) + 36px); padding-bottom:34px; }
+  .hero__title{ font-size:clamp(50px,15.5vw,76px); margin-top:20px; }
+  .hero__sub{ margin-top:10px; font-size:13px; }
+  .hero__lead{ margin-top:16px; font-size:13.5px; line-height:1.85; }
+  .hero__acts{ margin-top:24px; gap:9px; }
+  .hero__acts .btn{ height:44px; font-size:12.5px; }
+  .hero__meta{ margin-top:28px; gap:0; }
+  .hero__meta > div{ padding:12px 12px 0 0; }
+  .hero__meta > div:nth-child(2n){ padding-left:12px; }
+  .hero__meta dt{ font-size:9px; letter-spacing:.16em; }
+  .hero__meta dd{ font-size:12.5px; margin-top:4px; line-height:1.6; }
+
+  /* 成长路径：六节点从 2 列改成竖排时间轴，避免卡片宽窄不齐 */
+  .sec--path{ padding-top:44px; }
+  .pathhead{ gap:14px; margin-bottom:26px; }
+  .pathhead h3{ font-size:clamp(26px,7.6vw,32px); }
+  .pathhead > p{ font-size:12.5px; line-height:1.85; }
+  .ppath{ grid-template-columns:1fr 1fr; }
+  .pstep{ padding:14px 12px 12px 0; }
+  .pstep::before{ top:20px; }
+  .pstep p{ padding-right:0; font-size:12.2px; line-height:1.8; }
+  .pstep__hs{ margin-top:9px; }
+  .pstep__hs .hchip{ height:20px; font-size:9.5px; }
+
+  /* 长卷：手机上不占一屏半，缩到 100vh 让下一个标题能露出来 */
+  .unroll{ height:100vh; min-height:560px; }
+  .unroll__foot{ gap:6px; }
+
+  /* 六个问题：改成两列，六条从一屏半压到一屏 */
+  .stats, .stats--fit{ grid-template-columns:1fr 1fr; }
+  .stats > .stat, .stats--fit > .stat{
+    border-top:1px solid var(--line); margin-top:-1px;
+    padding:16px 12px 16px 0;
+  }
+  .stats > .stat:nth-child(-n+2), .stats--fit > .stat:nth-child(-n+2){ border-top:0; margin-top:0; }
+  .stats > .stat:nth-child(even), .stats--fit > .stat:nth-child(even){
+    padding-left:14px; padding-right:0; border-left:1px solid var(--line);
+  }
+  .stats > .stat:nth-child(odd), .stats--fit > .stat:nth-child(odd){ border-left:0; }
+  .stat{ padding:16px 12px 16px 0; }
+  .stat__q{ font-size:12px; margin-bottom:9px; }
+  .stat__n{ font-size:clamp(34px,10vw,44px); }
+  .stat__t{ margin-top:7px; font-size:13px; }
+  .stat__d{ margin-top:5px; font-size:11.5px; line-height:1.7; }
+
+  /* 七站：示意图与编号并排时不留下右侧空白，展开区也收紧 */
+  .walk{ padding:44px 0 40px; }
+  .walk__side{ gap:16px; margin-bottom:20px; padding-bottom:16px; }
+  .plan{ width:min(230px,58vw); }
+  .walk__num b{ font-size:16px; }
+  .walk__hd{ row-gap:2px; padding:14px 0; }
+  .walk__nm{ font-size:15px; }
+  .walk__body{ padding-top:12px; padding-bottom:16px; }
+  .walk__heart{ font-size:12.2px; line-height:1.8; }
+  .walk__hs{ margin-top:8px; }
+
+  /* 系部专业：筛选按钮两行变一行可横滑，系部展开区收紧 */
+  .mfilter{
+    flex-wrap:nowrap; overflow-x:auto; gap:6px;
+    margin:0 calc(var(--pad) * -1) 20px;
+    padding:0 var(--pad) 4px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .mfilter::-webkit-scrollbar{ display:none; }
+  .fbtn{ flex:none; height:31px; padding:0 11px; font-size:11.5px; }
+  .dept__hd{ grid-template-columns:30px 1fr 18px; padding:14px 0; }
+  .dept__nm{ font-size:15.5px; }
+  .dept__sm{ font-size:11.5px; line-height:1.6; }
+  .dept__in > div{ padding-bottom:20px; }
+  .dept__in > div > .mrows{ margin-top:4px; }
+  .chips{ gap:5px; }
+  .chips li{ font-size:10.5px; padding:3px 7px; }
+  .dept__note{ font-size:11.5px; line-height:1.75; margin-top:12px; }
+  .mrow{ padding:12px 0; }
+  .mrow__hd b{ font-size:14.5px; }
+  .mrow > p{ margin-top:4px; font-size:11.8px; line-height:1.75; }
+  .mrow__hs{ margin-top:8px; }
+
+  /* 匠心与荣誉：三块大字挤成一行可读，时间线节点减重 */
+  .craft{ padding:44px 0; }
+  .craft__big > div{ padding-top:12px; }
+  .craft__big b{ font-size:24px; }
+  .craft__big span{ font-size:10.5px; line-height:1.5; }
+  .tl{ margin-top:26px; }
+  .tl li{ padding:12px 0 12px 20px; }
+  .tl b{ font-size:13.5px; }
+  .tl p{ font-size:11.8px; line-height:1.7; }
+  .intl{ gap:1px; }
+  .news{ gap:8px; }
+
+  /* 自测：题干与选项都收紧，六题一屏半内走完 */
+  .qz__q{ font-size:15.5px; line-height:1.5; }
+  .qo{ padding:11px 13px; font-size:12.5px; }
+  .qz__bar-row{ grid-template-columns:52px 1fr 26px; gap:8px; }
+  .qz__res h3{ font-size:21px; }
+  .qz__res > p{ font-size:12.2px; }
+  .qz__maj{ padding:12px; }
+  .qz__maj b{ font-size:14.5px; }
+
+  /* 预约探校：场次从 2 列改 1 列会翻倍变高，保持 2 列但压扁卡片 */
+  .blk__h{ margin-bottom:9px; }
+  .slots{ grid-template-columns:1fr 1fr; gap:7px; margin-bottom:22px; }
+  .slot{ flex-direction:row; flex-wrap:wrap; align-items:center; gap:2px 6px; padding:9px 10px 8px; }
+  .slot__d{ flex:1; font-size:13.5px; }
+  .slot__d i{ font-size:9px; margin-left:3px; }
+  .slot__t{ font-size:9.5px; flex:1 0 100%; order:3; }
+  .slot__bar{ flex:1 0 100%; order:2; margin:3px 0 0; }
+  .slot__bar i{ height:2px; }
+  .slot__l{ flex:none; order:1; font-size:9px; }
+  .route{ margin-bottom:18px; }
+  .rt{ grid-template-columns:22px 1fr; gap:10px; padding:10px 0; }
+  .rt__m{ display:none; }
+  .rt b{ font-size:13.5px; }
+  .rt p{ font-size:11.5px; line-height:1.7; }
+  .tips{ gap:5px; }
+  .tips li{ font-size:11.5px; line-height:1.7; }
+  .vform, .aform, .cform{ padding:15px; }
+  .aform__sub{ font-size:11.5px; line-height:1.7; margin-top:6px; }
+  .cform{ margin-top:14px; }
+  .fd{ margin-bottom:11px; }
+  .fd > span{ font-size:10px; letter-spacing:.14em; margin-bottom:5px; }
+  .fd input, .fd select, .fd textarea{ height:42px; font-size:13.5px; padding:0 11px; }
+  .fd textarea{ height:auto; padding:10px 11px; }
+
+  /* 线上招生：四通道 813px → 一屏内；表单与流程同步收紧 */
+  .sec--admit{ padding:44px 0; }
+  .chns{ margin-bottom:28px; }
+  .chn{ padding:14px 16px; flex-direction:row; flex-wrap:wrap; align-items:baseline; gap:0 10px; }
+  .chn__no{ width:100%; }
+  .chn b{ font-size:15.5px; margin:6px 0 0; flex:1; }
+  .chn p{ font-size:11.2px; line-height:1.7; flex:1 0 100%; margin-top:5px; }
+  .chn__act{ border-top:0; margin-top:8px; padding-top:0; flex:1 0 100%; font-size:10.5px; }
+  .flow li{ grid-template-columns:30px 1fr; gap:10px; padding:13px 0; }
+  .flow b{ font-size:11px; }
+  .flow h4{ font-size:14px; margin-top:1px; }
+  .flow p{ font-size:11.5px; line-height:1.7; margin-top:3px; }
+  .levels{ margin-top:22px; }
+  .lv{ padding:11px 0; }
+  .lv b{ font-size:13.5px; }
+  .lv span{ font-size:11.2px; line-height:1.7; }
+  .contact{ gap:12px; margin-top:22px; }
+  .contact img{ width:96px; height:96px; }
+  .contact dl{ gap:1px 10px; }
+  .contact dt{ font-size:9px; }
+  .contact dd{ font-size:11.5px; line-height:1.6; }
+  /* 23 个专业标签在手机上要占 8 行、两百多像素，改成可滚动的一块 */
+  .picks{
+    gap:5px; max-height:126px; overflow-y:auto;
+    padding:2px 6px 2px 2px; border:1px solid var(--line);
+    background:color-mix(in srgb,var(--paper) 60%,transparent);
+  }
+  .pk{ height:26px; padding:0 8px; font-size:10.5px; }
+  .track__steps li{ font-size:10px; }
+
+  /* 匠心与荣誉：三张新闻图改成一条横排小图，不再各占一张 16:10 大图 */
+  .news{ grid-template-columns:repeat(3,1fr); gap:7px; }
+  .news img{ aspect-ratio:1/1; }
+  .news figcaption{ margin-top:5px; font-size:9.5px; line-height:1.5; }
+
+  /* 页脚：品牌独占一行，三列链接并成两列 */
+  .foot{ padding-top:36px; }
+  .foot__top{
+    grid-template-columns:1fr 1fr; gap:20px 18px;
+    padding-bottom:22px;
+  }
+  .foot__brand{ grid-column:1/-1; gap:12px; }
+  .foot__brand img{ width:34px; height:34px; }
+  .foot__brand b{ font-size:13px; }
+  .foot__brand span{ margin-top:5px; font-size:11px; line-height:1.65; }
+  .foot h5{ margin-bottom:9px; font-size:9px; }
+  .foot li{ margin-bottom:5px; }
+  .foot li a{ font-size:12px; }
+  .foot__bot{ padding-top:14px; font-size:10.5px; }
+}
+
+@media (max-width:359px){
+  .foot__top{ grid-template-columns:1fr; }
+  .stats, .stats--fit{ grid-template-columns:1fr; }
+  .stats > .stat:nth-child(-n+2), .stats--fit > .stat:nth-child(-n+2){ border-top:1px solid var(--line); margin-top:-1px; }
+  .stats > .stat:nth-child(-n+1), .stats--fit > .stat:nth-child(-n+1){ border-top:0; margin-top:0; }
+  .stats > .stat, .stats--fit > .stat{ padding-left:0 !important; border-left:0 !important; }
+}
