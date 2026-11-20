@@ -193,7 +193,6 @@
         (s.q ? '<p class="stat__q">' + esc(s.q) + '</p>' : '') +
         '<p class="stat__n"><span data-count="' + esc(s.n) + '">0</span><i>' + esc(s.unit || '') + '</i></p>' +
         '<p class="stat__t">' + esc(s.t) + '</p>' +
-        '<p class="stat__d">' + esc(s.d || '') + '</p>' +
       '</div>';
     }).join('');
 
@@ -310,8 +309,7 @@
   /* ---------- 线上招生：登记 / 查进度 / 流程 ---------- */
   RENDER.stops = function (s) {
     var items = arr(s.items).map(function (it, i) {
-      var tags = arr(it.tags).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
-      return '<article class="walk__it' + (i === 0 ? ' is-open' : '') + '" data-block="' + esc(it.block) + '" data-nm="' + esc(it.nm) + '">' +
+      return '<article class="walk__it' + (i === 0 ? ' is-open' : '') + '" data-nm="' + esc(it.nm) + '">' +
         '<button class="walk__hd" type="button" aria-expanded="' + (i === 0 ? 'true' : 'false') + '">' +
           '<span class="walk__no">' + esc(it.no) + '</span>' +
           '<span class="walk__nm">' + esc(it.nm) + '</span>' +
@@ -320,51 +318,16 @@
         '</button>' +
         '<div class="walk__bd"><div class="walk__in"><div class="walk__body">' +
           '<p class="walk__desc">' + esc(it.desc) + '</p>' +
-          '<ul class="walk__tags">' + tags + '</ul>' +
           (it.heart ? '<p class="walk__heart">' + esc(it.heart) + '</p>' : '') +
           '<div class="walk__hs">' + hchipList(it.hearts, true) + '</div>' +
         '</div></div></div>' +
       '</article>';
     }).join('');
 
-    var roads = arr(s.planRoads).map(function (d) {
-      return '<path class="plan__road" d="' + esc(d) + '"/>';
-    }).join('');
-
-    var blocks = arr(s.items).map(function (it) {
-      var p = it.plan || {};
-      var shape = p.oval
-        ? '<rect class="plan__b" data-block="' + esc(it.block) + '" x="' + esc(p.x) + '" y="' + esc(p.y) +
-          '" width="' + esc(p.w) + '" height="' + esc(p.h) + '" rx="42"/>'
-        : '<rect class="plan__b" data-block="' + esc(it.block) + '" x="' + esc(p.x) + '" y="' + esc(p.y) +
-          '" width="' + esc(p.w) + '" height="' + esc(p.h) + '" rx="2"/>';
-      var labelY = Number(p.y || 0) + Number(p.h || 0) / 2 + 6;
-      var label = '<text class="plan__l" x="' + (Number(p.x || 0) + Number(p.w || 0) / 2).toFixed(0) +
-        '" y="' + labelY.toFixed(0) + '">' + esc(p.label || it.nm) + '</text>';
-      return shape + label + (p.oval
-        ? '<ellipse class="plan__road" cx="' + esc(p.x + p.w / 2) + '" cy="' + esc(p.y + p.h / 2) +
-          '" rx="' + esc(s.planOval ? s.planOval.rx : 26) + '" ry="' + esc(s.planOval ? s.planOval.ry : 46) + '"/>'
-        : '');
-    }).join('');
-
     return '<section class="walk" id="stops">' +
       '<div class="wrap">' +
         secHead(s.kicker, s.head, s.headEm, s.lead) +
-        '<div class="walk__grid">' +
-          '<div class="walk__list" id="walkList">' + items + '</div>' +
-          '<aside class="walk__side">' +
-            '<div class="walk__num"><span id="walkNo">' + esc((arr(s.items)[0] || {}).no || '01') + '</span>' +
-              '<b id="walkNm">' + esc((arr(s.items)[0] || {}).nm || '') + '</b></div>' +
-            '<div class="plan" aria-label="校园导览示意图">' +
-              '<svg viewBox="0 0 ' + esc((s.planFrame || {}).w || 360) + ' ' + esc((s.planFrame || {}).h || 300) + '" role="img">' +
-                '<rect class="plan__frame" x="8" y="8" width="344" height="284" rx="4"/>' +
-                roads + blocks +
-                '<circle class="plan__dot" id="planDot" cx="213" cy="49" r="3.4"/>' +
-              '</svg>' +
-            '</div>' +
-            '<p class="plan__hint">' + esc(s.planHint || '') + '</p>' +
-          '</aside>' +
-        '</div>' +
+        '<div class="walk__list" id="walkList">' + items + '</div>' +
       '</div>' +
     '</section>';
   };
@@ -411,18 +374,14 @@
       '</div>';
     }).join('');
 
-    var levels = arr(m.levels).map(function (l) {
-      return '<div class="level"><b>' + esc(l.b) + '</b><span>' + esc(l.s) + '</span></div>';
-    }).join('');
 
     return '<section class="sec" id="majors">' +
       '<div class="wrap">' +
         secHead(m.kicker, m.head, m.headEm, m.lead) +
-        '<div class="majors__top reveal">' + top + '</div>' +
+        (top ? '<div class="majors__top reveal">' + top + '</div>' : '') +
         '<div class="mfilter reveal" id="mFilter">' + filter + '</div>' +
         '<div class="majors__list" id="depts">' + depts + '</div>' +
         '<p class="mempty" id="mEmpty" hidden>没有同时养这颗心的专业。换成「全部」再看。</p>' +
-        '<div class="levels reveal">' + levels + '</div>' +
       '</div>' +
     '</section>';
   };
@@ -431,12 +390,6 @@
     var big = arr(c.big).map(function (b) {
       return '<div><b>' + esc(b.n) + '<i>' + esc(b.u) + '</i></b><span>' + esc(b.t) + '</span></div>';
     }).join('');
-
-    var tl = arr(c.timeline).map(function (t) {
-      return '<li><b>' + esc(t.y) + '</b><p>' + esc(t.t) + '</p></li>';
-    }).join('');
-
-    var intl = arr(c.intl).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
 
     var news = arr(c.news).map(function (n) {
       return '<figure>' +
@@ -448,17 +401,9 @@
     return '<section class="sec" id="craft">' +
       '<div class="wrap">' +
         secHead(c.kicker, c.head, c.headEm, c.lead) +
-        '<div class="craft">' +
-          '<div class="reveal">' +
-            '<div class="craft__big">' + big + '</div>' +
-            '<ul class="tl" id="timeline">' + tl + '</ul>' +
-            '<ul class="intl">' + intl + '</ul>' +
-          '</div>' +
-          '<div class="reveal" data-d="1">' +
-            '<div class="news">' + news + '</div>' +
-            '<p class="dept__note" style="margin-top:22px">' + esc(c.newsNote || '') + '</p>' +
-          '</div>' +
-        '</div>' +
+        '<div class="craft__big reveal">' + big + '</div>' +
+        '<div class="news reveal" data-d="1">' + news + '</div>' +
+        (c.newsNote ? '<p class="craft__note">' + esc(c.newsNote) + '</p>' : '') +
       '</div>' +
     '</section>';
   };
@@ -480,9 +425,6 @@
         (f.d ? '<p>' + esc(f.d) + '</p>' : '') + '</div></li>';
     }).join('');
 
-    var levels = arr(a.levels).map(function (l) {
-      return '<div class="lv"><b>' + esc(l.b) + '</b><span>' + esc(l.s) + '</span></div>';
-    }).join('');
 
     var contact = a.contact || {};
     var crows = arr(contact.rows).map(function (r) {
@@ -505,7 +447,6 @@
           '<div class="reveal">' +
             '<h4 class="blk__h">五步走完</h4>' +
             '<ol class="flow">' + flow + '</ol>' +
-            '<div class="levels">' + levels + '</div>' +
             '<p class="slot__note">' + esc(a.note || '') + '</p>' +
           '</div>' +
 
@@ -743,22 +684,7 @@
 
   /* ---------- 交互：七站 ---------- */
   var walkItems = $$('.walk__it');
-  var planBlocks = $$('.plan__b');
-  var planDot = $('#planDot');
-  var walkNo = $('#walkNo');
-  var walkNm = $('#walkNm');
 
-  function planTo(name) {
-    var b = null;
-    planBlocks.forEach(function (node) {
-      var hit = node.getAttribute('data-block') === name;
-      node.classList.toggle('is-on', hit);
-      if (hit) b = node;
-    });
-    if (!b || !planDot) return;
-    planDot.setAttribute('cx', parseFloat(b.getAttribute('x')) + parseFloat(b.getAttribute('width')) - 11);
-    planDot.setAttribute('cy', parseFloat(b.getAttribute('y')) + 11);
-  }
   function openWalk(item, nudge) {
     walkItems.forEach(function (it) {
       var on = it === item;
@@ -766,10 +692,6 @@
       var hd = $('.walk__hd', it);
       if (hd) hd.setAttribute('aria-expanded', on ? 'true' : 'false');
     });
-    planTo(item.getAttribute('data-block'));
-    var no = $('.walk__no', item);
-    if (walkNo && no) walkNo.textContent = no.textContent;
-    if (walkNm) walkNm.textContent = item.getAttribute('data-nm') || '';
     if (!nudge) return;
     setTimeout(function () {
       var rect = item.getBoundingClientRect();

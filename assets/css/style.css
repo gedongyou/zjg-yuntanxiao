@@ -23,31 +23,31 @@
   --sans: -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
   --mono: "SF Mono","JetBrains Mono","Roboto Mono",ui-monospace,Menlo,Consolas,monospace;
 
-  --pad: clamp(20px, 5vw, 88px);
+  --pad: clamp(22px, 4.6vw, 72px);
   --nav-h: 72px;
   --max: 1320px;
 
   /* 层次系统：老师说的"标题和正文要分颜色、透明度"
      L1 标题 / L2 正文 / L3 辅助 —— 三档在字号、字重、颜色、透明度上都拉开 */
-  --t1-size: clamp(32px, 4.6vw, 62px);
+  --t1-size: clamp(30px, 4.2vw, 56px);
   --t1-weight: 500;
   --t1-ink: var(--ink);
   --t1-track: -.018em;
 
-  --t2-size: 14.5px;
+  --t2-size: 15px;
   --t2-weight: 400;
   --t2-ink: var(--ink-2);
   --t2-track: .012em;
 
-  --t3-size: 11.5px;
+  --t3-size: 11px;
   --t3-weight: 400;
   --t3-ink: var(--ink-3);
   --t3-track: .06em;
 
   /* 灰度与透明度分度（老师提的"灰度分度"） */
   --a1: 1;      /* 主信息不透明 */
-  --a2: .82;    /* 次信息 */
-  --a3: .62;    /* 辅助信息 */
+  --a2: .78;    /* 次信息 */
+  --a3: .46;    /* 辅助信息：明显淡一档 */
 
   /* 后台可调 */
   --contrast: 1;
@@ -508,30 +508,30 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   letter-spacing:.2em; color:var(--ink-3); flex:none;
 }
 
-.sec{ position:relative; padding:clamp(72px,11vh,140px) 0; }
+.sec{ position:relative; padding:clamp(88px,12vh,152px) 0; }
 .sec--paper{ background:var(--band); }
 .sec__head{
   display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
   gap:clamp(24px,5vw,72px);
   align-items:end;
-  padding-bottom:clamp(30px,5vh,54px);
+  padding-bottom:clamp(34px,5.5vh,60px);
   border-bottom:1px solid var(--line);
-  margin-bottom:clamp(34px,6vh,62px);
+  margin-bottom:clamp(46px,7.5vh,84px);
 }
 .sec__h{
   font-family:var(--serif);
   font-size:clamp(32px, 4.6vw, 62px);
   line-height:1.16; letter-spacing:-.015em;
-  margin-top:16px; font-weight:400;
+  margin-top:20px; font-weight:400;
 }
-.sec__lead{ color:var(--ink-2); font-size:14.5px; line-height:1.95; max-width:34em; }
+.sec__lead{ color:var(--ink-2); font-size:15px; line-height:2.05; max-width:32em; }
 
 .stats{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
 }
 .stat{
-  padding:26px 22px 30px 0;
+  padding:38px 26px 40px 0;
   border-bottom:1px solid var(--line);
   border-top:1px solid var(--line);
   margin-top:-1px;
@@ -539,27 +539,20 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .stat:not(:nth-child(4n+1)){ padding-left:24px; border-left:1px solid var(--line); }
 .stat__n{
   font-family:var(--serif);
-  font-size:clamp(38px,4.4vw,58px);
+  font-size:clamp(42px,4.6vw,64px);
   line-height:1;
-  letter-spacing:-.03em;
+  letter-spacing:-.035em;
   display:flex; align-items:baseline; gap:6px;
 }
 .stat__n i{
   font-style:normal; font-family:var(--sans);
   font-size:12px; letter-spacing:.06em; color:var(--red);
 }
-.stat__t{ margin-top:14px; font-size:13.5px; letter-spacing:.02em; }
-.stat__d{ margin-top:8px; font-size:12px; color:var(--ink-3); line-height:1.75; }
+.stat__t{ margin-top:20px; font-size:14px; letter-spacing:.02em; line-height:1.7; }
 
-.walk{ padding:clamp(64px,10vh,132px) 0 clamp(56px,9vh,110px); }
-.walk__grid{
-  display:grid;
-  grid-template-columns:minmax(0,1.32fr) minmax(0,.68fr);
-  gap:clamp(28px,5vw,80px);
-  align-items:start;
-}
+.walk{ padding:clamp(88px,12vh,152px) 0 clamp(72px,10vh,120px); }
 
-.walk__list{ border-top:1px solid var(--line-2); }
+.walk__list{ border-top:0; }
 .walk__it{ border-bottom:1px solid var(--line); }
 .walk__hd{
   width:100%;
@@ -568,7 +561,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   gap:clamp(10px,1.6vw,24px);
   align-items:center;
   text-align:left;
-  padding:clamp(20px,2.6vh,32px) 0;
+  padding:clamp(26px,3.4vh,40px) 0;
 }
 .walk__no{
   font-family:var(--mono); font-size:10.5px;
@@ -609,66 +602,41 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .walk__it.is-open .walk__bd{ grid-template-rows:1fr; }
 .walk__in{ overflow:hidden; }
 .walk__body{
-  padding:0 0 clamp(24px,3.4vh,38px) clamp(0px,5.6vw,82px);
-  max-width:42em;
+  padding:0 0 clamp(30px,4vh,46px) clamp(0px,5.6vw,82px);
+  max-width:38em;
 }
-.walk__desc{ color:var(--ink-2); font-size:13.4px; line-height:2.05; }
-.walk__tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
-.walk__tags li{
-  font-size:11.5px; color:var(--ink-2);
-  border:1px solid var(--line-2);
-  padding:5px 11px; letter-spacing:.02em;
-}
+.walk__desc{ color:var(--ink-2); font-size:14.5px; line-height:2.15; }
 .walk__heart{
-  margin-top:16px; padding-top:14px;
+  margin-top:22px; padding-top:18px;
   border-top:1px solid var(--line);
-  font-size:13px; line-height:1.95; color:var(--ink-2);
+  font-size:14px; line-height:2.05; color:var(--ink-2);
+  opacity:var(--a2);
 }
 .walk__hs{ display:flex; gap:7px; flex-wrap:wrap; margin-top:10px; }
+/* ---------- 心性小签（专业 / 站点 / 成长路径通用） ---------- */
+.hchip{
+  display:inline-flex; align-items:center; gap:6px;
+  height:26px; padding:0 10px;
+  border:1px solid color-mix(in srgb,var(--hc) 34%,transparent);
+  background:color-mix(in srgb,var(--hc) 7%,transparent);
+  font:inherit; font-size:11px; letter-spacing:.06em;
+  color:color-mix(in srgb,var(--hc) 82%,var(--ink));
+  cursor:pointer; transition:.3s ease;
+}
+.hchip i{ width:5px; height:5px; border-radius:50%; background:var(--hc); flex:none; }
+.hchip:hover{ background:var(--hc); border-color:var(--hc); color:#fff; }
+.hchip:hover i{ background:#fff; }
+.hchip[tabindex="-1"]{ cursor:default; }
+.hchip[tabindex="-1"]:hover{
+  background:color-mix(in srgb,var(--hc) 7%,transparent);
+  border-color:color-mix(in srgb,var(--hc) 34%,transparent);
+  color:color-mix(in srgb,var(--hc) 82%,var(--ink));
+}
+.hchip[tabindex="-1"]:hover i{ background:var(--hc); }
+
 .walk__hs .hchip{ font-size:11px; padding:3px 9px; }
 
-.walk__side{ position:sticky; top:calc(var(--nav-h) + 42px); }
-.walk__num{
-  display:flex; align-items:baseline; gap:12px;
-  margin-bottom:clamp(14px,2.2vh,24px);
-  padding-bottom:12px; border-bottom:1px solid var(--line);
-}
-.walk__num span{
-  font-family:var(--mono); font-size:10.5px;
-  letter-spacing:.2em; color:var(--red);
-}
-.walk__num b{
-  font-family:var(--serif); font-weight:400;
-  font-size:clamp(17px,1.9vw,24px); letter-spacing:.02em;
-}
 
-.plan{ width:100%; }
-.plan svg{ width:100%; height:auto; display:block; overflow:visible; }
-.plan__frame{ fill:none; stroke:var(--line); stroke-width:.8; }
-.plan__road{ fill:none; stroke:var(--line); stroke-width:.8; stroke-dasharray:3 4; }
-.plan__b{
-  fill:color-mix(in srgb, var(--ink) 4%, transparent);
-  stroke:color-mix(in srgb, var(--ink) 20%, transparent);
-  stroke-width:.9;
-  transition:fill .5s ease, stroke .5s ease;
-}
-.plan__l{
-  font-family:var(--sans); font-size:9px;
-  fill:var(--ink-2); letter-spacing:.02em;
-  transition:fill .5s ease;
-  text-anchor:middle;
-}
-.plan__b.is-on{ fill:var(--red); stroke:var(--red); }
-.plan__b.is-on + .plan__l{ fill:#fff; }
-.plan__dot{
-  fill:var(--paper); stroke:var(--red); stroke-width:1.4;
-  transition:cx .6s cubic-bezier(.22,.61,.36,1), cy .6s cubic-bezier(.22,.61,.36,1);
-}
-.plan__hint{
-  font-family:var(--mono); font-size:9px;
-  letter-spacing:.2em; color:var(--ink-3);
-  text-align:right; margin-top:12px;
-}
 
 .majors__top{
   display:flex; flex-wrap:wrap; gap:10px 34px;
@@ -724,32 +692,13 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   margin-top:16px; font-size:12.2px;
   color:var(--ink-3); line-height:1.85; max-width:48em;
 }
-.levels{
-  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:0; margin-top:clamp(34px,5vh,54px);
-  border-top:1px solid var(--line);
-}
-.level{
-  padding:22px 22px 4px 0;
-  border-bottom:1px solid var(--line);
-}
-.level + .level{ padding-left:22px; border-left:1px solid var(--line); }
-.level b{
-  display:block; font-family:var(--serif);
-  font-size:16px; font-weight:500; margin-bottom:9px;
-}
-.level span{ font-size:12px; color:var(--ink-3); line-height:1.8; display:block; }
 
-.craft{
-  display:grid;
-  grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
-  gap:clamp(34px,6vw,84px);
-}
 .craft__big{
   display:grid; grid-template-columns:repeat(3,1fr);
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
-  padding:22px 0 26px;
+  padding:34px 0 38px;
+  gap:clamp(16px,3vw,48px);
 }
 .craft__big > div + div{ border-left:1px solid var(--line); padding-left:20px; }
 .craft__big b{
@@ -765,41 +714,15 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   display:block; margin-top:12px;
   font-size:11.5px; color:var(--ink-3); letter-spacing:.04em;
 }
-.tl{ margin-top:clamp(26px,4vh,42px); }
-.tl li{
-  position:relative;
-  padding:0 0 20px 26px;
-  border-left:1px solid var(--line);
-  opacity:.42;
-  transition:opacity .6s ease;
-}
-.tl li:last-child{ border-left-color:transparent; padding-bottom:0; }
-.tl li.is-on{ opacity:1; }
-.tl li::before{
-  content:""; position:absolute; left:-4px; top:9px;
-  width:7px; height:7px;
-  background:var(--paper); border:1px solid var(--ink-2);
-  transform:rotate(45deg);
-  transition:background .5s ease, border-color .5s ease;
-}
-.tl li.is-on::before{ background:var(--red); border-color:var(--red); }
-.tl b{
-  font-family:var(--mono); font-size:11px;
-  letter-spacing:.14em; display:block;
-  margin-bottom:3px; color:var(--ink);
-}
-.tl p{ font-size:12.8px; color:var(--ink-2); line-height:1.8; }
-.intl{
-  display:flex; flex-wrap:wrap; gap:7px;
-  margin-top:clamp(26px,4vh,40px);
-  padding-top:20px; border-top:1px solid var(--line);
-}
-.intl li{
-  font-size:11.5px; color:var(--ink-2);
-  padding:5px 10px; border:1px solid var(--line);
-}
 .news{
-  display:grid; grid-template-columns:1fr; gap:18px;
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(14px,2vw,28px);
+  margin-top:clamp(30px,4.4vh,52px);
+}
+.craft__note{
+  margin-top:clamp(20px,3vh,30px);
+  font-size:12px; color:var(--ink-3); line-height:1.8;
+  opacity:var(--a2);
 }
 .news figure{ margin:0; }
 .news img{
@@ -809,8 +732,8 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 }
 .news figure:hover img{ filter:none; }
 .news figcaption{
-  margin-top:9px; font-size:11.5px; color:var(--ink-3);
-  line-height:1.7; letter-spacing:.01em;
+  margin-top:13px; font-size:12px; color:var(--ink-3);
+  line-height:1.8; letter-spacing:.01em; opacity:var(--a2);
 }
 
 .admit{
@@ -993,28 +916,23 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .walk__en,
 .walk__no,
 .unroll__mark,
-.plan__hint,
 .dept__no,
 .hero__meta dt,
 .doc__tag,
 .slot th,
 .contact dt,
 .foot h5,
-.stat__d,
 .dept__note,
 .slot__note,
 .news figcaption,
-.level span,
-.tl p,
-.intl li,
 .majors__top{
   color:var(--t3-ink);
   opacity:var(--a3);
 }
 
 /* --- 分段的垂直节奏：density 缩放 --- */
-.sec{ padding:calc(clamp(72px,11vh,140px) * var(--density)) 0; }
-.walk{ padding:calc(clamp(64px,10vh,132px) * var(--density)) 0 calc(clamp(56px,9vh,110px) * var(--density)); }
+.sec{ padding:calc(clamp(88px,12vh,152px) * var(--density)) 0; }
+.walk{ padding:calc(clamp(88px,12vh,152px) * var(--density)) 0 calc(clamp(72px,10vh,120px) * var(--density)); }
 
 /* --- 图片灰度：img-gray 统一控制 --- */
 .news img{ filter:grayscale(var(--img-gray)) contrast(1.02); }
@@ -1024,20 +942,19 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 /* --- 对齐：所有分段标题与正文贴同一条左线，右侧留白相同 --- */
 .sec__head{
   grid-template-columns:minmax(0,1.18fr) minmax(0,.82fr);
-  gap:clamp(26px,5vw,64px);
+  gap:clamp(30px,5.4vw,72px);
   align-items:end;
 }
 .sec__head > .reveal:first-child{ min-width:0; }
 
 /* 数字区标题：数字与单位、标签、注释三层分开 */
 .stat__t{ font-size:13.5px; color:var(--ink); letter-spacing:.02em; }
-.stat__d{ font-size:11.5px; color:var(--ink-3); line-height:1.7; }
 .stat__n{ color:var(--ink); }
 .stat__n i{ color:var(--red); opacity:.92; }
 
 /* 七站：站点名 L1、英文与序号 L3、正文 L2 */
 .walk__nm{ color:var(--ink); }
-.walk__desc{ font-size:13.4px; color:var(--ink-2); line-height:2.05; }
+.walk__desc{ font-size:14.5px; color:var(--ink-2); line-height:2.15; }
 
 /* 系部：系名 L1、方向说明 L2、注释 L3 */
 .dept__nm{ color:var(--ink); }
@@ -1046,31 +963,11 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .dept__note{ color:var(--ink-3); }
 
 /* 匠心：大数字、时间线、新闻三层 */
-.tl b{ color:var(--ink); }
-.tl p{ color:var(--ink-2); opacity:1; }
-.tl li{ opacity:.5; }
-.tl li.is-on{ opacity:1; }
 .craft__big b{ color:var(--ink); }
 .craft__big i{ color:var(--red); }
 .craft__big span{ color:var(--ink-3); }
 
 /* 匠心左列：右列三张新闻图比时间线高，把时间线在纵向上均分撑开，
-   国际合作贴到底，左右两列底边对齐，不留一块空白 */
-.craft > .reveal:first-child{
-  display:flex; flex-direction:column;
-}
-.craft > .reveal:first-child .tl{
-  flex:1 1 auto;
-  display:flex; flex-direction:column;
-  justify-content:space-between;
-}
-.craft > .reveal:first-child .intl{
-  margin-top:clamp(26px,4vh,40px);
-}
-.craft > .reveal + .reveal .news{
-  height:100%;
-  align-content:space-between;
-}
 
 /* 招生：流程步骤三层 */
 .flow h4{ color:var(--ink); }
@@ -1100,8 +997,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .hero__tag{ color:var(--ink-3); }
 
 /* 细分隔线更淡，避免"细看全是线" */
-.tl li{ border-left-color:var(--line); }
-.walk__it,.dept,.stat,.level,.flow li,.intl{ border-color:var(--line); }
+.walk__it,.dept,.stat,.flow li{ border-color:var(--line); }
 
 @media (max-width:1180px){
   .nav__links{ display:none; }
@@ -1117,18 +1013,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 @media (max-width:980px){
   .sec__head{ grid-template-columns:1fr; gap:18px; align-items:start; }
   .craft,.admit{ grid-template-columns:1fr; }
-  .walk__grid{ grid-template-columns:1fr; }
-  .walk__side{
-    position:static; order:-1;
-    display:flex; align-items:center; gap:clamp(18px,4vw,40px);
-    margin-bottom:26px; padding-bottom:22px;
-    border-bottom:1px solid var(--line);
-  }
-  .walk__num{ margin:0; padding:0; border:0; flex:none; flex-direction:column; align-items:flex-start; gap:4px; }
-  .plan{ width:min(190px,46vw); flex:none; }
-  .plan__hint{ display:none; }
-  .levels{ grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .level:nth-child(odd){ padding-left:0; border-left:0; }
   .foot__top{ grid-template-columns:1fr 1fr; }
   .foot__brand{ grid-column:1/-1; }
 }
@@ -1170,8 +1054,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   .dept__n{ display:none; }
   .dept__in > div{ padding-left:0; }
 
-  .levels{ grid-template-columns:1fr; }
-  .level,.level:nth-child(even){ padding-left:0; border-left:0; }
 
   .craft__big{ grid-template-columns:1fr 1fr 1fr; }
   .craft__big > div + div{ padding-left:12px; }
@@ -1854,8 +1736,6 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
 @media (max-width:1180px){
   .chns{ grid-template-columns:repeat(2,minmax(0,1fr)); }
   .ppath{ grid-template-columns:repeat(3,minmax(0,1fr)); }
-  .pstep:nth-child(3n){ border-right:0; padding-right:0; }
-  .pstep:nth-child(n+4){ border-top:1px solid var(--line); }
 }
 @media (max-width:980px){
   .visit{ grid-template-columns:1fr; }
@@ -1863,10 +1743,7 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
   .qz__bar-row{ grid-template-columns:56px 1fr 30px; }
 }
 @media (max-width:760px){
-  .ppath{ grid-template-columns:1fr 1fr; }
-  .pstep:nth-child(3n){ border-right:1px solid var(--line); padding-right:16px; }
-  .pstep:nth-child(2n){ border-right:0; padding-right:0; }
-  .pstep:nth-child(n+3){ border-top:1px solid var(--line); }
+  .ppath{ grid-template-columns:1fr; }
   .chns{ grid-template-columns:1fr; }
   .aform__row{ grid-template-columns:1fr; }
   .slots{ grid-template-columns:1fr 1fr; }
@@ -1883,8 +1760,11 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
    引导语；③ 列表类内容改成两列或折叠，不让它一行占满整个屏幕。
    ============================================================ */
 @media (max-width:760px){
-  /* 段落留白：桌面是 72–140px，手机上 44px 就够 */
-  .sec{ padding:44px 0; }
+  /* 页边距：桌面上是 22–72px，手机上给到 26px，字不再贴边 */
+  .wrap{ padding-inline:26px; }
+  .mfilter{ margin:0 -26px 22px; padding:0 26px 4px; }
+  /* 段落留白 */
+  .sec{ padding:46px 0; }
   .sec__head{
     padding-bottom:22px; margin-bottom:26px;
     gap:12px;
@@ -1907,48 +1787,54 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
   .hero__meta dd{ font-size:12.5px; margin-top:4px; line-height:1.6; }
 
   /* 成长路径：六节点从 2 列改成竖排时间轴，避免卡片宽窄不齐 */
-  .sec--path{ padding-top:44px; }
+  .sec--path{ padding-top:46px; }
   .pathhead{ gap:14px; margin-bottom:26px; }
   .pathhead h3{ font-size:clamp(26px,7.6vw,32px); }
   .pathhead > p{ font-size:12.5px; line-height:1.85; }
-  .ppath{ grid-template-columns:1fr 1fr; }
-  .pstep{ padding:14px 12px 12px 0; }
-  .pstep::before{ top:20px; }
-  .pstep p{ padding-right:0; font-size:12.2px; line-height:1.8; }
-  .pstep__hs{ margin-top:9px; }
-  .pstep__hs .hchip{ height:20px; font-size:9.5px; }
+  /* 成长路径：两列会挤成窄条，改成单列竖排，每步之间留出明显间距 */
+  .ppath{
+    grid-template-columns:1fr;
+    border-top:0;
+    border-left:1px solid var(--line);
+    margin-left:3px;
+  }
+  .pstep{
+    padding:0 0 30px 24px;
+    border-right:0;
+  }
+  .pstep:last-child{ padding-bottom:0; }
+  .pstep::before{ top:8px; left:-4px; }
+  .pstep__top span{ font-size:10px; }
+  .pstep__top b{ font-size:11px; }
+  .pstep h4{ font-size:19px; margin:8px 0 10px; }
+  .pstep p{ padding-right:0; font-size:13.5px; line-height:2; }
+  .pstep__hs{ margin-top:12px; }
+  .pstep__hs .hchip{ height:22px; font-size:10.5px; }
 
   /* 长卷：手机上不占一屏半，缩到 100vh 让下一个标题能露出来 */
   .unroll{ height:100vh; min-height:560px; }
   .unroll__foot{ gap:6px; }
 
-  /* 六个问题：改成两列，六条从一屏半压到一屏 */
-  .stats, .stats--fit{ grid-template-columns:1fr 1fr; }
+  /* 六个问题：单列，每条一行问题、一个数字、一行说明，不挤在窄栏里 */
+  .stats, .stats--fit{ grid-template-columns:1fr; }
   .stats > .stat, .stats--fit > .stat{
-    border-top:1px solid var(--line); margin-top:-1px;
-    padding:16px 12px 16px 0;
+    border-top:1px solid var(--line); border-left:0; margin-top:0;
+    padding:22px 0 24px;
   }
-  .stats > .stat:nth-child(-n+2), .stats--fit > .stat:nth-child(-n+2){ border-top:0; margin-top:0; }
-  .stats > .stat:nth-child(even), .stats--fit > .stat:nth-child(even){
-    padding-left:14px; padding-right:0; border-left:1px solid var(--line);
-  }
-  .stats > .stat:nth-child(odd), .stats--fit > .stat:nth-child(odd){ border-left:0; }
-  .stat{ padding:16px 12px 16px 0; }
-  .stat__q{ font-size:12px; margin-bottom:9px; }
-  .stat__n{ font-size:clamp(34px,10vw,44px); }
-  .stat__t{ margin-top:7px; font-size:13px; }
-  .stat__d{ margin-top:5px; font-size:11.5px; line-height:1.7; }
+  .stats > .stat:first-child{ border-top:0; }
+  .stat{ padding:22px 0 24px; }
+  .stat__q{ font-size:12.5px; margin-bottom:12px; }
+  .stat__n{ font-size:clamp(40px,11.5vw,50px); }
+  .stat__t{ margin-top:10px; font-size:13.5px; line-height:1.75; }
 
-  /* 七站：示意图与编号并排时不留下右侧空白，展开区也收紧 */
-  .walk{ padding:44px 0 40px; }
-  .walk__side{ gap:16px; margin-bottom:20px; padding-bottom:16px; }
-  .plan{ width:min(230px,58vw); }
-  .walk__num b{ font-size:16px; }
-  .walk__hd{ row-gap:2px; padding:14px 0; }
-  .walk__nm{ font-size:15px; }
-  .walk__body{ padding-top:12px; padding-bottom:16px; }
-  .walk__heart{ font-size:12.2px; line-height:1.8; }
-  .walk__hs{ margin-top:8px; }
+  .walk{ padding:54px 0 46px; }
+  .walk__hd{ row-gap:3px; padding:20px 0; }
+  .walk__no{ font-size:9.5px; }
+  .walk__nm{ font-size:20px; }
+  .walk__body{ padding-top:16px; padding-bottom:22px; }
+  .walk__desc{ font-size:13.8px; line-height:2.05; }
+  .walk__heart{ font-size:13.2px; line-height:1.95; margin-top:20px; padding-top:16px; }
+  .walk__hs{ margin-top:9px; }
 
   /* 系部专业：筛选按钮两行变一行可横滑，系部展开区收紧 */
   .mfilter{
@@ -1973,15 +1859,10 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
   .mrow__hs{ margin-top:8px; }
 
   /* 匠心与荣誉：三块大字挤成一行可读，时间线节点减重 */
-  .craft{ padding:44px 0; }
+  .craft{ padding:46px 0; }
   .craft__big > div{ padding-top:12px; }
   .craft__big b{ font-size:24px; }
   .craft__big span{ font-size:10.5px; line-height:1.5; }
-  .tl{ margin-top:26px; }
-  .tl li{ padding:12px 0 12px 20px; }
-  .tl b{ font-size:13.5px; }
-  .tl p{ font-size:11.8px; line-height:1.7; }
-  .intl{ gap:1px; }
   .news{ gap:8px; }
 
   /* 自测：题干与选项都收紧，六题一屏半内走完 */
@@ -2019,7 +1900,7 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
   .fd textarea{ height:auto; padding:10px 11px; }
 
   /* 线上招生：四通道 813px → 一屏内；表单与流程同步收紧 */
-  .sec--admit{ padding:44px 0; }
+  .sec--admit{ padding:46px 0; }
   .chns{ margin-bottom:28px; }
   .chn{ padding:14px 16px; flex-direction:row; flex-wrap:wrap; align-items:baseline; gap:0 10px; }
   .chn__no{ width:100%; }
@@ -2030,7 +1911,6 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
   .flow b{ font-size:11px; }
   .flow h4{ font-size:14px; margin-top:1px; }
   .flow p{ font-size:11.5px; line-height:1.7; margin-top:3px; }
-  .levels{ margin-top:22px; }
   .lv{ padding:11px 0; }
   .lv b{ font-size:13.5px; }
   .lv span{ font-size:11.2px; line-height:1.7; }

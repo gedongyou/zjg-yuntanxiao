@@ -613,7 +613,7 @@
               fText('一句话', p + '.one') + '</div>' +
             fList('主要养的五心（一行一个：red / ren / heng / jiang / chuang）', p + '.hearts');
         }, function (it) { return (it.id || '') + ' ' + (it.nm || ''); }) +
-        fGroup('办学层次', 'majors.levels', function (p) {
+        fGroup('办学层次（只用于专业行上的小标签，不在页面上单独成段）', 'majors.levels', function (p) {
           return fText('层次 id（w5 / gk / z3）', p + '.id') + fText('标题', p + '.b') +
             fText('说明', p + '.s', null, 2);
         }, function (it) { return it.b || ''; });
@@ -625,10 +625,6 @@
         fGroup('三个大数字', 'craft.big', function (p) {
           return '<div class="grid3">' + fText('数字', p + '.n') + fText('单位', p + '.u') + fText('标签', p + '.t') + '</div>';
         }, function (it) { return (it.n || '') + ' ' + (it.t || ''); }) +
-        fGroup('时间线', 'craft.timeline', function (p) {
-          return '<div class="grid2">' + fText('年份', p + '.y') + fText('事件', p + '.t') + '</div>';
-        }, function (it) { return (it.y || '') + ' ' + (it.t || '').slice(0, 16); }) +
-        fList('国际合作（一行一个）', 'craft.intl') +
         fGroup('新闻图', 'craft.news', function (p) {
           return fImg('图片', p + '.src') + fText('替代文字', p + '.alt') + fText('图注', p + '.cap');
         }, function (it) { return it.cap || ''; }) +
@@ -648,9 +644,6 @@
           return '<div class="grid3">' + fText('序号', p + '.no') + fText('标题', p + '.t') + '</div>' +
             fText('说明', p + '.d', null, 2);
         }, function (it) { return (it.no || '') + ' ' + (it.t || ''); }) +
-        fGroup('办学层次', 'admit.levels', function (p) {
-          return fText('标题', p + '.b') + fText('说明', p + '.s', null, 2);
-        }, function (it) { return it.b || ''; }) +
         fText('底部注释', 'admit.note', null, 3) +
         '<div class="grid2">' + fText('报名表单标题', 'admit.form.title') + fText('提交按钮', 'admit.form.submit') + '</div>' +
         fText('报名表单说明', 'admit.form.sub', null, 2) +
@@ -756,11 +749,11 @@
     path: '从入学到就业的六个节点，每步标注在练哪几样东西',
     core: '五颗心的名称与颜色（只在专业标签和路径里出现，不再单独成段）',
     pan: '滚到这一段自动拉开的红漆长卷',
-    numbers: '五个家长提问 + 对应数字，进视口从 0 补间',
-    stops: '七站手风琴 + 右侧校园示意图',
-    majors: '五个系部 + 二十三个专业 + 办学层次',
-    craft: '三个大数字、八行时间线、国际合作、新闻图',
-    quiz: '六道题、五心画像、推荐专业',
+    numbers: '六个家长提问 + 对应数字，进视口从 0 补间',
+    stops: '七站手风琴，点开一站读一段',
+    majors: '五个系部 + 二十三个专业（层次标签在专业行上）',
+    craft: '三个大数字与三张新闻图',
+    quiz: '六道题、心性画像、推荐专业',
     visit: '探校场次、四十分钟路线、预约表单',
     admit: '四个线上通道、五步流程、报名与查进度',
     footer: '页脚三栏链接与版权',
