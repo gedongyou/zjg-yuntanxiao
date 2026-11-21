@@ -375,17 +375,13 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   margin-top:.18em;
   font-size:.92em; letter-spacing:-.008em;
 }
-.unroll__head::before{  content:"";
-  position:absolute; left:var(--pad); bottom:0;
-  height:1px; width:calc(100% - var(--pad) * 2);
-  background:var(--line);
-}
+.unroll__head::before{ display:none; }
 .unroll__stage{
   position:relative;
   width:100%; max-width:var(--max); margin-inline:auto;
   height:clamp(300px, 56vh, 620px);
   z-index:2;
-  padding:0 calc(var(--pad) + var(--rod,20px));
+  padding:0 var(--pad);
 }
 /* 卷面：宽度固定，展开靠 clip-path 从中间往两侧铺开，四条边始终是直的 */
 .unroll__band{
@@ -406,44 +402,27 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    不用负 margin —— 这样左右两根在几何上完全镜像。 */
 .roller{
   position:absolute;
-  top:calc(var(--over,12px) * -1);
-  bottom:calc(var(--over,12px) * -1);
-  width:var(--rod,22px);
+  top:0; bottom:0;
+  width:var(--rod,24px);
   z-index:7;
-  border-radius:4px;
+  border-radius:6px;
   background:
     linear-gradient(90deg,
       #4A0C07 0%, #74130C 10%, #9B2015 26%,
-      #B93425 40%, #C74839 48%, #A82C1E 60%,
+      #B93425 40%, #CB4B3B 48%, #A82C1E 60%,
       #851A12 78%, #5C100A 92%, #3D0A05 100%);
-  box-shadow:0 2px 8px rgba(0,0,0,.20);
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
 }
-/* 轴头：上下各一道黄铜箍，正好盖住纸的上边与下边 —— 纸就"卷"在这两道箍之间 */
+/* 黄铜箍：柱身最上、最下各一道，收在柱身宽度之内 */
 .roller::before,.roller::after{
-  content:""; position:absolute; left:0; right:0; height:var(--over,12px);
+  content:""; position:absolute; left:0; right:0; height:14px;
   background:linear-gradient(180deg,
-    #E4C68C 0%, #C09A5A 34%, #9C7740 68%, #6E5228 100%);
-  border-radius:4px;
+    #E7CB93 0%, #C29C5C 32%, #9C7740 66%, #6E5228 100%);
 }
-.roller::before{ top:0; }
-.roller::after{ bottom:0; }
-.roller--l{ left:calc(var(--rod,22px) / -2); }
-.roller--r{ right:calc(var(--rod,22px) / -2); }
-
-/* 纸边压在轴上的那一点暗：很窄，只让纸看起来是贴上去的 */
-.unroll__frame::before,
-.unroll__frame::after{
-  content:""; position:absolute; top:0; bottom:0; width:14px; z-index:5;
-  pointer-events:none;
-}
-.unroll__frame::before{
-  left:0;
-  background:linear-gradient(90deg, rgba(0,0,0,.14), transparent);
-}
-.unroll__frame::after{
-  right:0;
-  background:linear-gradient(270deg, rgba(0,0,0,.14), transparent);
-}
+.roller::before{ top:0; border-radius:6px 6px 0 0; }
+.roller::after{ bottom:0; border-radius:0 0 6px 6px; }
+.roller--l{ left:calc(var(--rod,24px) / -2); }
+.roller--r{ right:calc(var(--rod,24px) / -2); }
 
 .unroll__img{
   position:absolute; top:0; bottom:0;
