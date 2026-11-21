@@ -362,67 +362,54 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .unroll__head{
   position:relative; z-index:6;
   width:100%; max-width:var(--max); margin:0 auto;
-  padding:0 var(--pad) clamp(22px,3.4vh,44px);
+  padding:0 var(--pad) clamp(16px,2.6vh,34px);
 }
 .unroll__head h2{
   font-family:var(--serif); font-weight:400;
-  font-size:clamp(30px, 4.6vw, 62px);
-  line-height:1.5; letter-spacing:-.012em;
+  font-size:clamp(38px, 6.6vw, 96px);
+  line-height:1.02; letter-spacing:-.035em;
 }
-.unroll__head h2 em{
-  display:block;
-  font-style:normal; color:var(--red);
-  margin-top:.18em;
-  font-size:.92em; letter-spacing:-.008em;
+.unroll__head h2 em{ font-style:normal; color:var(--red); }
+.unroll__head::before{  content:"";
+  position:absolute; left:var(--pad); bottom:0;
+  height:2px; width:calc(100% - var(--pad) * 2);
+  background:color-mix(in srgb, var(--red) 13%, transparent);
 }
-.unroll__head::before{ display:none; }
+.unroll.is-open .unroll__head::after{ width:calc(100% - var(--pad) * 2); }
+.unroll__head::after{  content:"";
+  position:absolute; left:var(--pad); bottom:0;
+  height:2px; width:calc(var(--p,0) * (100% - var(--pad) * 2));
+  background:var(--red);
+  transform:skewY(-.6deg);
+  opacity:.92;
+}
+
 .unroll__stage{
   position:relative;
-  width:100%; max-width:var(--max); margin-inline:auto;
+  width:100vw; margin-left:calc(50% - 50vw);
   height:clamp(300px, 56vh, 620px);
+  display:flex; align-items:center; justify-content:center;
   z-index:2;
-  padding:0 var(--pad);
 }
-/* 卷面：宽度固定，展开靠 clip-path 从中间往两侧铺开，四条边始终是直的 */
 .unroll__band{
   position:relative;
-  height:100%; width:100%;
+  height:100%; width:5%;
+  max-width:100vw;
+  will-change:width;
+  transition:width 6s cubic-bezier(.25,.7,.3,1);
 }
-.unroll__frame{
-  position:absolute; inset:0;
+.unroll__frame{  position:absolute; inset:0;
   overflow:hidden;
   background:var(--ink);
-  clip-path:inset(0 50% 0 50%);
-  transition:clip-path 2.8s cubic-bezier(.22,.61,.36,1);
 }
-.unroll.is-open .unroll__frame{ clip-path:inset(0 0 0 0); }
-
-/* 卷轴：骑在纸的左右两条边上（纸从轴上卷过来，一半压在纸上）。
-   柱身上下各探出纸 14px，两端各一道收口，位置用 top/bottom 对称给，
-   不用负 margin —— 这样左右两根在几何上完全镜像。 */
-.roller{
-  position:absolute;
-  top:0; bottom:0;
-  width:var(--rod,24px);
-  z-index:7;
-  border-radius:6px;
-  background:
-    linear-gradient(90deg,
-      #4A0C07 0%, #74130C 10%, #9B2015 26%,
-      #B93425 40%, #CB4B3B 48%, #A82C1E 60%,
-      #851A12 78%, #5C100A 92%, #3D0A05 100%);
-  box-shadow:0 2px 8px rgba(0,0,0,.18);
+.unroll.is-open .unroll__frame::after{ opacity:0; }
+.unroll__frame::after{  content:"";
+  position:absolute; inset:0; z-index:4;
+  background:color-mix(in srgb, var(--ink) 66%, transparent);
+  opacity:.66;
+  transition:opacity 4s ease;
+  pointer-events:none;
 }
-/* 黄铜箍：柱身最上、最下各一道，收在柱身宽度之内 */
-.roller::before,.roller::after{
-  content:""; position:absolute; left:0; right:0; height:14px;
-  background:linear-gradient(180deg,
-    #E7CB93 0%, #C29C5C 32%, #9C7740 66%, #6E5228 100%);
-}
-.roller::before{ top:0; border-radius:6px 6px 0 0; }
-.roller::after{ bottom:0; border-radius:0 0 6px 6px; }
-.roller--l{ left:calc(var(--rod,24px) / -2); }
-.roller--r{ right:calc(var(--rod,24px) / -2); }
 
 .unroll__img{
   position:absolute; top:0; bottom:0;
@@ -447,16 +434,12 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   position:absolute; inset:0;
   display:grid; place-items:center;
   overflow:hidden;
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--paper) 96%, #fff) 0%,
-      var(--paper) 42%,
-      color-mix(in srgb, var(--paper-2) 62%, var(--paper)) 100%);
+  background:radial-gradient(130% 96% at 50% 0%, color-mix(in srgb, var(--paper) 92%, #fff), var(--paper-3) 82%);
   opacity:0;
   transition:opacity .34s cubic-bezier(.22,.7,.3,1);
 }
 .unroll__card.is-on{ opacity:1; }
-.unroll__cin{ width:min(880px, 100%); padding:0 clamp(18px,3vw,48px); text-align:center; }
+.unroll__cin{ width:min(880px, 86vw); text-align:center; }
 .unroll__yr{
   display:block; font-family:var(--serif);
   font-size:clamp(56px, 9.2vw, 130px);
@@ -479,6 +462,36 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   width:34px; height:1px; background:var(--gold);
   transform:translateX(-50%);
 }
+
+.roller{
+  position:absolute; top:-4%; bottom:-4%;
+  width:22px; z-index:5;
+  background:linear-gradient(90deg,
+    color-mix(in srgb, var(--red) 46%, #000) 0%,
+    color-mix(in srgb, var(--red) 78%, #000) 22%,
+    var(--red) 46%,
+    color-mix(in srgb, var(--red) 62%, #fff) 56%,
+    color-mix(in srgb, var(--red) 78%, #000) 80%,
+    color-mix(in srgb, var(--red) 46%, #000) 100%);
+  box-shadow:
+    0 22px 50px color-mix(in srgb, var(--ink) 34%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--paper) 50%, transparent),
+    inset 0 0 0 1px rgba(255,255,255,.26);
+  border-radius:3px;
+}
+.roller::before,.roller::after{
+  content:""; position:absolute; left:-7px; right:-7px; height:13px;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--gold) 62%, #fff),
+    var(--gold) 42%,
+    color-mix(in srgb, var(--gold) 62%, #000));
+  border-radius:2px;
+  box-shadow:0 2px 8px color-mix(in srgb, var(--ink) 22%, transparent);
+}
+.roller::before{ top:-8px; }
+.roller::after{ bottom:-8px; }
+.roller--l{ left:0; }
+.roller--r{ right:0; }
 
 .unroll__foot{
   position:relative; z-index:6;
@@ -1023,7 +1036,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   .hero__seal{ display:none; }
 
   .unroll{ height:130vh; }
-  .unroll__head h2{ font-size:clamp(25px,7.4vw,36px); line-height:1.24; }
+  .unroll__head h2{ font-size:clamp(32px,9.6vw,50px); }
   .unroll__stage{ height:clamp(230px,40vh,330px); }
   .unroll__yr{ font-size:clamp(46px, 15vw, 72px); }
   .unroll__tx{ font-size:12px; line-height:1.95; }
@@ -1802,9 +1815,6 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
 
   /* 长卷：手机上不占一屏半，缩到 100vh 让下一个标题能露出来 */
   .unroll{ height:100vh; min-height:560px; }
-  .unroll__head{ padding-bottom:26px; }
-  .unroll__head h2{ font-size:clamp(27px,7.6vw,36px); line-height:1.46; letter-spacing:-.008em; }
-  .unroll__head h2 em{ margin-top:.26em; font-size:.94em; }
   .unroll__foot{ gap:6px; }
 
   /* 六个问题：单列，每条一行问题、一个数字、一行说明，不挤在窄栏里 */

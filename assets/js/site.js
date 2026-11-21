@@ -174,8 +174,8 @@
         '</div>' +
         '<div class="unroll__stage">' +
           '<div class="unroll__band" id="unrollBand">' +
-            '<div class="unroll__frame">' + frames + '</div>' +
             '<span class="roller roller--l" aria-hidden="true"></span>' +
+            '<div class="unroll__frame">' + frames + '</div>' +
             '<span class="roller roller--r" aria-hidden="true"></span>' +
           '</div>' +
         '</div>' +
