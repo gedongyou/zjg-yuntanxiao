@@ -667,6 +667,7 @@
         return;
       }
       showFrame(i);
+      setCap(frames[i].getAttribute('data-cap'));
     }, Math.max(80, step));
   }
   if (unroll) {
