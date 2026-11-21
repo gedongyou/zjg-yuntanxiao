@@ -366,58 +366,83 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 }
 .unroll__head h2{
   font-family:var(--serif); font-weight:400;
-  font-size:clamp(32px, 5.2vw, 72px);
-  line-height:1.22; letter-spacing:-.026em;
-  text-wrap:balance;
+  font-size:clamp(30px, 4.6vw, 62px);
+  line-height:1.5; letter-spacing:-.012em;
 }
 .unroll__head h2 em{
+  display:block;
   font-style:normal; color:var(--red);
-  display:inline-block; margin-top:.08em;
-  font-size:.92em;
+  margin-top:.18em;
+  font-size:.92em; letter-spacing:-.008em;
 }
 .unroll__head::before{  content:"";
   position:absolute; left:var(--pad); bottom:0;
-  height:2px; width:calc(100% - var(--pad) * 2);
-  background:color-mix(in srgb, var(--red) 13%, transparent);
+  height:1px; width:calc(100% - var(--pad) * 2);
+  background:var(--line);
 }
-.unroll.is-open .unroll__head::after{ width:calc(100% - var(--pad) * 2); }
-.unroll__head::after{  content:"";
-  position:absolute; left:var(--pad); bottom:0;
-  height:2px; width:calc(var(--p,0) * (100% - var(--pad) * 2));
-  background:var(--red);
-  transform:skewY(-.6deg);
-  opacity:.92;
-}
-
 .unroll__stage{
   position:relative;
-  width:100vw; margin-left:calc(50% - 50vw);
+  width:100%; max-width:var(--max); margin-inline:auto;
   height:clamp(300px, 56vh, 620px);
-  display:flex; align-items:center; justify-content:center;
   z-index:2;
-  padding:clamp(10px,1.6vh,18px) clamp(18px,3.2vw,54px) 0;
+  padding:0 calc(var(--pad) + var(--rod,20px));
 }
+/* 卷面：宽度固定，展开靠 clip-path 从中间往两侧铺开，四条边始终是直的 */
 .unroll__band{
   position:relative;
-  height:100%; width:5%;
-  max-width:100%;
-  will-change:width;
-  transition:width 6s cubic-bezier(.25,.7,.3,1);
+  height:100%; width:100%;
 }
-.unroll__frame{  position:absolute; inset:0 var(--rod,26px);
+.unroll__frame{
+  position:absolute; inset:0;
   overflow:hidden;
   background:var(--ink);
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.08),
-    inset 0 0 22px rgba(0,0,0,.18);
+  clip-path:inset(0 50% 0 50%);
+  transition:clip-path 2.8s cubic-bezier(.22,.61,.36,1);
 }
-.unroll.is-open .unroll__frame::after{ opacity:0; }
-.unroll__frame::after{  content:"";
-  position:absolute; inset:0; z-index:4;
-  background:color-mix(in srgb, var(--ink) 66%, transparent);
-  opacity:.66;
-  transition:opacity 4s ease;
+.unroll.is-open .unroll__frame{ clip-path:inset(0 0 0 0); }
+
+/* 卷轴：骑在纸的左右两条边上（纸从轴上卷过来，一半压在纸上）。
+   柱身上下各探出纸 14px，两端各一道收口，位置用 top/bottom 对称给，
+   不用负 margin —— 这样左右两根在几何上完全镜像。 */
+.roller{
+  position:absolute;
+  top:calc(var(--over,12px) * -1);
+  bottom:calc(var(--over,12px) * -1);
+  width:var(--rod,22px);
+  z-index:7;
+  border-radius:4px;
+  background:
+    linear-gradient(90deg,
+      #4A0C07 0%, #74130C 10%, #9B2015 26%,
+      #B93425 40%, #C74839 48%, #A82C1E 60%,
+      #851A12 78%, #5C100A 92%, #3D0A05 100%);
+  box-shadow:0 2px 8px rgba(0,0,0,.20);
+}
+/* 轴头：上下各一道黄铜箍，正好盖住纸的上边与下边 —— 纸就"卷"在这两道箍之间 */
+.roller::before,.roller::after{
+  content:""; position:absolute; left:0; right:0; height:var(--over,12px);
+  background:linear-gradient(180deg,
+    #E4C68C 0%, #C09A5A 34%, #9C7740 68%, #6E5228 100%);
+  border-radius:4px;
+}
+.roller::before{ top:0; }
+.roller::after{ bottom:0; }
+.roller--l{ left:calc(var(--rod,22px) / -2); }
+.roller--r{ right:calc(var(--rod,22px) / -2); }
+
+/* 纸边压在轴上的那一点暗：很窄，只让纸看起来是贴上去的 */
+.unroll__frame::before,
+.unroll__frame::after{
+  content:""; position:absolute; top:0; bottom:0; width:14px; z-index:5;
   pointer-events:none;
+}
+.unroll__frame::before{
+  left:0;
+  background:linear-gradient(90deg, rgba(0,0,0,.14), transparent);
+}
+.unroll__frame::after{
+  right:0;
+  background:linear-gradient(270deg, rgba(0,0,0,.14), transparent);
 }
 
 .unroll__img{
@@ -443,7 +468,11 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   position:absolute; inset:0;
   display:grid; place-items:center;
   overflow:hidden;
-  background:radial-gradient(130% 96% at 50% 0%, color-mix(in srgb, var(--paper) 92%, #fff), var(--paper-3) 82%);
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--paper) 96%, #fff) 0%,
+      var(--paper) 42%,
+      color-mix(in srgb, var(--paper-2) 62%, var(--paper)) 100%);
   opacity:0;
   transition:opacity .34s cubic-bezier(.22,.7,.3,1);
 }
@@ -471,29 +500,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   width:34px; height:1px; background:var(--gold);
   transform:translateX(-50%);
 }
-
-.roller{
-  position:absolute; top:0; bottom:0;
-  width:var(--rod,26px); z-index:5;
-  background:
-    linear-gradient(90deg,
-      color-mix(in srgb, var(--red) 82%, #000) 0%,
-      color-mix(in srgb, var(--red) 96%, #fff) 45%,
-      color-mix(in srgb, var(--red) 86%, #000) 100%);
-  box-shadow:0 2px 8px color-mix(in srgb, var(--ink) 20%, transparent);
-}
-/* 上下两道黄铜箍，与画面上下边齐平，不外凸 */
-.roller::before,.roller::after{
-  content:""; position:absolute; left:0; right:0; height:6px;
-  background:linear-gradient(180deg,
-    color-mix(in srgb, var(--gold) 54%, #fff) 0%,
-    var(--gold) 52%,
-    color-mix(in srgb, var(--gold) 72%, #000) 100%);
-}
-.roller::before{ top:0; }
-.roller::after{ bottom:0; }
-.roller--l{ left:0; }
-.roller--r{ right:0; }
 
 .unroll__foot{
   position:relative; z-index:6;
@@ -1817,6 +1823,9 @@ body.is-asking .nav, body.is-asking .ask{ opacity:0; pointer-events:none; }
 
   /* 长卷：手机上不占一屏半，缩到 100vh 让下一个标题能露出来 */
   .unroll{ height:100vh; min-height:560px; }
+  .unroll__head{ padding-bottom:26px; }
+  .unroll__head h2{ font-size:clamp(27px,7.6vw,36px); line-height:1.46; letter-spacing:-.008em; }
+  .unroll__head h2 em{ margin-top:.26em; font-size:.94em; }
   .unroll__foot{ gap:6px; }
 
   /* 六个问题：单列，每条一行问题、一个数字、一行说明，不挤在窄栏里 */

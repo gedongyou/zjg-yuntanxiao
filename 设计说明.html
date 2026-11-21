@@ -203,7 +203,7 @@
         <tbody>
           <tr><td>首屏</td><td>三秒说清这是什么，把唯一想让访客做的事亮出来</td><td>竖排印章、细红压线、向下提示，两个按钮：「先看校园」「在线报名」</td></tr>
           <tr><td>成长路径</td><td>把育人内涵放进时间轴，而不是横着铺五个标签</td><td>六个节点，每个节点写这一年实际在做什么、被要求到什么程度；节点下标注这一阶段主养哪几颗心，小签可点，点了筛出主要养这颗心的专业</td></tr>
-          <tr><td>校园长卷</td><td>先把场域铺开</td><td>标题两行分开排，下面一条细红线压住；画面左右两根红漆卷轴，与画面上边下边齐平，滚到这一段自动向两侧拉开：先逐张翻过 1984—2024 的年份卡，拉到底最后是校门实景</td></tr>
+          <tr><td>校园长卷</td><td>先把场域铺开</td><td>标题两行分开排（行高 1.5，第二行另起一行并略小一号），下面一条细线压住；画面左右两根卷轴骑在纸的两条边上，滚到这一段时纸从中间向两侧铺开——先逐张翻过 1984—2024 的年份卡，铺到底最后是校门实景</td></tr>
           <tr><td>六个问题</td><td>用可核对的事实建立信任</td><td>每条先给家长的原话（「学校有多大？」），再是数字；进入视口后数字从 0 补间到实际值</td></tr>
           <tr><td>七站导览</td><td>让人自己决定看哪一站</td><td>单列手风琴，点开一站展开一段；每站正文末句由这站的事实说到那颗心，下面再挂心性小签，点了筛专业</td></tr>
           <tr><td>系部专业</td><td>看专业，也能按心找专业</td><td>六个筛选按钮（全部 + 五颗心，各带数量）；五个系部手风琴，一次只开一个，每个系部标「N 个方向」、注释末句由这个系做的事说到那种人；每个专业一行，标层次小标签、一句话、主要养哪几颗心</td></tr>
@@ -225,7 +225,7 @@
       <ul>
         <li><b>内容与页面分离</b>：<span style="font-family:var(--mono);font-size:12px">content.json</span> 是唯一数据源，<span style="font-family:var(--mono);font-size:12px">node tools/build.mjs</span> 把它编译成 <span style="font-family:var(--mono);font-size:12px">assets/js/site-data.js</span>（挂在 <span style="font-family:var(--mono);font-size:12px">window.__CONTENT__</span> 上）。之所以不直接 fetch 那个 json，是因为 file:// 协议下读本地 json 会被浏览器的同源策略拦掉，双击就白屏；编译成 js 之后双击照样能看</li>
         <li><b>运行时渲染</b>：<span style="font-family:var(--mono);font-size:12px">index.html</span> 是个空壳，<span style="font-family:var(--mono);font-size:12px">assets/js/site.js</span> 按 <span style="font-family:var(--mono);font-size:12px">sections</span> 里的顺序把十段拼出来。后台调顺序、关板块，前台立刻跟着变</li>
-        <li><b>卷轴拉开</b>：父级 sticky 占住视口，进入视口 35% 时触发一次，卷面宽度用 6 秒过渡从 5% 走到 100%，边拉开边翻帧，翻到最后停在门面图。两根卷轴按画面高度撑满、上下齐平，上下各一道黄铜箍贴在画面边缘，不做外凸的轴帽——外凸的轴头在不同宽度下会顶到屏幕边上，看起来就不平了</li>
+        <li><b>卷轴铺开</b>：父级 sticky 占住视口，进入视口 35% 时触发一次。纸的宽度始终是满的，铺开用 <code>clip-path: inset(0 50% 0 50%) → inset(0)</code> 的 2.8 秒过渡来做——从中间一条缝向两侧展开，四条边自始至终是直的，不会出现宽度动画那种「图被夹扁」的观感。铺开的同时逐帧翻过 1984—2024 的年份卡，最后停在门面照片。<b>卷轴</b>用绝对定位骑在纸的左右两条边上（<code>left/right: calc(var(--rod) / -2)</code>），上下各探出 12px，两端各一道与探出量等高的黄铜箍，正好盖住纸的上边与下边：纸看起来是「卷在这两道箍之间」的。两根柱子用同一组 <code>top/bottom</code> 对称值，所以左右在几何上完全镜像，任何宽度下都是平的；不做外凸的轴帽，因为它会在窄屏顶到视口边上</li>
         <li><b>七站展开</b>：点标题给该条加 <span style="font-family:var(--mono);font-size:12px">.is-open</span>，用 <span style="font-family:var(--mono);font-size:12px">grid-template-rows: 0fr → 1fr</span> 做高度过渡；同一时刻只开一站，展开的正文左侧比站名缩进半个字宽，读完一段再接下一站</li>
         <li><b>数字补间</b>：IntersectionObserver 只触发一次，rAF 里按 easeOutCubic 跑 1300ms</li>
         <li><b>问校园</b>：每条问答有关键词表，访客的话去和关键词比对，命中词越长、命中个数越多得分越高，再叠一个后台可调的权重；最高分低于阈值就当答不上来，如实说不知道，并建议换个问法或去学校官网、问招生办</li>
